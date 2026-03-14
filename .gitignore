@@ -9,30 +9,42 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
-*.egg-info/
-*.egg
-dist/
-build/
-.eggs/
 venv/
 .venv/
 env/
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 pip-log.txt
 pip-delete-this-directory.txt
 
 # ── pytest ──
 .pytest_cache/
-.coverage
 htmlcov/
-.tox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
 
 # ── Node / Next.js ──
 node_modules/
 frontend/node_modules/
 frontend/.next/
 frontend/out/
-frontend/.vercel
 .next/
 out/
 
@@ -43,8 +55,8 @@ out/
 *.swo
 *~
 .project
-.classpath
 .settings/
+.classpath
 
 # ── OS ──
 .DS_Store
@@ -63,28 +75,25 @@ docker-compose.override.yml
 *.log
 logs/
 
+# ── Snowflake ──
+snowflake_credentials.json
+
 # ── Build artifacts ──
 *.pyc
 *.pyo
-*.whl
-
-# ── Snowflake ──
-snowflake_credentials.json
+*.pyd
 
 # ── Temporary files ──
 tmp/
 temp/
 *.tmp
 *.bak
+*.swp
 
-# ── Coverage ──
-coverage/
-*.lcov
-
-# ── Jupyter (if any scratch notebooks) ──
+# ── Jupyter (if any quick prototyping) ──
 .ipynb_checkpoints/
 *.ipynb
 
-# ── Data (keep demo receipts, ignore user uploads) ──
-uploads/
-user_data/
+# ── Distribution ──
+*.tar.gz
+*.whl
