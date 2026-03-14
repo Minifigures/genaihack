@@ -14,15 +14,21 @@ export default function UploadPage() {
   const [traces, setTraces] = useState<AgentTrace[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [studentId, setStudentId] = useState("STU-001");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   async function handleUpload(file: File) {
+    setSelectedFile(file);
+  }
+
+  async function handleAnalyze() {
+    if (!selectedFile) return;
     setIsLoading(true);
     setError(null);
     setResult(null);
     setTraces([]);
 
     try {
-      const pipelineResult = await uploadClaim(file, studentId);
+      const pipelineResult = await uploadClaim(selectedFile, studentId);
       setResult(pipelineResult);
       setTraces(pipelineResult.agent_traces || []);
 
@@ -46,11 +52,9 @@ export default function UploadPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: Upload + Settings */}
         <div className="lg:col-span-2 space-y-6">
           <UploadZone onUpload={handleUpload} isLoading={isLoading} />
 
-          {/* Student selector */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <label className="text-sm font-medium text-gray-700">Student ID</label>
             <select
@@ -64,57 +68,47 @@ export default function UploadPage() {
             </select>
           </div>
 
+          <button
+            onClick={handleAnalyze}
+            disabled={!selectedFile || isLoading}
+            className="w-full bg-vigil-600 text-white py-3 rounded-lg font-semibold text-base hover:bg-vigil-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Analyzing..." : "Analyze Receipt"}
+          </button>
+
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
-          {/* Results */}
           {result && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FraudCaseCard
-                fraudScore={result.fraud_score}
-                flags={result.fraud_flags}
-              />
+              <FraudCaseCard fraudScore={result.fraud_score} flags={result.fraud_flags} />
               <BenefitsCard report={result.benefits_report} />
             </div>
           )}
 
-          {/* Report HTML */}
           {result?.report_html && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Full Report</h3>
-              <div
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: result.report_html }}
-              />
+              <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: result.report_html }} />
             </div>
           )}
         </div>
 
-        {/* Right column: Agent trace */}
         <div>
           <AgentTracePanel traces={traces} isRunning={isLoading} />
 
           {result && result.ranked_plans && result.ranked_plans.length > 0 && (
             <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                Recommended Actions
-              </h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Recommended Actions</h3>
               <div className="space-y-2">
                 {result.ranked_plans.map((rp, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-gray-50 rounded-lg"
-                  >
+                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-800">
-                        {rp.plan.name as string}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        Priority: {rp.priority_score}
-                      </span>
+                      <span className="text-sm font-medium text-gray-800">{rp.plan.name as string}</span>
+                      <span className="text-xs text-gray-500">Priority: {rp.priority_score}</span>
                     </div>
                   </div>
                 ))}

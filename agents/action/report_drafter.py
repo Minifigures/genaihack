@@ -104,7 +104,7 @@ async def run_report_drafter(state: VigilState) -> dict:
 
         return {
             "report_html": report_html,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "report_drafter",
                 "event": "complete",
                 "message": "Generated fraud analysis report",
@@ -116,8 +116,8 @@ async def run_report_drafter(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="report_drafter", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"report_drafter: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"report_drafter: {str(e)}"],
+            "agent_traces": [{
                 "agent": "report_drafter",
                 "event": "error",
                 "message": str(e),

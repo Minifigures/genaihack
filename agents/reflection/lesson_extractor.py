@@ -12,7 +12,7 @@ async def run_lesson_extractor(state: VigilState) -> dict:
 
     duration = int((datetime.utcnow() - start).total_seconds() * 1000)
     return {
-        "agent_traces": state.get("agent_traces", []) + [{
+        "agent_traces": [{
             "agent": "lesson_extractor",
             "event": "complete",
             "message": "Lesson extraction (stub, stretch goal)",

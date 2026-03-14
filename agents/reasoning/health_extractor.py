@@ -67,7 +67,7 @@ async def run_health_extractor(state: VigilState) -> dict:
 
         return {
             "health_signals": health_signals,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "health_extractor",
                 "event": "complete",
                 "message": f"Extracted {len(treatments)} treatments, found {len(gaps)} preventive care gaps",
@@ -79,8 +79,8 @@ async def run_health_extractor(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="health_extractor", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"health_extractor: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"health_extractor: {str(e)}"],
+            "agent_traces": [{
                 "agent": "health_extractor",
                 "event": "error",
                 "message": str(e),

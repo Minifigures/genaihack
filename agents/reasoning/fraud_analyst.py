@@ -115,8 +115,8 @@ async def run_fraud_analyst(state: VigilState) -> dict:
         logger.info("agent_complete", agent="fraud_analyst", duration_ms=duration, flags=len(flags))
 
         return {
-            "fraud_flags": state.get("fraud_flags", []) + flags,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "fraud_flags": flags,
+            "agent_traces": [{
                 "agent": "fraud_analyst",
                 "event": "complete",
                 "message": f"Found {len(flags)} fraud flags across {len(procedures)} procedures",
@@ -128,8 +128,8 @@ async def run_fraud_analyst(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="fraud_analyst", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"fraud_analyst: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"fraud_analyst: {str(e)}"],
+            "agent_traces": [{
                 "agent": "fraud_analyst",
                 "event": "error",
                 "message": str(e),

@@ -48,7 +48,7 @@ async def run_optimization_engine(state: VigilState) -> dict:
 
         return {
             "ranked_plans": ranked,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "optimization_engine",
                 "event": "complete",
                 "message": f"Ranked {len(ranked)} action plans by priority",
@@ -60,8 +60,8 @@ async def run_optimization_engine(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="optimization_engine", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"optimization_engine: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"optimization_engine: {str(e)}"],
+            "agent_traces": [{
                 "agent": "optimization_engine",
                 "event": "error",
                 "message": str(e),

@@ -68,7 +68,7 @@ async def run_normalizer(state: VigilState) -> dict:
         return {
             "normalized_claim": normalized,
             "claim_id": claim_id,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "normalizer",
                 "event": "complete",
                 "message": f"Normalized {len(validated_procedures)} procedures, claim_id={claim_id[:8]}",
@@ -80,8 +80,8 @@ async def run_normalizer(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="normalizer", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"normalizer: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"normalizer: {str(e)}"],
+            "agent_traces": [{
                 "agent": "normalizer",
                 "event": "error",
                 "message": str(e),

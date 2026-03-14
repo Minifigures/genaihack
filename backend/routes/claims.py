@@ -51,19 +51,8 @@ async def upload_claim(
             "agent_traces": [],
         }
 
-        # Stream agent events via WebSocket
-        final_state = None
-        async for event in graph.astream(initial_state):
-            for node_name, node_output in event.items():
-                await manager.send_agent_event(
-                    node_name,
-                    "complete",
-                    f"Agent {node_name} finished",
-                )
-                final_state = node_output if isinstance(node_output, dict) else event
-
-        if final_state is None:
-            final_state = initial_state
+        # Run pipeline to completion
+        final_state = await graph.ainvoke(initial_state)
 
         # Build response
         claim_id = final_state.get("claim_id", str(uuid.uuid4()))

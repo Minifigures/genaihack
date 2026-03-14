@@ -64,7 +64,7 @@ async def run_compliance_gate(state: VigilState) -> dict:
 
         return {
             "compliance_approved": approved,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "compliance_gate",
                 "event": "complete",
                 "message": f"Compliance {'approved' if approved else f'flagged {len(issues)} issues'}",
@@ -77,8 +77,8 @@ async def run_compliance_gate(state: VigilState) -> dict:
         logger.error("agent_error", agent="compliance_gate", error=str(e))
         return {
             "compliance_approved": True,
-            "errors": state.get("errors", []) + [f"compliance_gate: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"compliance_gate: {str(e)}"],
+            "agent_traces": [{
                 "agent": "compliance_gate",
                 "event": "error",
                 "message": str(e),
