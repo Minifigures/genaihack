@@ -1,0 +1,52 @@
+-- VIGIL Demo Seed Data
+USE DATABASE VIGIL;
+USE SCHEMA PUBLIC;
+
+-- Seed fee guide (subset of ODA codes)
+INSERT INTO fee_guide (code, description, category, suggested_fee, effective_date) VALUES
+('11101', 'Exam, recall', 'preventive', 78.00, '2025-01-01'),
+('11102', 'Exam, complete', 'preventive', 120.00, '2025-01-01'),
+('11111', 'Scaling, first unit', 'preventive', 55.00, '2025-01-01'),
+('11117', 'Scaling, additional unit', 'preventive', 55.00, '2025-01-01'),
+('01201', 'Radiograph, periapical, 1 film', 'diagnostic', 25.00, '2025-01-01'),
+('02202', 'Radiographs, periapical, 2 films', 'diagnostic', 42.00, '2025-01-01'),
+('02101', 'Radiograph, bitewing, 1 film', 'diagnostic', 28.00, '2025-01-01'),
+('02102', 'Radiographs, bitewing, 2 films', 'diagnostic', 45.00, '2025-01-01'),
+('12101', 'Fluoride treatment, child', 'preventive', 30.00, '2025-01-01'),
+('12111', 'Fluoride treatment, adult', 'preventive', 35.00, '2025-01-01'),
+('21111', 'Amalgam, 1 surface', 'restorative', 125.00, '2025-01-01'),
+('21112', 'Amalgam, 2 surfaces', 'restorative', 160.00, '2025-01-01'),
+('23111', 'Composite, 1 surface, anterior', 'restorative', 150.00, '2025-01-01'),
+('23112', 'Composite, 2 surfaces, anterior', 'restorative', 190.00, '2025-01-01'),
+('23211', 'Composite, 1 surface, posterior', 'restorative', 165.00, '2025-01-01'),
+('23212', 'Composite, 2 surfaces, posterior', 'restorative', 210.00, '2025-01-01'),
+('33111', 'Pulpotomy', 'endodontic', 175.00, '2025-01-01'),
+('33211', 'Root canal, anterior', 'endodontic', 550.00, '2025-01-01'),
+('33212', 'Root canal, premolar', 'endodontic', 700.00, '2025-01-01'),
+('43411', 'Gingivectomy, per tooth', 'periodontic', 150.00, '2025-01-01'),
+('43421', 'Root planing, per quadrant', 'periodontic', 195.00, '2025-01-01'),
+('43427', 'Root planing, 3+ quadrants', 'periodontic', 185.00, '2025-01-01'),
+('27201', 'Crown, porcelain', 'prosthodontic', 1100.00, '2025-01-01'),
+('27211', 'Crown, metal', 'prosthodontic', 950.00, '2025-01-01'),
+('71101', 'Extraction, erupted tooth', 'oral_surgery', 125.00, '2025-01-01'),
+('71201', 'Extraction, surgical', 'oral_surgery', 250.00, '2025-01-01');
+
+-- Seed provider stats
+INSERT INTO provider_stats (provider_id, provider_name, address, total_claims, flagged_claims, avg_fee_deviation, risk_tier, common_fraud_types) VALUES
+('PRV-001', 'Dr. Smith Dental Clinic', '123 University Ave, Toronto, ON', 47, 12, 0.23, 'flagged_multiple', PARSE_JSON('["upcoding", "fee_deviation"]')),
+('PRV-002', 'Campus Dental Care', '45 St. George St, Toronto, ON', 120, 3, 0.05, 'clean', PARSE_JSON('[]')),
+('PRV-003', 'Downtown Dental Group', '789 Bay St, Toronto, ON', 89, 28, 0.35, 'confirmed_fraud', PARSE_JSON('["upcoding", "unbundling", "phantom_billing"]')),
+('PRV-004', 'Smile Bright Dentistry', '200 Bloor St W, Toronto, ON', 65, 5, 0.12, 'flagged_once', PARSE_JSON('["fee_deviation"]'));
+
+-- Seed student benefits
+INSERT INTO student_benefits (student_id, plan_year, category, annual_limit, used_ytd, remaining) VALUES
+('STU-001', '2025-2026', 'dental', 750.00, 420.00, 330.00),
+('STU-001', '2025-2026', 'vision', 150.00, 0.00, 150.00),
+('STU-001', '2025-2026', 'paramedical', 500.00, 150.00, 350.00),
+('STU-001', '2025-2026', 'psychology', 300.00, 0.00, 300.00),
+('STU-001', '2025-2026', 'prescription', 3000.00, 85.00, 2915.00),
+('STU-002', '2025-2026', 'dental', 750.00, 200.00, 550.00),
+('STU-002', '2025-2026', 'vision', 150.00, 150.00, 0.00),
+('STU-002', '2025-2026', 'paramedical', 500.00, 0.00, 500.00),
+('STU-002', '2025-2026', 'psychology', 300.00, 100.00, 200.00),
+('STU-002', '2025-2026', 'prescription', 3000.00, 250.00, 2750.00);

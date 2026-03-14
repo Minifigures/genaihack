@@ -1,0 +1,28 @@
+thresholds:
+  low: 0
+  elevated: 26
+  high: 51
+  critical: 76
+
+fee_deviation_tolerance:
+  default: 0.30
+  high_risk_codes:
+    - "43421"   # Root planing
+    - "43427"   # Root planing
+    - "11117"   # Scaling additional units
+    - "27201"   # Crown porcelain
+    - "27211"   # Crown metal
+  high_risk_tolerance: 0.15
+
+code_risk_weights:
+  upcoding: 0.9
+  unbundling: 0.7
+  phantom_billing: 1.0
+  fee_deviation: 0.4
+  duplicate_claim: 0.8
+
+provider_history_weights:
+  clean: 0.8
+  flagged_once: 1.2
+  flagged_multiple: 1.5
+  confirmed_fraud: 2.0

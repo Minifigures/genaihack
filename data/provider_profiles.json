@@ -1,0 +1,54 @@
+[
+  {
+    "provider_id": "PRV-001",
+    "provider_name": "Dr. Smith Dental Clinic",
+    "address": "123 University Ave, Toronto, ON M5H 1T1",
+    "phone": "416-555-0101",
+    "type": "general_dentistry",
+    "total_claims": 47,
+    "flagged_claims": 12,
+    "avg_fee_deviation": 0.23,
+    "risk_tier": "flagged_multiple",
+    "common_fraud_types": ["upcoding", "fee_deviation"],
+    "notes": "Consistently bills root planing when scaling is more appropriate. Fees 20-30% above ODA guide."
+  },
+  {
+    "provider_id": "PRV-002",
+    "provider_name": "Campus Dental Care",
+    "address": "45 St. George St, Toronto, ON M5S 2E5",
+    "phone": "416-555-0102",
+    "type": "general_dentistry",
+    "total_claims": 120,
+    "flagged_claims": 3,
+    "avg_fee_deviation": 0.05,
+    "risk_tier": "clean",
+    "common_fraud_types": [],
+    "notes": "Follows ODA fee guide closely. High volume, low risk."
+  },
+  {
+    "provider_id": "PRV-003",
+    "provider_name": "Downtown Dental Group",
+    "address": "789 Bay St, Toronto, ON M5G 2N8",
+    "phone": "416-555-0103",
+    "type": "general_dentistry",
+    "total_claims": 89,
+    "flagged_claims": 28,
+    "avg_fee_deviation": 0.35,
+    "risk_tier": "confirmed_fraud",
+    "common_fraud_types": ["upcoding", "unbundling", "phantom_billing"],
+    "notes": "Multiple confirmed fraud patterns. Under investigation by RCDSO."
+  },
+  {
+    "provider_id": "PRV-004",
+    "provider_name": "Smile Bright Dentistry",
+    "address": "200 Bloor St W, Toronto, ON M5S 1T8",
+    "phone": "416-555-0104",
+    "type": "general_dentistry",
+    "total_claims": 65,
+    "flagged_claims": 5,
+    "avg_fee_deviation": 0.12,
+    "risk_tier": "flagged_once",
+    "common_fraud_types": ["fee_deviation"],
+    "notes": "Minor fee deviations, likely geographic pricing. Low concern."
+  }
+]
