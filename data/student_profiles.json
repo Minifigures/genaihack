@@ -1,0 +1,50 @@
+[
+  {
+    "student_id": "STU-001",
+    "name": "Alex Chen",
+    "program": "Computer Science, Year 3",
+    "enrollment": "full_time",
+    "plan_type": "UTSU_2025",
+    "claims_ytd": 7,
+    "preferred_providers": ["PRV-001"],
+    "coverage_used_ytd": {
+      "dental": 420.00,
+      "vision": 0.00,
+      "paramedical": 150.00,
+      "psychology": 0.00,
+      "prescription": 85.00
+    }
+  },
+  {
+    "student_id": "STU-002",
+    "name": "Jordan Williams",
+    "program": "Biology, Year 2",
+    "enrollment": "full_time",
+    "plan_type": "UTSU_2025",
+    "claims_ytd": 4,
+    "preferred_providers": ["PRV-002"],
+    "coverage_used_ytd": {
+      "dental": 200.00,
+      "vision": 150.00,
+      "paramedical": 0.00,
+      "psychology": 100.00,
+      "prescription": 250.00
+    }
+  },
+  {
+    "student_id": "STU-003",
+    "name": "Priya Patel",
+    "program": "Engineering, Year 4",
+    "enrollment": "full_time",
+    "plan_type": "UTSU_2025",
+    "claims_ytd": 2,
+    "preferred_providers": ["PRV-004"],
+    "coverage_used_ytd": {
+      "dental": 78.00,
+      "vision": 0.00,
+      "paramedical": 0.00,
+      "psychology": 0.00,
+      "prescription": 0.00
+    }
+  }
+]

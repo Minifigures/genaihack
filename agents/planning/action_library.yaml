@@ -1,0 +1,32 @@
+actions:
+  dispute_claim:
+    name: "Dispute Claim with Insurer"
+    category: "financial"
+    effort: 3
+    description: "File a formal dispute with Green Shield Canada"
+    prerequisites: ["fraud_score >= 51"]
+
+  report_provider:
+    name: "Report Provider to RCDSO"
+    category: "regulatory"
+    effort: 5
+    description: "File a complaint with the Royal College of Dental Surgeons of Ontario"
+    prerequisites: ["fraud_score >= 76", "confirmed_pattern"]
+
+  switch_provider:
+    name: "Switch to Lower-Cost Provider"
+    category: "preventive"
+    effort: 2
+    description: "Recommend dentists near campus that follow the ODA fee guide"
+
+  book_preventive:
+    name: "Book Covered Preventive Visit"
+    category: "health"
+    effort: 1
+    description: "Schedule a covered preventive visit the student hasn't used"
+
+  request_itemized:
+    name: "Request Itemized Bill"
+    category: "investigation"
+    effort: 1
+    description: "Ask the provider for a detailed breakdown of services"

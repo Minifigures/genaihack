@@ -1,0 +1,78 @@
+{
+  "plan_name": "UTSU Health & Dental Plan",
+  "plan_year": "2025-2026",
+  "provider": "Green Shield Canada",
+  "coverage": {
+    "dental": {
+      "annual_limit": 750.00,
+      "coverage_pct": 80,
+      "includes": [
+        "Preventive (exams, cleanings, X-rays, fluoride)",
+        "Basic restorative (fillings)",
+        "Endodontic (root canals)",
+        "Periodontic (scaling, root planing)",
+        "Oral surgery (simple extractions)"
+      ],
+      "excludes": [
+        "Orthodontics",
+        "Cosmetic dentistry",
+        "Implants"
+      ],
+      "waiting_period_months": 0
+    },
+    "vision": {
+      "annual_limit": 150.00,
+      "coverage_pct": 100,
+      "includes": [
+        "Eye exams",
+        "Prescription glasses",
+        "Contact lenses"
+      ],
+      "frequency": "Every 24 months for glasses/contacts"
+    },
+    "paramedical": {
+      "annual_limit": 500.00,
+      "coverage_pct": 80,
+      "per_visit_max": 50.00,
+      "includes": [
+        "Physiotherapy",
+        "Chiropractic",
+        "Massage therapy",
+        "Naturopath",
+        "Acupuncture",
+        "Podiatry"
+      ]
+    },
+    "psychology": {
+      "annual_limit": 300.00,
+      "coverage_pct": 100,
+      "includes": [
+        "Psychologist",
+        "Social worker",
+        "Counsellor"
+      ]
+    },
+    "prescription": {
+      "annual_limit": 3000.00,
+      "coverage_pct": 80,
+      "dispensing_fee_max": 8.00,
+      "includes": [
+        "Prescription medications",
+        "Insulin and diabetic supplies"
+      ]
+    },
+    "health_practitioner": {
+      "annual_limit": 100.00,
+      "coverage_pct": 100,
+      "includes": [
+        "Dietitian",
+        "Speech therapist"
+      ]
+    }
+  },
+  "eligibility": {
+    "full_time": "Automatically enrolled",
+    "part_time": "Must opt-in during enrollment period",
+    "opt_out": "Available during September enrollment period with proof of comparable coverage"
+  }
+}
