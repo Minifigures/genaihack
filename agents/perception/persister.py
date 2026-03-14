@@ -16,7 +16,7 @@ async def run_persister(state: VigilState) -> dict:
         if enriched is None:
             logger.warning("persister_skip", reason="no enriched claim")
             return {
-                "agent_traces": state.get("agent_traces", []) + [{
+                "agent_traces": [{
                     "agent": "persister",
                     "event": "skip",
                     "message": "No enriched claim to persist",
@@ -35,7 +35,7 @@ async def run_persister(state: VigilState) -> dict:
         logger.info("agent_complete", agent="persister", duration_ms=duration)
 
         return {
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "persister",
                 "event": "complete",
                 "message": f"Persisted claim {enriched.claim_id[:8]} to database",
@@ -47,8 +47,8 @@ async def run_persister(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="persister", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"persister: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"persister: {str(e)}"],
+            "agent_traces": [{
                 "agent": "persister",
                 "event": "error",
                 "message": str(e),

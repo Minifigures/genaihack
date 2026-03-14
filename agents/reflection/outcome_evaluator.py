@@ -12,7 +12,7 @@ async def run_outcome_evaluator(state: VigilState) -> dict:
 
     duration = int((datetime.utcnow() - start).total_seconds() * 1000)
     return {
-        "agent_traces": state.get("agent_traces", []) + [{
+        "agent_traces": [{
             "agent": "outcome_evaluator",
             "event": "complete",
             "message": "Outcome evaluation (stub, stretch goal)",

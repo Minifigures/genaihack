@@ -44,13 +44,13 @@ async def run_ocr(state: VigilState) -> dict:
     logger.info("agent_start", agent="ocr_agent")
 
     try:
-        if settings.demo_mode and not settings.google_api_key:
+        if settings.demo_mode:
             result = _demo_ocr_result()
             duration = int((datetime.utcnow() - start).total_seconds() * 1000)
             logger.info("agent_complete", agent="ocr_agent", duration_ms=duration, mode="demo")
             return {
                 "ocr_result": result,
-                "agent_traces": state.get("agent_traces", []) + [{
+                "agent_traces": [{
                     "agent": "ocr_agent",
                     "event": "complete",
                     "message": f"OCR extracted {len(result.procedures)} procedures (demo mode)",
@@ -61,7 +61,7 @@ async def run_ocr(state: VigilState) -> dict:
 
         import google.generativeai as genai
         genai.configure(api_key=settings.google_api_key)
-        model = genai.GenerativeModel("gemini-2.5-pro-preview-05-06")
+        model = genai.GenerativeModel("gemini-2.0-flash")
 
         image_data = state["receipt_image"]
         b64_image = base64.b64encode(image_data).decode("utf-8")
@@ -95,7 +95,7 @@ async def run_ocr(state: VigilState) -> dict:
 
         return {
             "ocr_result": result,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "ocr_agent",
                 "event": "complete",
                 "message": f"OCR extracted {len(procedures)} procedures from receipt",
@@ -107,8 +107,8 @@ async def run_ocr(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="ocr_agent", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"ocr_agent: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"ocr_agent: {str(e)}"],
+            "agent_traces": [{
                 "agent": "ocr_agent",
                 "event": "error",
                 "message": str(e),

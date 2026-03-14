@@ -38,7 +38,7 @@ async def run_audit_logger(state: VigilState) -> dict:
 
         return {
             "case_id": case_id,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "audit_logger",
                 "event": "complete",
                 "message": f"Audit logged, case_id={case_id[:8]}",
@@ -50,8 +50,8 @@ async def run_audit_logger(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="audit_logger", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"audit_logger: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"audit_logger: {str(e)}"],
+            "agent_traces": [{
                 "agent": "audit_logger",
                 "event": "error",
                 "message": str(e),

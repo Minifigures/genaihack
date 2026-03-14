@@ -1,4 +1,5 @@
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Annotated
+import operator
 from backend.models.claim import OCRResult, NormalizedClaim, EnrichedClaim
 from backend.models.fraud import FraudFlag, FraudScore
 from backend.models.benefits import BenefitsReport
@@ -43,15 +44,15 @@ class VigilState(TypedDict):
     enriched_claim: Optional[EnrichedClaim]
     claim_id: Optional[str]
 
-    # Reasoning outputs
-    fraud_flags: list[FraudFlag]
+    # Reasoning outputs — lists use Annotated reducer to handle parallel writes
+    fraud_flags: Annotated[list[FraudFlag], operator.add]
     health_signals: Optional[HealthSignals]
     fraud_score: Optional[FraudScore]
 
     # Planning outputs
     benefits_report: Optional[BenefitsReport]
-    action_plans: list[ActionPlan]
-    ranked_plans: list[RankedPlan]
+    action_plans: Annotated[list[ActionPlan], operator.add]
+    ranked_plans: Annotated[list[RankedPlan], operator.add]
 
     # Action outputs
     report_html: Optional[str]
@@ -59,5 +60,5 @@ class VigilState(TypedDict):
     case_id: Optional[str]
 
     # Metadata
-    errors: list[str]
-    agent_traces: list[AgentTrace]
+    errors: Annotated[list[str], operator.add]
+    agent_traces: Annotated[list[AgentTrace], operator.add]

@@ -113,7 +113,7 @@ async def run_scoring_engine(state: VigilState) -> dict:
 
         return {
             "fraud_score": score,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "scoring_engine",
                 "event": "complete",
                 "message": f"Fraud score: {score.score}/100 ({score.level.value})",
@@ -125,8 +125,8 @@ async def run_scoring_engine(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="scoring_engine", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"scoring_engine: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"scoring_engine: {str(e)}"],
+            "agent_traces": [{
                 "agent": "scoring_engine",
                 "event": "error",
                 "message": str(e),

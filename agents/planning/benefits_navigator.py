@@ -113,7 +113,7 @@ async def run_benefits_navigator(state: VigilState) -> dict:
 
         return {
             "benefits_report": report,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "benefits_navigator",
                 "event": "complete",
                 "message": f"Benefits report: ${total_unused:.2f} total unused coverage across {len(coverage_items)} categories",
@@ -125,8 +125,8 @@ async def run_benefits_navigator(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="benefits_navigator", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"benefits_navigator: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"benefits_navigator: {str(e)}"],
+            "agent_traces": [{
                 "agent": "benefits_navigator",
                 "event": "error",
                 "message": str(e),

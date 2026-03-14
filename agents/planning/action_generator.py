@@ -74,7 +74,7 @@ async def run_action_generator(state: VigilState) -> dict:
 
         return {
             "action_plans": plans,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "action_generator",
                 "event": "complete",
                 "message": f"Generated {len(plans)} candidate action plans",
@@ -86,8 +86,8 @@ async def run_action_generator(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="action_generator", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"action_generator: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"action_generator: {str(e)}"],
+            "agent_traces": [{
                 "agent": "action_generator",
                 "event": "error",
                 "message": str(e),

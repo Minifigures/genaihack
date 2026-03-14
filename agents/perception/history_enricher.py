@@ -47,7 +47,7 @@ async def run_history_enricher(state: VigilState) -> dict:
 
         return {
             "enriched_claim": enriched,
-            "agent_traces": state.get("agent_traces", []) + [{
+            "agent_traces": [{
                 "agent": "history_enricher",
                 "event": "complete",
                 "message": f"Enriched with {enriched.past_claims_at_provider} past claims at provider",
@@ -59,8 +59,8 @@ async def run_history_enricher(state: VigilState) -> dict:
     except Exception as e:
         logger.error("agent_error", agent="history_enricher", error=str(e))
         return {
-            "errors": state.get("errors", []) + [f"history_enricher: {str(e)}"],
-            "agent_traces": state.get("agent_traces", []) + [{
+            "errors": [f"history_enricher: {str(e)}"],
+            "agent_traces": [{
                 "agent": "history_enricher",
                 "event": "error",
                 "message": str(e),
