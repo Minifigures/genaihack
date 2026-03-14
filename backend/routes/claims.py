@@ -34,6 +34,7 @@ async def upload_claim(
         initial_state = {
             "receipt_image": image_bytes,
             "student_id": student_id,
+            "receipt_filename": file.filename or "",
             "ocr_result": None,
             "normalized_claim": None,
             "enriched_claim": None,

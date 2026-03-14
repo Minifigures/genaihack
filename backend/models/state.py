@@ -37,6 +37,7 @@ class VigilState(TypedDict):
     # Input
     receipt_image: bytes
     student_id: str
+    receipt_filename: Optional[str]
 
     # Perception outputs
     ocr_result: Optional[OCRResult]
