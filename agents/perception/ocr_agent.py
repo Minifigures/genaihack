@@ -45,7 +45,8 @@ async def run_ocr(state: VigilState) -> dict:
 
     try:
         if settings.demo_mode:
-            result = _demo_ocr_result()
+            filename = state.get("receipt_filename", "")
+            result = _demo_ocr_result(filename)
             duration = int((datetime.utcnow() - start).total_seconds() * 1000)
             logger.info("agent_complete", agent="ocr_agent", duration_ms=duration, mode="demo")
             return {
@@ -118,7 +119,36 @@ async def run_ocr(state: VigilState) -> dict:
         }
 
 
-def _demo_ocr_result() -> OCRResult:
+def _demo_ocr_result(filename: str = "") -> OCRResult:
+    name = filename.lower()
+    if "unbundled" in name:
+        return _demo_unbundled()
+    if "upcoded" in name:
+        return _demo_upcoded()
+    return _demo_clean()
+
+
+def _demo_clean() -> OCRResult:
+    """Routine visit — all fees within ODA guide, no fraud flags expected."""
+    return OCRResult(
+        provider_name="Maple Dental Centre",
+        provider_address="456 Bloor St W, Toronto, ON M5S 1X8",
+        claim_date="2025-02-10",
+        procedures=[
+            Procedure(code="11101", description="Exam, recall", fee_charged=82.00),
+            Procedure(code="02202", description="Radiographs, periapical, 2 films", fee_charged=44.00),
+            Procedure(code="11111", description="Scaling, first unit", fee_charged=57.00),
+        ],
+        subtotal=183.00,
+        tax=None,
+        total=183.00,
+        ocr_confidence=0.97,
+        raw_text="Maple Dental Centre\n456 Bloor St W\nDate: Feb 10, 2025\n11101 Exam recall $82.00\n02202 Periapical 2 films $44.00\n11111 Scaling first unit $57.00\nTotal: $183.00",
+    )
+
+
+def _demo_upcoded() -> OCRResult:
+    """Fees 40-60% above ODA guide + root planing likely upcoded from scaling."""
     return OCRResult(
         provider_name="Dr. Smith Dental Clinic",
         provider_address="123 University Ave, Toronto, ON M5H 1T1",
@@ -134,4 +164,27 @@ def _demo_ocr_result() -> OCRResult:
         total=490.00,
         ocr_confidence=0.95,
         raw_text="Dr. Smith Dental Clinic\n123 University Ave\nDate: Jan 15, 2025\n11101 Exam recall $82.00\n02202 Periapical 2 films $48.00\n43421 Root planing Q1 $285.00\n11117 Scaling add unit $75.00\nTotal: $490.00",
+    )
+
+
+def _demo_unbundled() -> OCRResult:
+    """Same composite code billed twice for same tooth + 3 separate scaling units (should be bundled)."""
+    return OCRResult(
+        provider_name="Queensway Family Dentistry",
+        provider_address="789 Queensway Ave, Toronto, ON M8Z 1N4",
+        claim_date="2025-03-05",
+        procedures=[
+            Procedure(code="11101", description="Exam, recall", fee_charged=82.00),
+            Procedure(code="02202", description="Radiographs, periapical, 2 films", fee_charged=48.00),
+            Procedure(code="23112", description="Composite resin, 2 surfaces, anterior", fee_charged=220.00, tooth_number="21"),
+            Procedure(code="23112", description="Composite resin, 2 surfaces, anterior", fee_charged=220.00, tooth_number="21"),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=75.00),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=75.00),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=75.00),
+        ],
+        subtotal=795.00,
+        tax=None,
+        total=795.00,
+        ocr_confidence=0.93,
+        raw_text="Queensway Family Dentistry\n789 Queensway Ave\nDate: Mar 5, 2025\n11101 Exam recall $82.00\n02202 Periapical 2 films $48.00\n23112 Composite 2-surf tooth 21 $220.00\n23112 Composite 2-surf tooth 21 $220.00\n11117 Scaling unit 1 $75.00\n11117 Scaling unit 2 $75.00\n11117 Scaling unit 3 $75.00\nTotal: $795.00",
     )

@@ -1,14 +1,28 @@
-fastapi==0.115.0
-uvicorn[standard]==0.30.0
-python-multipart==0.0.9
-websockets==12.0
-pydantic==2.9.0
-pydantic-settings==2.5.0
-langgraph==0.2.0
-google-generativeai==0.8.0
-snowflake-connector-python==3.12.0
-ibm-watsonx-ai==1.1.0
-structlog==24.4.0
-pyyaml==6.0.2
-pytest==8.3.0
-httpx==0.27.0
+# Core API
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+websockets>=12.0
+
+# Pydantic — unpinned so pip uses pre-built wheels on Python 3.14
+pydantic>=2.10
+pydantic-settings>=2.6
+
+# AI / Agents
+langgraph>=0.2.0
+google-generativeai>=0.8.0
+
+# Database
+snowflake-connector-python>=3.12.0
+
+# IBM WatsonX — optional, set ENABLE_WATSONX=false to skip
+# Unpinned: 1.1.0 is broken on Python 3.14
+ibm-watsonx-ai>=1.3.0
+
+# Utilities
+structlog>=24.4.0
+pyyaml>=6.0.2
+
+# Dev / Testing
+pytest>=8.3.0
+httpx>=0.27.0
