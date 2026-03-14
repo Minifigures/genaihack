@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getClaims } from "@/lib/api";
+import { getClaims, getCases } from "@/lib/api";
 import type { PipelineResult } from "@/lib/api";
 
 const levelStyles: Record<string, string> = {

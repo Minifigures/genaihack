@@ -32,21 +32,6 @@ async def health():
     return {"status": "ok", "service": "vigil-backend"}
 
 
-@app.get("/api/metrics")
-async def metrics():
-    return {
-        "agents": {
-            "total_runs": 0,
-            "avg_duration_ms": 0,
-        },
-        "pipeline": {
-            "total_runs": 0,
-            "avg_fraud_score": 0,
-            "total_flags": 0,
-        },
-    }
-
-
 @app.websocket("/ws/trace")
 async def websocket_trace(websocket: WebSocket):
     await manager.connect(websocket)
@@ -59,10 +44,11 @@ async def websocket_trace(websocket: WebSocket):
 
 
 # Include route modules
-from backend.routes import claims, cases, benefits, providers, audit
+from backend.routes import claims, cases, benefits, providers, audit, metrics as metrics_router
 
 app.include_router(claims.router, prefix="/api")
 app.include_router(cases.router, prefix="/api")
 app.include_router(benefits.router, prefix="/api")
 app.include_router(providers.router, prefix="/api")
 app.include_router(audit.router, prefix="/api")
+app.include_router(metrics_router.router, prefix="/api")
