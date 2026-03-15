@@ -1,144 +1,144 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { KPICard } from "@/components/KPICard";
-import { getClaims, getProviders } from "@/lib/api";
-import type { PipelineResult, ProviderStats } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
+import DashboardPage from "@/components/Dashboard";
 
-export default function DashboardPage() {
-  const [claims, setClaims] = useState<PipelineResult[]>([]);
-  const [providers, setProviders] = useState<ProviderStats[]>([]);
+export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [claimsData, providerData] = await Promise.all([
-          getClaims(),
-          getProviders(),
-        ]);
-        setClaims(claimsData.claims);
-        setProviders(providerData.providers);
-      } catch {
-        // API may not be running
-      } finally {
-        setLoading(false);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
       }
-    }
-    load();
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const totalFlags = claims.reduce((sum, c) => sum + (c.fraud_flags?.length || 0), 0);
-  const avgScore = claims.length > 0
-    ? claims.reduce((sum, c) => sum + (c.fraud_score?.score || 0), 0) / claims.length
-    : 0;
-  const highRiskProviders = providers.filter(
-    (p) => p.risk_tier === "confirmed_fraud" || p.risk_tier === "flagged_multiple"
-  );
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-12 h-12 border-4 border-vigil-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return <DashboardPage />;
+  }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">VIGIL Dashboard</h1>
-          <p className="text-gray-500 mt-1">Healthcare billing fraud detection system</p>
+    <div className="flex flex-col items-center">
+      {/* Hero Section */}
+      <section className="w-full relative bg-gray-900 text-white rounded-3xl overflow-hidden shadow-2xl mb-16">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/hero.png"
+            alt="SecureFlow AI Dashboard Preview"
+            fill
+            className="object-cover object-center opacity-40 mix-blend-luminosity"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-10"></div>
         </div>
-        <Link
-          href="/upload"
-          className="bg-vigil-600 text-white px-6 py-2.5 rounded-lg hover:bg-vigil-700 transition-colors font-medium"
-        >
-          Upload Receipt
-        </Link>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <KPICard
-              title="Claims Analyzed"
-              value={claims.length}
-              subtitle="receipts processed"
-              color="blue"
-            />
-            <KPICard
-              title="Fraud Flags"
-              value={totalFlags}
-              subtitle="across all claims"
-              color="red"
-            />
-            <KPICard
-              title="Avg Fraud Score"
-              value={avgScore > 0 ? avgScore.toFixed(1) : "--"}
-              subtitle="out of 100"
-              color="yellow"
-            />
-            <KPICard
-              title="High Risk Providers"
-              value={highRiskProviders.length}
-              subtitle={`of ${providers.length} total`}
-              color="red"
-            />
+        <div className="relative z-20 px-8 lg:px-16 py-24 md:py-32 w-full max-w-4xl">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+            SecureFlow AI
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 font-light mb-10 max-w-2xl leading-relaxed">
+            The next generation of intelligent, real-time healthcare billing fraud detection. Protect your enterprise with advanced AI verification.
+          </p>
+          <div className="flex gap-4">
+            <Link
+              href="/signup"
+              className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30"
+            >
+              Get Started
+            </Link>
+            <Link
+              href="/login"
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+            >
+              Log In
+            </Link>
           </div>
+        </div>
+      </section>
 
-          {/* Recent claims */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">Recent Claims</h2>
+      {/* Info Section */}
+      <section className="w-full max-w-5xl mb-16 px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">The Cost of Healthcare Fraud in Canada</h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Healthcare billing fraud is a multi-billion dollar problem that affects premiums, resources, and trust in the system.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            {claims.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-gray-500 mb-4">No claims analyzed yet</p>
-                <Link
-                  href="/upload"
-                  className="text-vigil-600 hover:text-vigil-700 font-medium"
-                >
-                  Upload your first receipt
-                </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-100">
-                {claims.slice(0, 5).map((claim) => (
-                  <div key={claim.claim_id} className="px-6 py-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        Claim {claim.claim_id.slice(0, 8)}...
-                      </p>
-                      <p className="text-xs text-gray-500">{claim.timestamp}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {claim.fraud_score && (
-                        <span
-                          className={`text-sm font-medium px-2 py-1 rounded ${
-                            claim.fraud_score.level === "critical"
-                              ? "bg-red-100 text-red-700"
-                              : claim.fraud_score.level === "high"
-                              ? "bg-orange-100 text-orange-700"
-                              : claim.fraud_score.level === "elevated"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-green-100 text-green-700"
-                          }`}
-                        >
-                          {claim.fraud_score.score}/100
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-400">
-                        {claim.fraud_flags?.length || 0} flags
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <h3 className="text-xl font-bold text-gray-900 mb-3">$600M - $3.4 Billion Annual Loss</h3>
+            <p className="text-gray-600 mb-4 leading-relaxed">
+              For private insurers in Canada, fraudulent claims are estimated to range from 2% to 10% of the $34 billion paid out in health claims annually.
+            </p>
+            <p className="text-xs text-gray-400">Source: Canadian Broadcasting Corporation (CBC)</p>
           </div>
-        </>
-      )}
+
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Increased Premiums</h3>
+            <p className="text-gray-600 mb-4 leading-relaxed">
+              Insurance scams, including those tied to medical and auto claims, add over $1 billion to Canadian insurance premiums annually.
+            </p>
+            <p className="text-xs text-gray-400">Source: RestoraCare Health</p>
+          </div>
+
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Phantom & Upcoding</h3>
+            <p className="text-gray-600 mb-4 leading-relaxed">
+              Common frauds include billing for services never delivered and intentionally assigning higher billing codes to inflate reimbursement amounts.
+            </p>
+            <p className="text-xs text-gray-400">Source: GetDefended.ca</p>
+          </div>
+
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Collusion & Clinics</h3>
+            <p className="text-gray-600 mb-4 leading-relaxed">
+              Major insurers have delisted thousands of providers due to false claims, often involving collusion between clinics and employees.
+            </p>
+            <p className="text-xs text-gray-400">Source: Canadian Broadcasting Corporation (CBC)</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
