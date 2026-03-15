@@ -1,0 +1,582 @@
+# Instincts generated from https://github.com/Minifigures/genaihack
+# Generated: 2026-03-15T04:54:57.581Z
+# Version: 2.0
+
+---
+id: genaihack-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Commit Length
+
+## Action
+
+Keep commit messages concise (under 50 characters)
+
+## Evidence
+
+- Average commit message length: 45 chars
+- Based on 19 commits
+
+---
+id: genaihack-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: genaihack-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: genaihack-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: genaihack-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: genaihack-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~9x per month
+- Files: frontend/app/benefits/*, frontend/app/cases/[id]/*, frontend/app/cases/*
+
+---
+id: genaihack-workflow-refactoring
+trigger: "when refactoring code"
+confidence: 0.75
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Refactoring
+
+## Action
+
+Follow the refactoring workflow:
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~5x per month
+- Files: src/**/*
+
+---
+id: genaihack-workflow-auth-integration-fix
+trigger: "when doing auth integration fix"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Auth Integration Fix
+
+## Action
+
+Follow the auth-integration-fix workflow:
+1. Update auth.py with new auth logic
+2. Modify route files to use/bypass auth
+3. Update claims.py and cases.py endpoints
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: backend/auth.py, backend/routes/cases.py, backend/routes/claims.py
+
+---
+id: genaihack-workflow-database-migration-refactor
+trigger: "when doing database migration refactor"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Database Migration Refactor
+
+## Action
+
+Follow the database-migration-refactor workflow:
+1. Update database connection
+2. Modify all agent modules
+3. Update backend routes
+4. Update models and store
+5. Update configuration and requirements
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: database/connection.py, backend/store.py, backend/config/settings.py
+
+---
+id: genaihack-workflow-perception-agent-upgrade
+trigger: "when doing perception agent upgrade"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Perception Agent Upgrade
+
+## Action
+
+Follow the perception-agent-upgrade workflow:
+1. Update OCR agent with new models/features
+2. Enhance normalizer with validation
+3. Improve history enricher
+4. Update persister logic
+5. Add/update claim models
+6. Write/update tests
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: agents/perception/ocr_agent.py, agents/perception/normalizer.py, agents/perception/history_enricher.py
+
+---
+id: genaihack-workflow-frontend-auth-ui-integration
+trigger: "when doing frontend auth ui integration"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Frontend Auth Ui Integration
+
+## Action
+
+Follow the frontend-auth-ui-integration workflow:
+1. Add/update auth components
+2. Create/modify auth pages
+3. Update navigation and layout
+4. Add Supabase integration
+5. Update package dependencies
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: frontend/components/AuthButton.tsx, frontend/components/AuthGuard.tsx, frontend/app/login/page.tsx
+
+---
+id: genaihack-workflow-agent-pipeline-fixes
+trigger: "when doing agent pipeline fixes"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Agent Pipeline Fixes
+
+## Action
+
+Follow the agent-pipeline-fixes workflow:
+1. Fix audit logger issues
+2. Update OCR agent logic
+3. Modify perception agents
+4. Fix route endpoints
+5. Update claims processing
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: agents/action/audit_logger.py, agents/perception/ocr_agent.py, agents/perception/history_enricher.py
+
+---
+id: genaihack-snake-case-files
+trigger: "When creating new Python files"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Snake Case Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Pattern in agents/perception/ocr_agent.py
+- Pattern in backend/routes/cases.py
+
+---
+id: genaihack-camel-case-functions
+trigger: "When defining Python functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Camel Case Functions
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Consistent pattern across backend modules
+- Pattern in agent files
+
+---
+id: genaihack-pascal-case-classes
+trigger: "When defining Python classes"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Pascal Case Classes
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Pattern in backend/models/claim.py
+- Class definitions across codebase
+
+---
+id: genaihack-alias-imports
+trigger: "When importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Alias Imports
+
+## Action
+
+Use import aliases for clarity
+
+## Evidence
+
+- Import style pattern across Python files
+- Consistent alias usage
+
+---
+id: genaihack-try-catch-errors
+trigger: "When handling potential errors"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Try Catch Errors
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- No custom error classes found
+- Standard try-catch pattern in codebase
+
+---
+id: genaihack-separate-test-files
+trigger: "When writing tests"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Separate Test Files
+
+## Action
+
+Place tests in separate test files/directories
+
+## Evidence
+
+- tests/ directory structure
+- Pattern in tests/test_perception.py
+
+---
+id: genaihack-prefix-commits
+trigger: "When making commits"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Prefix Commits
+
+## Action
+
+Use prefixes: fix, feat, refactor, merge
+
+## Evidence
+
+- fix: patch 4 critical bugs
+- feat: implement full VIGIL
+- refactor: snowflake to supabase
+
+---
+id: genaihack-descriptive-commits
+trigger: "When writing commit messages"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Descriptive Commits
+
+## Action
+
+Keep messages around 45 characters with clear context
+
+## Evidence
+
+- Average commit length 45 chars
+- Examples show descriptive context
+
+---
+id: genaihack-auth-fix-workflow
+trigger: "When authentication is broken or needs integration"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Auth Fix Workflow
+
+## Action
+
+Update auth.py, then modify route files, then update endpoints
+
+## Evidence
+
+- 4x/month frequency
+- Consistent pattern across backend/auth.py and routes
+
+---
+id: genaihack-db-migration-workflow
+trigger: "When switching database providers or major schema changes"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Db Migration Workflow
+
+## Action
+
+Update connection first, then agents, then routes, then models
+
+## Evidence
+
+- Snowflake to Supabase migration commits
+- Pattern across database/, backend/, agents/
+
+---
+id: genaihack-perception-upgrade-workflow
+trigger: "When improving document processing and perception functionality"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Perception Upgrade Workflow
+
+## Action
+
+Update OCR agent, enhance normalizer, improve enricher, update persister
+
+## Evidence
+
+- Pattern in agents/perception/ modules
+- Consistent OCR and normalization updates
+
+---
+id: genaihack-frontend-auth-workflow
+trigger: "When adding or fixing frontend authentication UI"
+confidence: 0.88
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Frontend Auth Workflow
+
+## Action
+
+Update auth components, modify auth pages, update navigation, add integrations
+
+## Evidence
+
+- 3x/month frequency
+- Pattern in frontend/components/ and frontend/app/ auth files
+
+---
+id: genaihack-pipeline-fix-workflow
+trigger: "When agent pipeline has errors or state management issues"
+confidence: 0.82
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Pipeline Fix Workflow
+
+## Action
+
+Fix audit logger first, then OCR agent, then perception agents, then routes
+
+## Evidence
+
+- 3x/month frequency
+- Pattern across agents/ and backend/routes/ fixes
+
+---
+id: genaihack-hybrid-module-organization
+trigger: "When organizing new modules or refactoring structure"
+confidence: 0.9
+domain: architecture
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Hybrid Module Organization
+
+## Action
+
+Use hybrid organization with separate frontend/backend/agents/data folders
+
+## Evidence
+
+- Clear separation in folder structure
+- Consistent organization across major components
+
+---
+id: genaihack-tsx-frontend-files
+trigger: "When creating frontend components"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Tsx Frontend Files
+
+## Action
+
+Use .tsx extension and place in frontend/components/ or frontend/app/
+
+## Evidence
+
+- Pattern in frontend/components/AuthButton.tsx
+- Consistent .tsx usage across frontend
+
