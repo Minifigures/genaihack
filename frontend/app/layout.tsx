@@ -43,16 +43,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-slate-50/80 bg-mesh-gradient">
-          <Nav />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <AuthGuard>
-              {children}
-            </AuthGuard>
-          </main>
-        </div>
+    <html lang="en" className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}>
+      <body className={sansFont.className}>
+        <TooltipProvider>
+          <div className="min-h-screen bg-slate-50/80">
+            <Nav />
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <AuthGuard>
+                {children}
+              </AuthGuard>
+            </main>
+            <Footer />
+          </div>
+          <Toaster richColors position="top-right" />
+        </TooltipProvider>
       </body>
     </html>
   );

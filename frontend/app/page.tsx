@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import DashboardPage from "@/components/Dashboard";
@@ -42,9 +43,7 @@ export default function Home() {
     );
   }
 
-  if (user || isDemo) {
-    return <DashboardPage />;
-  }
+  if (user || isDemo) return <DashboardPage />;
 
   return (
     <div className="flex flex-col items-center animate-fade-in">
@@ -124,8 +123,6 @@ export default function Home() {
               Source: Canadian Broadcasting Corporation (CBC)
             </p>
           </div>
-        </BlurFade>
-
           <div className="card-hover p-8 border-l-4 border-l-orange-500">
             <div className="w-10 h-10 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center mb-5">
               <TrendingUp className="w-5 h-5" />

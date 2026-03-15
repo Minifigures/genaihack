@@ -11,6 +11,7 @@ from agents.reasoning.scoring_engine import run_scoring_engine
 from agents.planning.benefits_navigator import run_benefits_navigator
 from agents.planning.action_generator import run_action_generator
 from agents.planning.optimization_engine import run_optimization_engine
+from agents.action.watsonx_summarizer import run_watsonx_summarizer
 from agents.action.report_drafter import run_report_drafter
 from agents.action.compliance_gate import run_compliance_gate
 from agents.action.audit_logger import run_audit_logger
@@ -36,6 +37,7 @@ def build_graph() -> StateGraph:
     graph.add_node("optimization_engine", run_optimization_engine)
 
     # Layer 4: Action (sequential)
+    graph.add_node("watsonx_summarizer", run_watsonx_summarizer)
     graph.add_node("report_drafter", run_report_drafter)
     graph.add_node("compliance_gate", run_compliance_gate)
     graph.add_node("audit_logger", run_audit_logger)
@@ -52,8 +54,9 @@ def build_graph() -> StateGraph:
     graph.add_edge("fraud_analyst", "scoring_engine")
     graph.add_edge("health_extractor", "scoring_engine")
 
-    # Layer 3 edges (sequential)
-    graph.add_edge("scoring_engine", "benefits_navigator")
+    # Layer 3 edges (sequential, with WatsonX summarizer after scoring)
+    graph.add_edge("scoring_engine", "watsonx_summarizer")
+    graph.add_edge("watsonx_summarizer", "benefits_navigator")
     graph.add_edge("benefits_navigator", "action_generator")
     graph.add_edge("action_generator", "optimization_engine")
 
