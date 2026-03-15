@@ -24,6 +24,48 @@ Students upload photos of healthcare receipts (dental bills, pharmacy receipts).
 | **Human Review Layer** | Approve/dismiss fraud cases with confirmation dialogs |
 | **Savings Counter** | Running total of overcharges detected across all claims |
 
+## Project Structure
+
+```
+genaihack/
+├── frontend/                # Next.js 14 (TypeScript + Tailwind + ShadCN)
+│   ├── app/                 # App Router pages
+│   │   ├── benefits/        # Benefits explorer
+│   │   ├── cases/           # Fraud cases + detail pages
+│   │   ├── clinics/         # Clinic finder
+│   │   ├── fee-guide/       # ODA fee guide explorer
+│   │   ├── login/           # Auth pages
+│   │   ├── signup/
+│   │   ├── upload/          # Receipt upload + analysis
+│   │   └── logs/            # Audit log
+│   ├── components/          # React components
+│   │   ├── ui/              # ShadCN + Magic UI components
+│   │   ├── Dashboard.tsx    # Student health dashboard
+│   │   ├── FraudCaseCard.tsx # Animated fraud gauge + comparison bars
+│   │   ├── AgentTracePanel.tsx # Pipeline visualization
+│   │   └── ...
+│   ├── e2e/                 # Playwright E2E tests (26 tests)
+│   └── lib/                 # API client + utilities
+├── backend/                 # FastAPI server
+│   ├── models/              # Pydantic data models
+│   ├── routes/              # API endpoints
+│   ├── store.py             # VigilStore (Supabase PostgreSQL)
+│   ├── auth.py              # Supabase JWT auth
+│   └── config/              # Settings + logging
+├── agents/                  # LangGraph agent implementations
+│   ├── graph.py             # StateGraph with all nodes + edges
+│   ├── perception/          # OCR, normalizer, enricher, persister
+│   ├── reasoning/           # Fraud analyst, health extractor, scoring engine
+│   │   └── fraud_policy.yaml # Single source of truth for all scoring config
+│   ├── planning/            # Benefits nav, action gen, optimization
+│   ├── action/              # Report drafter, compliance gate, audit logger
+│   └── reflection/          # Outcome evaluator, lesson extractor
+├── data/
+│   ├── demo_receipts/       # Test PDFs: clean, upcoded, unbundled
+│   └── *.json               # Student/provider/plan profiles
+├── tests/                   # pytest test suite
+└── docs/                    # Architecture + API documentation
+
 ## Architecture
 
 5-layer, 14-agent pipeline orchestrated by LangGraph with parallel branching:
@@ -173,47 +215,6 @@ Upload these from `data/demo_receipts/` on the `/upload` page:
 | `/login` | Sign In | Supabase email/password auth |
 | `/signup` | Sign Up | Account creation |
 
-## Project Structure
-
-```
-genaihack/
-├── frontend/                # Next.js 14 (TypeScript + Tailwind + ShadCN)
-│   ├── app/                 # App Router pages
-│   │   ├── benefits/        # Benefits explorer
-│   │   ├── cases/           # Fraud cases + detail pages
-│   │   ├── clinics/         # Clinic finder
-│   │   ├── fee-guide/       # ODA fee guide explorer
-│   │   ├── login/           # Auth pages
-│   │   ├── signup/
-│   │   ├── upload/          # Receipt upload + analysis
-│   │   └── logs/            # Audit log
-│   ├── components/          # React components
-│   │   ├── ui/              # ShadCN + Magic UI components
-│   │   ├── Dashboard.tsx    # Student health dashboard
-│   │   ├── FraudCaseCard.tsx # Animated fraud gauge + comparison bars
-│   │   ├── AgentTracePanel.tsx # Pipeline visualization
-│   │   └── ...
-│   ├── e2e/                 # Playwright E2E tests (26 tests)
-│   └── lib/                 # API client + utilities
-├── backend/                 # FastAPI server
-│   ├── models/              # Pydantic data models
-│   ├── routes/              # API endpoints
-│   ├── store.py             # VigilStore (Supabase PostgreSQL)
-│   ├── auth.py              # Supabase JWT auth
-│   └── config/              # Settings + logging
-├── agents/                  # LangGraph agent implementations
-│   ├── graph.py             # StateGraph with all nodes + edges
-│   ├── perception/          # OCR, normalizer, enricher, persister
-│   ├── reasoning/           # Fraud analyst, health extractor, scoring engine
-│   │   └── fraud_policy.yaml # Single source of truth for all scoring config
-│   ├── planning/            # Benefits nav, action gen, optimization
-│   ├── action/              # Report drafter, compliance gate, audit logger
-│   └── reflection/          # Outcome evaluator, lesson extractor
-├── data/
-│   ├── demo_receipts/       # Test PDFs: clean, upcoded, unbundled
-│   └── *.json               # Student/provider/plan profiles
-├── tests/                   # pytest test suite
-└── docs/                    # Architecture + API documentation
 ```
 
 ## Security
