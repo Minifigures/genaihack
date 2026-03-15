@@ -14,6 +14,7 @@ import {
   Heart,
   Building2,
   ScrollText,
+  Shield,
 } from "lucide-react";
 
 const navItems = [
@@ -48,12 +49,10 @@ export function Nav() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2 mr-8">
-              <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-                <ShieldAlert className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">VIGIL</span>
-              <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full font-medium border border-emerald-200">
+            <Link href="/" className="flex items-center gap-2 mr-8 text-xl font-bold text-emerald-700">
+              <Shield className="w-6 h-6 text-emerald-600" />
+              VIGIL
+              <span className="text-[10px] font-semibold tracking-wider uppercase text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                 beta
               </span>
             </Link>
