@@ -65,11 +65,11 @@ genaihack/
 │   └── *.json               # Student/provider/plan profiles
 ├── tests/                   # pytest test suite
 └── docs/                    # Architecture + API documentation
-
+```
 ## Architecture
 
 5-layer, 14-agent pipeline orchestrated by LangGraph with parallel branching:
-```
+
 ```
 Receipt Image -> OCR Agent -> Normalizer -> History Enricher -> Persister
                                                                     |
