@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AuthButton } from "./AuthButton";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { User } from "@supabase/supabase-js";
 
 const navItems = [
   { href: "/", label: "Dashboard" },
@@ -14,6 +18,21 @@ const navItems = [
 
 export function Nav() {
   const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -28,27 +47,29 @@ export function Nav() {
                 beta
               </span>
             </div>
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                      isActive
-                        ? "text-vigil-700 bg-vigil-50"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
+            {user && (
+              <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                        isActive
+                          ? "text-vigil-700 bg-vigil-50"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
-          <div className="flex items-center">
-            <span className="text-sm text-gray-500">GenAI Genesis 2026</span>
+          <div className="flex items-center space-x-4">
+            <AuthButton />
           </div>
         </div>
       </div>

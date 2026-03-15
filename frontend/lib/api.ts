@@ -1,4 +1,13 @@
+import { supabase } from "@/lib/supabase";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+async function getAuthHeaders() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return {
+    ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
+  };
+}
 
 export interface FraudFlag {
   fraud_type: string;
@@ -76,13 +85,14 @@ export interface ProviderStats {
   last_claim_date: string | null;
 }
 
-export async function uploadClaim(file: File, studentId: string = "STU-001"): Promise<PipelineResult> {
+export async function uploadClaim(file: File): Promise<PipelineResult> {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("student_id", studentId);
 
+  const headers = await getAuthHeaders();
   const response = await fetch(`${API_BASE}/api/claims/upload`, {
     method: "POST",
+    headers,
     body: formData,
   });
 
@@ -94,36 +104,43 @@ export async function uploadClaim(file: File, studentId: string = "STU-001"): Pr
 }
 
 export async function getClaims(): Promise<{ claims: PipelineResult[]; total: number }> {
-  const response = await fetch(`${API_BASE}/api/claims`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/claims`, { headers });
   return response.json();
 }
 
 export async function getClaim(claimId: string): Promise<PipelineResult> {
-  const response = await fetch(`${API_BASE}/api/claims/${claimId}`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/claims/${claimId}`, { headers });
   return response.json();
 }
 
 export async function getCases(): Promise<{ cases: Array<Record<string, unknown>>; total: number }> {
-  const response = await fetch(`${API_BASE}/api/cases`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/cases`, { headers });
   return response.json();
 }
 
 export async function getBenefits(studentId: string): Promise<BenefitsReport> {
-  const response = await fetch(`${API_BASE}/api/benefits/${studentId}`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/benefits/${studentId}`, { headers });
   return response.json();
 }
 
 export async function getProviders(): Promise<{ providers: ProviderStats[]; total: number }> {
-  const response = await fetch(`${API_BASE}/api/providers`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/providers`, { headers });
   return response.json();
 }
 
 export async function getAuditLogs(limit: number = 50, offset: number = 0): Promise<{ entries: Array<Record<string, unknown>>; total: number }> {
-  const response = await fetch(`${API_BASE}/api/audit?limit=${limit}&offset=${offset}`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/audit?limit=${limit}&offset=${offset}`, { headers });
   return response.json();
 }
 
 export async function getMetrics(): Promise<Record<string, unknown>> {
-  const response = await fetch(`${API_BASE}/api/metrics`);
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/metrics`, { headers });
   return response.json();
 }
