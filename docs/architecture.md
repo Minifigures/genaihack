@@ -10,8 +10,8 @@ VIGIL is a multi-agent healthcare billing fraud detection system built for the G
 Extracts structured data from receipt images.
 - **OCR Agent**: Gemini 2.5 Pro multimodal vision
 - **Normalizer**: Pure Python validation + CDA code mapping
-- **History Enricher**: Moorcheh episodic memory + Snowflake queries
-- **Persister**: Snowflake write
+- **History Enricher**: Moorcheh episodic memory + PostgreSQL queries
+- **Persister**: PostgreSQL write
 
 ### Layer 2: Reasoning
 Scores fraud risk and extracts health signals.
@@ -29,7 +29,7 @@ Generates and ranks response actions.
 Presents results with human approval gate.
 - **Report Drafter**: Generates human-readable fraud alert + benefits summary
 - **Compliance Gate**: IBM watsonx.ai validation with local fallback
-- **Audit Logger**: Snowflake audit_log write
+- **Audit Logger**: PostgreSQL audit_log write
 
 ### Layer 5: Reflection (Stretch Goal)
 - **Outcome Evaluator**: Compare predicted vs actual dispute outcomes
@@ -66,5 +66,5 @@ Receipt Image -> OCR -> Normalize -> Enrich -> Persist
 - **Backend**: FastAPI + WebSocket
 - **Orchestration**: LangGraph StateGraph
 - **AI**: Gemini 2.5 Pro, IBM watsonx.ai
-- **Database**: Snowflake + Moorcheh SDK
+- **Database**: Supabase PostgreSQL + Moorcheh SDK
 - **Config**: pydantic-settings, YAML policy files

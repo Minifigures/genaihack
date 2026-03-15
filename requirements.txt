@@ -12,8 +12,9 @@ pydantic-settings>=2.6
 langgraph>=0.2.0
 google-generativeai>=0.8.0
 
-# Database
-snowflake-connector-python>=3.12.0
+# Database (Supabase PostgreSQL)
+asyncpg>=0.29.0
+sqlalchemy[asyncio]>=2.0.0
 
 # IBM WatsonX — optional, set ENABLE_WATSONX=false to skip
 # Unpinned: 1.1.0 is broken on Python 3.14

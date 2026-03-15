@@ -6,18 +6,18 @@ class Settings(BaseSettings):
     # AI Services
     google_api_key: str = ""
     moorcheh_api_key: str = ""
+    huggingface_endpoint: str = ""
+    huggingface_api_key: str = ""
     watsonx_api_key: str = ""
     watsonx_project_id: str = ""
     watsonx_url: str = "https://us-south.ml.cloud.ibm.com"
 
-    # Snowflake
-    snowflake_account: str = ""
-    snowflake_user: str = ""
-    snowflake_password: str = ""
-    snowflake_database: str = "VIGIL"
-    snowflake_schema: str = "PUBLIC"
-    snowflake_warehouse: str = "COMPUTE_WH"
-    snowflake_role: str = "ACCOUNTADMIN"
+    # Database (Supabase PostgreSQL)
+    database_url: str = ""
+
+    # Supabase
+    supabase_url: str = ""
+    supabase_key: str = ""
 
     # App Config
     demo_mode: bool = True

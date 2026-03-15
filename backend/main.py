@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from contextlib import asynccontextmanager
 
 # Add project root to path so imports work
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -11,12 +12,26 @@ import structlog
 from backend.config.settings import Settings
 from backend.config.logging import setup_logging
 from backend.websocket.trace import manager
+from backend.store import store
 
 settings = Settings()
 setup_logging(settings.log_level)
 logger = structlog.get_logger()
 
-app = FastAPI(title="VIGIL API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize store on startup, close on shutdown."""
+    # Startup: Initialize db connection and create tables
+    await store.initialize()
+    logger.info("app_started", backend=store.backend)
+    yield
+    # Shutdown: Close connections
+    await store.close()
+    logger.info("app_shutdown")
+
+
+app = FastAPI(title="VIGIL API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
