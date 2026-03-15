@@ -135,6 +135,7 @@ uvicorn backend.main:app --reload --port 8000
 
 **Terminal 2 — Frontend:**
 ```bash
+cd genaihack
 cd frontend
 npm run dev
 ```
