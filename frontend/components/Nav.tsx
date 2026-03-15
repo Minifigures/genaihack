@@ -60,13 +60,15 @@ export function Nav() {
             {user && (
               <div className="hidden sm:flex items-center gap-1">
                 {navItems.map((item) => {
-                  const isActive = pathname === item.href;
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== "/" && pathname.startsWith(item.href));
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                        "relative inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                         isActive
                           ? "text-emerald-700 bg-emerald-50"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -74,6 +76,9 @@ export function Nav() {
                     >
                       <item.icon className="w-4 h-4" />
                       {item.label}
+                      {isActive && (
+                        <span className="absolute -bottom-[13px] left-3 right-3 h-0.5 bg-emerald-600 rounded-full" />
+                      )}
                     </Link>
                   );
                 })}

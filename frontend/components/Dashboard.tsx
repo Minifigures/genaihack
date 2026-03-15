@@ -129,7 +129,9 @@ export default function DashboardPage() {
                         <p className="text-sm font-medium text-gray-800">
                           Claim {claim.claim_id.slice(0, 8)}...
                         </p>
-                        <p className="text-xs text-muted-foreground">{claim.timestamp}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {claim.timestamp ? new Date(claim.timestamp).toLocaleDateString() : "--"}
+                        </p>
                       </div>
                       <div className="flex items-center gap-3">
                         {claim.fraud_score && (
