@@ -138,6 +138,8 @@ uvicorn backend.main:app --reload --port 8000
 cd genaihack
 cd frontend
 npm run dev
+# or
+npx create-next-app@latest frontend --typescript --tailwind --app --eslint --src-dir=false --import-alias="@/*"
 ```
 
 Open **http://localhost:3000** in your browser.
