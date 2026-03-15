@@ -9,18 +9,15 @@ from backend.store import store
 logger = structlog.get_logger()
 POLICY_PATH = Path(__file__).parent / "fraud_policy.yaml"
 
-CODE_RISK_WEIGHTS: dict[str, float] = {
-    "upcoding": 0.9,
-    "unbundling": 0.7,
-    "phantom_billing": 1.0,
-    "fee_deviation": 0.4,
-    "duplicate_claim": 0.8,
-}
+_policy_cache: dict | None = None
 
 
 def load_policy() -> dict:
-    with open(POLICY_PATH) as f:
-        return yaml.safe_load(f)
+    global _policy_cache
+    if _policy_cache is None:
+        with open(POLICY_PATH) as f:
+            _policy_cache = yaml.safe_load(f)
+    return _policy_cache
 
 
 def classify_risk(score: float) -> RiskLevel:
@@ -52,20 +49,31 @@ def compute_fraud_score(
             ),
         )
 
-    # Component 1: Fee deviation severity (0-40)
+    policy = load_policy()
+    weights = policy["code_risk_weights"]
+    caps = policy["scoring_components"]
+
+    # Component 1: Fee deviation severity (0 to fee_deviation_max)
     deviations = [f.deviation_pct for f in flags if f.deviation_pct is not None]
     max_deviation = max(deviations) if deviations else 0.0
-    fee_component = min(40.0, max_deviation * 40.0)
+    fee_max = float(caps["fee_deviation_max"])
+    fee_component = min(fee_max, max_deviation * fee_max)
 
-    # Component 2: Code risk weight (0-25)
-    code_risks = [CODE_RISK_WEIGHTS.get(f.fraud_type.value, 0.5) for f in flags]
-    code_component = min(25.0, sum(code_risks) * 10.0)
+    # Component 2: Code risk weight (0 to code_risk_max)
+    code_risks = [weights.get(f.fraud_type.value, 0.5) for f in flags]
+    code_max = float(caps["code_risk_max"])
+    code_multiplier = float(caps["code_risk_multiplier"])
+    code_component = min(code_max, sum(code_risks) * code_multiplier)
 
-    # Component 3: Provider history (0-25)
-    history_component = min(25.0, provider_history_flags * 5.0)
+    # Component 3: Provider history (0 to provider_history_max)
+    history_max = float(caps["provider_history_max"])
+    history_component = min(history_max, provider_history_flags * 5.0)
 
-    # Component 4: Pattern bonus (0-10)
-    pattern_bonus = 10.0 if len(flags) >= 3 else float(len(flags) * 3)
+    # Component 4: Pattern bonus (0 to pattern_bonus_max)
+    pattern_max = float(caps["pattern_bonus_max"])
+    pattern_threshold = int(caps["pattern_threshold"])
+    points_per_flag = float(caps["points_per_flag"])
+    pattern_bonus = pattern_max if len(flags) >= pattern_threshold else float(len(flags)) * points_per_flag
 
     raw_score = fee_component + code_component + history_component + pattern_bonus
 
@@ -94,16 +102,18 @@ async def run_scoring_engine(state: VigilState) -> dict:
         flags = state.get("fraud_flags", [])
         enriched = state.get("enriched_claim")
 
+        # Map provider deviation to history flags using policy thresholds
+        policy = load_policy()
+        ph = policy["provider_history"]
         provider_history_flags = 0
         if enriched and enriched.provider_avg_fee_deviation is not None:
-            if enriched.provider_avg_fee_deviation > 0.3:
-                provider_history_flags = 3
-            elif enriched.provider_avg_fee_deviation > 0.15:
-                provider_history_flags = 1
+            if enriched.provider_avg_fee_deviation > ph["high_deviation"]:
+                provider_history_flags = ph["high_flags"]
+            elif enriched.provider_avg_fee_deviation > ph["moderate_deviation"]:
+                provider_history_flags = ph["moderate_flags"]
 
         score = compute_fraud_score(flags, provider_history_flags)
 
-        # Log audit entry for fraud analysis completion
         claim_id = state.get("claim_id")
         student_id = state.get("student_id")
         await store.save_audit_entry(

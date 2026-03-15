@@ -1,4 +1,6 @@
+import yaml
 import structlog
+from pathlib import Path
 from datetime import datetime
 from backend.models.state import VigilState
 from backend.models.fraud import FraudFlag, FraudType
@@ -7,7 +9,21 @@ from backend.config.settings import Settings
 logger = structlog.get_logger()
 settings = Settings()
 
-# ODA fee guide reference (subset for demo, full data in Snowflake)
+POLICY_PATH = Path(__file__).parent / "fraud_policy.yaml"
+
+_policy_cache: dict | None = None
+
+
+def _load_policy() -> dict:
+    global _policy_cache
+    if _policy_cache is None:
+        with open(POLICY_PATH) as f:
+            _policy_cache = yaml.safe_load(f)
+    return _policy_cache
+
+
+# ODA fee guide reference (2024 Ontario Dental Association suggested fees)
+# Subset for demo; production would query a complete fee database
 ODA_FEE_GUIDE: dict[str, dict] = {
     "11101": {"description": "Exam, recall", "suggested_fee": 78.00},
     "11102": {"description": "Exam, complete", "suggested_fee": 120.00},
@@ -17,12 +33,19 @@ ODA_FEE_GUIDE: dict[str, dict] = {
     "11117": {"description": "Scaling, additional unit", "suggested_fee": 55.00},
     "43421": {"description": "Root planing, per quadrant", "suggested_fee": 195.00},
     "43427": {"description": "Root planing, 3+ quadrants", "suggested_fee": 185.00},
-    "27201": {"description": "Crown, porcelain", "suggested_fee": 1100.00},
-    "27211": {"description": "Crown, metal", "suggested_fee": 950.00},
-    "21111": {"description": "Amalgam, 1 surface", "suggested_fee": 125.00},
-    "21112": {"description": "Amalgam, 2 surfaces", "suggested_fee": 160.00},
-    "23111": {"description": "Composite, 1 surface, anterior", "suggested_fee": 150.00},
-    "23112": {"description": "Composite, 2 surfaces, anterior", "suggested_fee": 190.00},
+    "27201": {"description": "Crown, porcelain fused to metal", "suggested_fee": 1100.00},
+    "27211": {"description": "Crown, full cast metal", "suggested_fee": 950.00},
+    "21111": {"description": "Amalgam restoration, 1 surface", "suggested_fee": 125.00},
+    "21112": {"description": "Amalgam restoration, 2 surfaces", "suggested_fee": 160.00},
+    "23111": {"description": "Composite restoration, 1 surface, anterior", "suggested_fee": 150.00},
+    "23112": {"description": "Composite restoration, 2 surfaces, anterior", "suggested_fee": 190.00},
+    "01301": {"description": "Panoramic radiograph", "suggested_fee": 85.00},
+    "01401": {"description": "Full mouth series", "suggested_fee": 155.00},
+    "32111": {"description": "Extraction, single tooth", "suggested_fee": 135.00},
+    "32211": {"description": "Surgical extraction", "suggested_fee": 245.00},
+    "25201": {"description": "Prefabricated crown, primary", "suggested_fee": 240.00},
+    "41101": {"description": "Pulpotomy", "suggested_fee": 180.00},
+    "33111": {"description": "Extraction, deciduous tooth", "suggested_fee": 95.00},
 }
 
 # Known upcoding pairs (cheaper code -> expensive code)
@@ -38,6 +61,11 @@ async def run_fraud_analyst(state: VigilState) -> dict:
     logger.info("agent_start", agent="fraud_analyst")
 
     try:
+        policy = _load_policy()
+        tolerance_config = policy["fee_deviation_tolerance"]
+        confidence_levels = policy["confidence_levels"]
+        high_risk_codes = set(tolerance_config.get("high_risk_codes", []))
+
         enriched = state.get("enriched_claim")
         ocr_result = state.get("ocr_result")
         if enriched is None and ocr_result is None:
@@ -57,19 +85,22 @@ async def run_fraud_analyst(state: VigilState) -> dict:
             else:
                 deviation = 0.0
 
-            # Check fee deviation
-            if deviation > 0.15:
+            # Use stricter tolerance for high-risk codes
+            tolerance = tolerance_config["high_risk_tolerance"] if proc.code in high_risk_codes else tolerance_config["default"]
+
+            # Check fee deviation against policy tolerance
+            if deviation > tolerance:
                 flags.append(FraudFlag(
                     fraud_type=FraudType.FEE_DEVIATION,
                     code=proc.code,
                     billed_fee=proc.fee_charged,
                     suggested_fee=suggested_fee,
                     deviation_pct=round(deviation, 3),
-                    confidence=0.85,
+                    confidence=confidence_levels["fee_deviation"],
                     evidence=f"Fee ${proc.fee_charged:.2f} exceeds ODA guide ${suggested_fee:.2f} by {deviation*100:.1f}%",
                 ))
 
-            # Check for upcoding (expensive code billed when cheaper is typical)
+            # Check for upcoding
             if proc.code in UPCODING_PAIRS.values():
                 cheaper_code = next(
                     (k for k, v in UPCODING_PAIRS.items() if v == proc.code),
@@ -87,7 +118,7 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                                 (proc.fee_charged - cheaper_entry["suggested_fee"]) / cheaper_entry["suggested_fee"],
                                 3,
                             ),
-                            confidence=0.75,
+                            confidence=confidence_levels["upcoding"],
                             evidence=(
                                 f"Procedure {proc.code} ({guide_entry['description']}) may be upcoded from "
                                 f"{cheaper_code} ({cheaper_entry['description']}). "
@@ -95,19 +126,20 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                             ),
                         ))
 
-        # Check for unbundling (multiple codes that should be a single bundled code)
+        # Check for unbundling
         code_set = {p.code for p in procedures}
         if "11101" in code_set and "11117" in code_set:
             scaling_count = sum(1 for p in procedures if p.code == "11117")
             if scaling_count >= 3:
                 total_scaling_fee = sum(p.fee_charged for p in procedures if p.code == "11117")
+                bundled_ref = ODA_FEE_GUIDE["11117"]["suggested_fee"] * 2
                 flags.append(FraudFlag(
                     fraud_type=FraudType.UNBUNDLING,
                     code="11117",
                     billed_fee=total_scaling_fee,
-                    suggested_fee=55.00 * 2,
-                    deviation_pct=round((total_scaling_fee - 110.0) / 110.0, 3),
-                    confidence=0.70,
+                    suggested_fee=bundled_ref,
+                    deviation_pct=round((total_scaling_fee - bundled_ref) / bundled_ref, 3),
+                    confidence=confidence_levels["unbundling"],
                     evidence=f"Multiple scaling units ({scaling_count}) billed separately, may represent unbundled comprehensive cleaning",
                 ))
 
