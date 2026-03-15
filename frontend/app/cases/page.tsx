@@ -68,7 +68,7 @@ export default function CasesPage() {
                       Case {claim.claim_id.slice(0, 8)}...
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      Student: {claim.student_id} | {claim.timestamp}
+                      Student: {claim.student_id} | {claim.timestamp ? new Date(claim.timestamp).toLocaleDateString() : "--"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
