@@ -69,7 +69,7 @@ genaihack/
 ## Architecture
 
 5-layer, 14-agent pipeline orchestrated by LangGraph with parallel branching:
-
+```
 ```
 Receipt Image -> OCR Agent -> Normalizer -> History Enricher -> Persister
                                                                     |
@@ -214,8 +214,6 @@ Upload these from `data/demo_receipts/` on the `/upload` page:
 | `/logs` | Audit Log | Full audit trail of all system actions |
 | `/login` | Sign In | Supabase email/password auth |
 | `/signup` | Sign Up | Account creation |
-
-```
 
 ## Security
 
