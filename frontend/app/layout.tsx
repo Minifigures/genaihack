@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
+import { AuthGuard } from "@/components/AuthGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,9 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50">
           <Nav />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
+            <AuthGuard>
+              {children}
+            </AuthGuard>
           </main>
         </div>
       </body>

@@ -13,7 +13,6 @@ export default function UploadPage() {
   const [result, setResult] = useState<PipelineResult | null>(null);
   const [traces, setTraces] = useState<AgentTrace[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [studentId, setStudentId] = useState("STU-001");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   async function handleUpload(file: File) {
@@ -28,7 +27,7 @@ export default function UploadPage() {
     setTraces([]);
 
     try {
-      const pipelineResult = await uploadClaim(selectedFile, studentId);
+      const pipelineResult = await uploadClaim(selectedFile);
       setResult(pipelineResult);
       setTraces(pipelineResult.agent_traces || []);
 
@@ -55,18 +54,7 @@ export default function UploadPage() {
         <div className="lg:col-span-2 space-y-6">
           <UploadZone onUpload={handleUpload} isLoading={isLoading} />
 
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <label className="text-sm font-medium text-gray-700">Student ID</label>
-            <select
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-vigil-500 focus:ring-vigil-500 text-sm p-2 border"
-            >
-              <option value="STU-001">STU-001 (Alex Chen, CS Year 3)</option>
-              <option value="STU-002">STU-002 (Jordan Williams, Bio Year 2)</option>
-              <option value="STU-003">STU-003 (Priya Patel, Eng Year 4)</option>
-            </select>
-          </div>
+          {/* User association runs via authenticated JWT on backend */}
 
           <button
             onClick={handleAnalyze}

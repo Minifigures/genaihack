@@ -69,6 +69,8 @@ async def run_audit_logger(state: VigilState) -> dict:
             },
         )
 
+        logger.info("audit_logged", **audit_entry)
+
         duration = int((datetime.utcnow() - start).total_seconds() * 1000)
         logger.info("agent_complete", agent="audit_logger", duration_ms=duration, case_id=case_id)
 
