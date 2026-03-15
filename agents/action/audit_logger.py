@@ -42,6 +42,7 @@ async def run_audit_logger(state: VigilState) -> dict:
                 provider_id=provider_id,
                 fraud_score=fraud_score,
                 flags=fraud_flags,
+                report_html=state.get("report_html"),
                 status="open",
             )
             await store.save_fraud_case(

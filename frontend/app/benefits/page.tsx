@@ -15,27 +15,26 @@ const BENCHMARK_DATA: Record<string, number> = {
 };
 
 function getComparisonColor(studentPct: number, benchmarkPct: number): string {
-  if (studentPct >= benchmarkPct) return "text-emerald-600";
-  if (studentPct >= benchmarkPct * 0.5) return "text-amber-600";
-  return "text-red-600";
+  if (studentPct >= benchmarkPct) return "text-[hsl(var(--status-resolved-fg))]";
+  if (studentPct >= benchmarkPct * 0.5) return "text-[hsl(43_96%_38%)]";
+  return "text-[hsl(var(--status-review-fg))]";
 }
 
 function getBarColor(studentPct: number, benchmarkPct: number): string {
-  if (studentPct >= benchmarkPct) return "bg-emerald-500";
-  if (studentPct >= benchmarkPct * 0.5) return "bg-amber-500";
-  return "bg-red-500";
+  if (studentPct >= benchmarkPct) return "bg-primary";
+  if (studentPct >= benchmarkPct * 0.5) return "bg-[hsl(43_96%_50%)]";
+  return "bg-[hsl(var(--status-review-fg))]";
 }
 
-export default function BenefitsPage() {
+export default function MyPlanPage() {
   const [report, setReport] = useState<BenefitsReport | null>(null);
-  const [studentId, setStudentId] = useState("STU-001");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       try {
-        const data = await getBenefits(studentId);
+        const data = await getBenefits("STU-001");
         setReport(data);
       } catch {
         setReport(null);
@@ -44,40 +43,38 @@ export default function BenefitsPage() {
       }
     }
     load();
-  }, [studentId]);
+  }, []);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Benefits Explorer</h1>
-        <select
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
-          className="rounded-md border-gray-300 shadow-sm focus:border-vigil-500 focus:ring-vigil-500 text-sm p-2 border"
-        >
-          <option value="STU-001">STU-001 (Alex Chen)</option>
-          <option value="STU-002">STU-002 (Jordan Williams)</option>
-          <option value="STU-003">STU-003 (Priya Patel)</option>
-        </select>
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-8">
+        <h1 className="font-display text-2xl font-normal text-foreground leading-tight">
+          My Plan
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1.5">
+          Your student health coverage at a glance
+        </p>
       </div>
 
       {loading ? (
-        <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
+        <div className="h-64 bg-muted rounded-lg animate-pulse" />
       ) : (
-        <div className="max-w-2xl space-y-6">
+        <div>
           <BenefitsCard report={report} />
 
           {/* Students Like You benchmark widget */}
           {report && report.coverage_items.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="mt-5 bg-card rounded-lg border border-border p-5">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <Users className="w-4 h-4 text-indigo-600" />
+                <div className="w-7 h-7 bg-muted rounded-sm flex items-center justify-center">
+                  <Users className="w-3.5 h-3.5 text-muted-foreground" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800">Students Like You</h3>
-                  <p className="text-xs text-gray-500">
-                    How your benefit usage compares to other UofT students by March
+                  <p className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+                    Students Like You
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Benefit usage vs other UofT students by March
                   </p>
                 </div>
               </div>
@@ -95,19 +92,19 @@ export default function BenefitsPage() {
                   return (
                     <div key={item.category}>
                       <div className="flex justify-between items-baseline mb-1.5">
-                        <span className="text-sm font-medium text-gray-700 capitalize">
+                        <span className="text-sm font-medium text-foreground capitalize">
                           {item.category}
                         </span>
-                        <span className={`text-sm font-semibold ${compColor}`}>
+                        <span className={`text-xs font-medium ${compColor}`}>
                           {studentPct >= benchmark ? "Above" : "Below"} average
                         </span>
                       </div>
 
                       {/* Student bar */}
                       <div className="relative mb-1">
-                        <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+                        <div className="w-full bg-muted rounded-sm h-3 overflow-hidden">
                           <div
-                            className={`${barColor} h-4 rounded-full transition-all relative`}
+                            className={`${barColor} h-3 rounded-sm transition-all relative`}
                             style={{ width: `${Math.min(100, studentPct)}%` }}
                           >
                             <span className="absolute right-2 top-0.5 text-[10px] font-bold text-white drop-shadow">
@@ -117,16 +114,16 @@ export default function BenefitsPage() {
                         </div>
                         {/* Benchmark marker */}
                         <div
-                          className="absolute top-0 h-4 border-r-2 border-dashed border-gray-600"
+                          className="absolute top-0 h-3 border-r-2 border-dashed border-muted-foreground/50"
                           style={{ left: `${Math.min(100, benchmark)}%` }}
                         />
                       </div>
 
                       <div className="flex justify-between">
-                        <span className="text-xs text-gray-500">
+                        <span className="font-mono text-2xs text-muted-foreground">
                           You: {studentPct}%
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="font-mono text-2xs text-muted-foreground">
                           Avg student: {benchmark}%
                         </span>
                       </div>
@@ -135,34 +132,33 @@ export default function BenefitsPage() {
                 })}
               </div>
 
-              <div className="mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                <p className="text-xs text-indigo-700">
+              <div className="mt-4 p-3 bg-muted rounded-sm border border-border">
+                <p className="font-mono text-2xs text-muted-foreground">
                   Students in your program typically use {BENCHMARK_DATA.dental}% of their dental
-                  coverage by March. Green means you are on track, amber means
-                  you may be underusing benefits, and red means you are
-                  significantly below average.
+                  coverage by March. Green means you are on track, amber means you may be
+                  underusing benefits, and red means you are significantly below average.
                 </p>
               </div>
             </div>
           )}
 
-          {report && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          {report && report.coverage_items.some((i) => i.recommendation) && (
+            <div className="mt-5 bg-card rounded-lg border border-border p-5">
+              <p className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground mb-3">
                 Recommendations
-              </h3>
-              <div className="space-y-3">
+              </p>
+              <div className="space-y-2.5">
                 {report.coverage_items
                   .filter((item) => item.recommendation)
                   .map((item) => (
                     <div
                       key={item.category}
-                      className="p-3 bg-vigil-50 rounded-lg border border-vigil-100"
+                      className="border-l-2 border-primary/30 pl-3"
                     >
-                      <p className="text-sm font-medium text-vigil-800 capitalize">
+                      <p className="text-sm font-medium text-foreground capitalize mb-0.5">
                         {item.category}
                       </p>
-                      <p className="text-sm text-vigil-700 mt-1">
+                      <p className="text-sm text-muted-foreground">
                         {item.recommendation}
                       </p>
                     </div>

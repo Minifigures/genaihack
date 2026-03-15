@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAuditLogs } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -13,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ScrollText } from "lucide-react";
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<Array<Record<string, unknown>>>([]);
@@ -34,60 +31,65 @@ export default function LogsPage() {
   }, []);
 
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-          <ScrollText className="w-5 h-5 text-gray-600" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Audit Log</h1>
-          <p className="text-sm text-muted-foreground">{logs.length} entries</p>
-        </div>
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8">
+        <h1 className="font-display text-2xl font-normal text-foreground leading-tight">
+          Audit Log
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1.5">
+          {loading ? "Loading…" : `${logs.length} entries`}
+        </p>
       </div>
 
       {loading ? (
-        <Skeleton className="h-64 rounded-lg" />
+        <div className="h-64 bg-muted rounded-lg animate-pulse" />
       ) : logs.length === 0 ? (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <p className="text-muted-foreground">
-              No audit entries yet. Process a claim to generate audit logs.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="bg-card rounded-lg border border-border p-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            No audit entries yet. Process a claim to generate audit logs.
+          </p>
+        </div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Agent</TableHead>
-                  <TableHead className="max-w-[300px]">Details</TableHead>
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-border">
+                <TableHead className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+                  Timestamp
+                </TableHead>
+                <TableHead className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+                  Action
+                </TableHead>
+                <TableHead className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+                  Agent
+                </TableHead>
+                <TableHead className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground max-w-[300px]">
+                  Details
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {logs.map((log, idx) => (
+                <TableRow key={idx} className="border-b border-border last:border-0">
+                  <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                    {String(log.timestamp || "")}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="font-mono text-2xs">
+                      {String(log.action || "")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-muted-foreground">
+                    {String(log.agent || "")}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground max-w-[300px] truncate">
+                    {JSON.stringify(log.details || {})}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {logs.map((log, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell className="text-muted-foreground text-sm whitespace-nowrap">
-                      {String(log.timestamp || "")}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{String(log.action || "")}</Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {String(log.agent || "")}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground max-w-[300px] truncate">
-                      {JSON.stringify(log.details || {})}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   );

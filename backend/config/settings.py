@@ -5,6 +5,7 @@ from typing import Optional
 class Settings(BaseSettings):
     # AI Services
     google_api_key: str = ""
+    oss_endpoint: str = ""
     moorcheh_api_key: str = ""
     huggingface_endpoint: str = ""
     huggingface_api_key: str = ""
@@ -26,4 +27,4 @@ class Settings(BaseSettings):
     enable_watsonx: bool = True
     enable_reflection: bool = False
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}

@@ -1,35 +1,37 @@
-# VIGIL Fraud Detection Policy Configuration
-# All scoring weights, thresholds, and tolerances are centralized here.
-# Agents read from this file at runtime - do NOT hardcode values elsewhere.
+# ============================================================
+# VIGIL Fraud Policy Configuration
+# ============================================================
+# Single source of truth for ALL scoring parameters.
+# Every threshold, weight, and cap in the scoring engine and
+# fraud analyst is driven by this file — nothing is hardcoded.
+# ============================================================
 
-# Risk band thresholds (0-100 score maps to these bands)
-# Based on insurance industry standard quartile risk stratification
+# --- Risk-band thresholds (score 0-100) ----------------------
 thresholds:
-  low: 0           # 0-25: within expected billing norms
-  elevated: 26     # 26-50: minor deviations, worth monitoring
-  high: 51         # 51-75: significant anomalies, auto-creates case for review
-  critical: 76     # 76-100: strong fraud indicators, immediate escalation
+  low: 0
+  elevated: 26
+  high: 51        # >= 51 auto-creates a fraud case
+  critical: 76
 
-# Fee deviation tolerance before flagging
-# 15% is the NHCAA (National Health Care Anti-Fraud Association) recommended
-# threshold for triggering fee anomaly investigation
+# --- Scoring component caps (must sum to 100) ----------------
+scoring_caps:
+  fee_deviation: 40
+  code_risk: 25
+  provider_history: 25
+  pattern_bonus: 10
+
+# --- Fee-deviation detection ---------------------------------
 fee_deviation_tolerance:
-  default: 0.30              # 30% deviation for standard procedure codes
-  high_risk_codes:           # Codes frequently associated with upcoding schemes
-    - "43421"   # Root planing per quadrant
-    - "43427"   # Root planing 3+ quadrants
-    - "11117"   # Scaling additional units
-    - "27201"   # Crown porcelain
-    - "27211"   # Crown metal
-  high_risk_tolerance: 0.15  # 15% for high-risk codes (stricter scrutiny)
+  default: 0.30
+  high_risk_codes:
+    - "43421"     # Root planing, per quadrant
+    - "43427"     # Root planing, 3+ quadrants
+    - "11117"     # Scaling, additional unit
+    - "27201"     # Crown, porcelain
+    - "27211"     # Crown, metal
+  high_risk_tolerance: 0.15
 
-# Code risk weights (0.0-1.0) for scoring engine
-# Ranked by severity per NHCAA fraud typology:
-# - Phantom billing: most severe (services never rendered)
-# - Upcoding: billing for more expensive procedure than performed
-# - Duplicate claims: same service billed multiple times
-# - Unbundling: splitting bundled services to inflate total
-# - Fee deviation: overcharging relative to fee guide
+# --- Code-risk weights (per fraud type, 0.0 – 1.0) ----------
 code_risk_weights:
   phantom_billing: 1.0   # Most severe: billing for non-existent services
   upcoding: 0.9          # Billing a more expensive code than performed
@@ -37,39 +39,34 @@ code_risk_weights:
   unbundling: 0.7        # Splitting bundled services to inflate billing
   fee_deviation: 0.4     # Overcharging relative to ODA fee guide
 
-# Scoring component caps (must sum to 100)
-# Weighted by investigative priority: fee deviation is the most
-# quantifiable signal, provider history captures repeat offenders
-scoring_components:
-  fee_deviation_max: 40       # Largest component: direct financial evidence
-  code_risk_max: 25           # Fraud type severity
-  provider_history_max: 25    # Repeat offender signal
-  pattern_bonus_max: 10       # Multiple concurrent flags
-  pattern_threshold: 3        # Number of flags to trigger full pattern bonus
-  points_per_flag: 3          # Points per flag when below pattern threshold
-  code_risk_multiplier: 10    # Points per unit of code risk weight
+# --- Provider-history multipliers ----------------------------
+provider_history_weights:
+  clean: 0.8
+  flagged_once: 1.2
+  flagged_multiple: 1.5
+  confirmed_fraud: 2.0
 
-# Provider history risk mapping
-# Maps provider average fee deviation to history flags
-provider_history:
-  high_deviation: 0.30        # Above 30% avg deviation -> max history flags (3)
-  moderate_deviation: 0.15    # Above 15% avg deviation -> 1 history flag
-  high_flags: 3               # History flags for high deviation providers
-  moderate_flags: 1           # History flags for moderate deviation providers
+# --- Provider-history flag thresholds ------------------------
+provider_history_flag_rules:
+  severe_deviation: 0.30      # avg deviation > this = 3 flags
+  moderate_deviation: 0.15    # avg deviation > this = 1 flag
+  severe_flags: 3
+  moderate_flags: 1
 
-# Provider trust multipliers (for future weighted scoring)
-provider_trust_weights:
-  clean: 0.8                  # Trusted provider, reduce score slightly
-  flagged_once: 1.2           # One prior flag, increase scrutiny
-  flagged_multiple: 1.5       # Multiple flags, significant concern
-  confirmed_fraud: 2.0        # Confirmed fraudster, maximum weight
+# --- Pattern bonus rules -------------------------------------
+pattern_bonus_rules:
+  multi_flag_threshold: 3     # >= this many flags = full bonus
+  per_flag_points: 3          # points per flag when below threshold
 
-# Confidence values assigned to fraud flag types
-# Based on signal reliability: fee deviations are most quantifiable,
-# unbundling requires more contextual interpretation
-confidence_levels:
-  fee_deviation: 0.85         # High confidence: direct fee comparison
-  upcoding: 0.75              # Moderate: requires clinical context
-  unbundling: 0.70            # Lower: pattern-based inference
-  phantom_billing: 0.90       # Very high: binary (service rendered or not)
-  duplicate_claim: 0.95       # Highest: exact match detection
+# --- Confidence defaults (per fraud type) --------------------
+confidence_defaults:
+  fee_deviation: 0.85
+  upcoding: 0.75
+  unbundling: 0.70
+  phantom_billing: 0.90
+  duplicate_claim: 0.80
+
+# --- Unbundling detection ------------------------------------
+unbundling_rules:
+  min_scaling_units: 3        # flag when >= this many units billed
+  bundled_units: 2            # expected units for a single cleaning

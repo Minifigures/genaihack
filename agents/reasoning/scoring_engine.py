@@ -20,6 +20,13 @@ def load_policy() -> dict:
     return _policy_cache
 
 
+def reload_policy() -> dict:
+    """Force-reload the policy file (useful for tests)."""
+    global _policy_cache
+    _policy_cache = None
+    return load_policy()
+
+
 def classify_risk(score: float) -> RiskLevel:
     policy = load_policy()
     thresholds = policy["thresholds"]
@@ -36,6 +43,11 @@ def compute_fraud_score(
     flags: list[FraudFlag],
     provider_history_flags: int = 0,
 ) -> FraudScore:
+    policy = load_policy()
+    caps = policy["scoring_caps"]
+    code_risk_weights = policy["code_risk_weights"]
+    pattern_rules = policy["pattern_bonus_rules"]
+
     if not flags:
         return FraudScore(
             score=0.0,
@@ -49,31 +61,30 @@ def compute_fraud_score(
             ),
         )
 
-    policy = load_policy()
-    weights = policy["code_risk_weights"]
-    caps = policy["scoring_components"]
+    fee_cap = caps["fee_deviation"]
+    code_cap = caps["code_risk"]
+    history_cap = caps["provider_history"]
+    pattern_cap = caps["pattern_bonus"]
 
-    # Component 1: Fee deviation severity (0 to fee_deviation_max)
+    # Component 1: Fee deviation severity (0 – fee_cap)
     deviations = [f.deviation_pct for f in flags if f.deviation_pct is not None]
     max_deviation = max(deviations) if deviations else 0.0
-    fee_max = float(caps["fee_deviation_max"])
-    fee_component = min(fee_max, max_deviation * fee_max)
+    fee_component = min(float(fee_cap), max_deviation * fee_cap)
 
-    # Component 2: Code risk weight (0 to code_risk_max)
-    code_risks = [weights.get(f.fraud_type.value, 0.5) for f in flags]
-    code_max = float(caps["code_risk_max"])
-    code_multiplier = float(caps["code_risk_multiplier"])
-    code_component = min(code_max, sum(code_risks) * code_multiplier)
+    # Component 2: Code risk weight (0 – code_cap)
+    code_risks = [code_risk_weights.get(f.fraud_type.value, 0.5) for f in flags]
+    code_component = min(float(code_cap), sum(code_risks) * 10.0)
 
-    # Component 3: Provider history (0 to provider_history_max)
-    history_max = float(caps["provider_history_max"])
-    history_component = min(history_max, provider_history_flags * 5.0)
+    # Component 3: Provider history (0 – history_cap)
+    history_component = min(float(history_cap), provider_history_flags * 5.0)
 
-    # Component 4: Pattern bonus (0 to pattern_bonus_max)
-    pattern_max = float(caps["pattern_bonus_max"])
-    pattern_threshold = int(caps["pattern_threshold"])
-    points_per_flag = float(caps["points_per_flag"])
-    pattern_bonus = pattern_max if len(flags) >= pattern_threshold else float(len(flags)) * points_per_flag
+    # Component 4: Pattern bonus (0 – pattern_cap)
+    multi_threshold = pattern_rules["multi_flag_threshold"]
+    per_flag_pts = pattern_rules["per_flag_points"]
+    if len(flags) >= multi_threshold:
+        pattern_bonus = float(pattern_cap)
+    else:
+        pattern_bonus = min(float(pattern_cap), float(len(flags) * per_flag_pts))
 
     raw_score = fee_component + code_component + history_component + pattern_bonus
 
@@ -99,6 +110,9 @@ async def run_scoring_engine(state: VigilState) -> dict:
     logger.info("agent_start", agent="scoring_engine")
 
     try:
+        policy = load_policy()
+        history_rules = policy["provider_history_flag_rules"]
+
         flags = state.get("fraud_flags", [])
         enriched = state.get("enriched_claim")
 
@@ -107,10 +121,10 @@ async def run_scoring_engine(state: VigilState) -> dict:
         ph = policy["provider_history"]
         provider_history_flags = 0
         if enriched and enriched.provider_avg_fee_deviation is not None:
-            if enriched.provider_avg_fee_deviation > ph["high_deviation"]:
-                provider_history_flags = ph["high_flags"]
-            elif enriched.provider_avg_fee_deviation > ph["moderate_deviation"]:
-                provider_history_flags = ph["moderate_flags"]
+            if enriched.provider_avg_fee_deviation > history_rules["severe_deviation"]:
+                provider_history_flags = history_rules["severe_flags"]
+            elif enriched.provider_avg_fee_deviation > history_rules["moderate_deviation"]:
+                provider_history_flags = history_rules["moderate_flags"]
 
         score = compute_fraud_score(flags, provider_history_flags)
 
