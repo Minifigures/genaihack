@@ -51,6 +51,10 @@ def get_demo_receipt(filename: str) -> OCRResult:
     if "ai_gen_09" in name: return _ai_gen_09()
     if "ai_gen_10" in name: return _ai_gen_10()
 
+    # fraud_test.pdf (manually created extreme fraud receipt)
+    if "fraud_test" in name:
+        return _fraud_test()
+
     # Default fallback
     return _clean()
 
@@ -147,10 +151,10 @@ def _fraud_03():
         subtotal=457.00, tax=None, total=457.00, ocr_confidence=0.92, raw_text="5 scaling units unbundled")
 
 def _fraud_04():
-    """Phantom billing: crown on healthy tooth with high fee."""
+    """Phantom billing: overpriced crown + inflated exam + unnecessary scaling."""
     return OCRResult(provider_name="Midtown Dental Centre", provider_address="1200 Bay St, Toronto, ON M5R 2A5", claim_date="2025-01-30",
-        procedures=[Procedure(code="11101", description="Recall examination", fee_charged=78.00), Procedure(code="27201", description="Crown, porcelain fused to metal", fee_charged=1450.00, tooth_number="36"), Procedure(code="02202", description="Periapical radiographs, 2 films", fee_charged=42.00)],
-        subtotal=1570.00, tax=None, total=1570.00, ocr_confidence=0.91, raw_text="phantom crown billing")
+        procedures=[Procedure(code="11101", description="Recall examination", fee_charged=145.00), Procedure(code="27201", description="Crown, porcelain fused to metal", fee_charged=1650.00, tooth_number="36"), Procedure(code="02202", description="Periapical radiographs, 2 films", fee_charged=70.00), Procedure(code="11117", description="Scaling, additional unit", fee_charged=85.00)],
+        subtotal=1950.00, tax=None, total=1950.00, ocr_confidence=0.91, raw_text="phantom crown with inflated fees")
 
 def _fraud_05():
     """Duplicate claims: same composite twice for same tooth."""
@@ -250,3 +254,19 @@ def _ai_gen_10():
     return OCRResult(provider_name="Prestige Oral Health Centre", provider_address="4700 Keele St, Toronto, ON M3J 1P3", claim_date="2025-02-28",
         procedures=[Procedure(code="11101", description="Dental Recall", fee_charged=140.00), Procedure(code="02202", description="Radiographic Assessment", fee_charged=85.00), Procedure(code="27211", description="Full Metal Crown", fee_charged=1600.00, tooth_number="46"), Procedure(code="23112", description="Composite Filling 2S", fee_charged=300.00, tooth_number="11"), Procedure(code="23112", description="Composite Filling 2S", fee_charged=300.00, tooth_number="11")],
         subtotal=2425.00, tax=None, total=2425.00, ocr_confidence=0.90, raw_text="AI gen crown + duplicate")
+
+
+def _fraud_test():
+    """Manually created extreme fraud: inflated exam, double root planing, triple scaling, polishing."""
+    return OCRResult(provider_name="Dr. Richard Chen Dental Office", provider_address="456 Dundas St W, Suite 200, Toronto, ON M5T 1G8", claim_date="2025-03-10",
+        procedures=[
+            Procedure(code="11101", description="Recall examination", fee_charged=175.00),
+            Procedure(code="02202", description="Periapical radiographs, 2 films", fee_charged=90.00),
+            Procedure(code="43421", description="Root planing, per quadrant", fee_charged=425.00, tooth_number="14"),
+            Procedure(code="43421", description="Root planing, per quadrant", fee_charged=425.00, tooth_number="24"),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=110.00),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=110.00),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=110.00),
+            Procedure(code="12101", description="Polishing", fee_charged=85.00),
+        ],
+        subtotal=1530.00, tax=None, total=1530.00, ocr_confidence=0.91, raw_text="extreme multi-type fraud receipt")

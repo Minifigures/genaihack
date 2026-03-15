@@ -27,8 +27,11 @@ fee_deviation_tolerance:
     - "43421"     # Root planing, per quadrant
     - "43427"     # Root planing, 3+ quadrants
     - "11117"     # Scaling, additional unit
+    - "11111"     # Scaling, first unit
     - "27201"     # Crown, porcelain
     - "27211"     # Crown, metal
+    - "23111"     # Composite, 1 surface (common in upcoding)
+    - "23112"     # Composite, 2 surfaces (common in upcoding)
   high_risk_tolerance: 0.15
 
 # --- Code-risk weights (per fraud type, 0.0 – 1.0) ----------
