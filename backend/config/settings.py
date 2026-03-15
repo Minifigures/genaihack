@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # App Config
     demo_mode: bool = True
     log_level: str = "INFO"
-    cors_origins: list[str] = ["http://localhost:3000", "https://frontend-theta-seven-45.vercel.app"]
+    cors_origins: list[str] = ["http://localhost:3000", "https://frontend-theta-seven-45.vercel.app", "https://vigil-app.vercel.app"]
     enable_watsonx: bool = True
     enable_reflection: bool = False
 
