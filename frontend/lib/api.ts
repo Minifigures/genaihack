@@ -122,6 +122,12 @@ export async function getCases(): Promise<{ cases: Array<Record<string, unknown>
   return response.json();
 }
 
+export async function getCase(caseId: string): Promise<Record<string, unknown>> {
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/cases/${caseId}`, { headers });
+  return response.json();
+}
+
 export async function getBenefits(studentId: string): Promise<BenefitsReport> {
   const headers = await getAuthHeaders();
   const response = await fetch(`${API_BASE}/api/benefits/${studentId}`, { headers });

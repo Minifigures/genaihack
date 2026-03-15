@@ -7,6 +7,7 @@ from backend.websocket.trace import manager
 from backend.config.settings import Settings
 from backend.store import store
 from backend.auth import get_current_user
+from agents.reasoning.scoring_engine import load_policy
 from fastapi import Depends
 
 logger = structlog.get_logger()
@@ -99,9 +100,8 @@ async def upload_claim(
         _pipeline_results[claim_id] = result
 
         # Auto-create a fraud case for HIGH / CRITICAL risk claims
-        # Threshold loaded from fraud_policy.yaml via scoring engine
-        from agents.reasoning.scoring_engine import load_policy
-        case_threshold = load_policy()["thresholds"]["high"]
+        policy = load_policy()
+        case_threshold = policy["thresholds"]["high"]
         if fraud_score and fraud_score.score >= case_threshold:
             from backend.models.fraud import FraudCase
             fraud_case = FraudCase(
@@ -110,6 +110,7 @@ async def upload_claim(
                 student_id=student_id,
                 fraud_score=fraud_score,
                 flags=final_state.get("fraud_flags", []),
+                report_html=final_state.get("report_html"),
                 status="open",
             )
             await store.save_fraud_case(fraud_case)
@@ -128,8 +129,13 @@ async def upload_claim(
 async def list_claims(user: dict = Depends(get_current_user)):
     if settings.demo_mode:
         return {"claims": _claims_store, "total": len(_claims_store)}
-    user_claims = [c for c in _claims_store if c.get("student_id") == user["sub"]]
-    return {"claims": user_claims, "total": len(user_claims)}
+    # In postgres mode, read from DB so counts survive server restarts
+    db_claims = await store.get_claims(student_id=user["sub"])
+    # Merge with any in-memory results from this session (for fraud_score/flags)
+    db_ids = {c.get("claim_id") for c in db_claims}
+    session_only = [c for c in _claims_store if c.get("claim_id") not in db_ids and c.get("student_id") == user["sub"]]
+    merged = db_claims + session_only
+    return {"claims": merged, "total": len(merged)}
 
 
 @router.get("/claims/{claim_id}")

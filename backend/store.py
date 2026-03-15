@@ -336,15 +336,7 @@ class VigilStore:
         async with session_factory() as session:
             breakdown_json = case.fraud_score.breakdown.model_dump_json()
             flags_json = json.dumps([f.model_dump() for f in case.flags])
-
-            await session.execute(text("""
-                INSERT INTO fraud_cases (case_id, tenant_id, created_by, session_id, claim_id,
-                                        student_id, provider_id, fraud_score, risk_level,
-                                        score_breakdown, flags, status)
-                VALUES (:case_id, :tenant_id, :created_by, :session_id, :claim_id,
-                        :student_id, :provider_id, :fraud_score, :risk_level,
-                        CAST(:score_breakdown AS jsonb), CAST(:flags AS jsonb), :status)
-            """), {
+            base_params = {
                 "case_id": case.case_id,
                 "tenant_id": tenant_id,
                 "created_by": created_by,
@@ -357,7 +349,28 @@ class VigilStore:
                 "score_breakdown": breakdown_json,
                 "flags": flags_json,
                 "status": case.status,
-            })
+            }
+
+            try:
+                await session.execute(text("""
+                    INSERT INTO fraud_cases (case_id, tenant_id, created_by, session_id, claim_id,
+                                            student_id, provider_id, fraud_score, risk_level,
+                                            score_breakdown, flags, report_html, status)
+                    VALUES (:case_id, :tenant_id, :created_by, :session_id, :claim_id,
+                            :student_id, :provider_id, :fraud_score, :risk_level,
+                            CAST(:score_breakdown AS jsonb), CAST(:flags AS jsonb), :report_html, :status)
+                """), {**base_params, "report_html": getattr(case, "report_html", None)})
+            except Exception:
+                # report_html column may not exist yet — fall back to insert without it
+                await session.rollback()
+                await session.execute(text("""
+                    INSERT INTO fraud_cases (case_id, tenant_id, created_by, session_id, claim_id,
+                                            student_id, provider_id, fraud_score, risk_level,
+                                            score_breakdown, flags, status)
+                    VALUES (:case_id, :tenant_id, :created_by, :session_id, :claim_id,
+                            :student_id, :provider_id, :fraud_score, :risk_level,
+                            CAST(:score_breakdown AS jsonb), CAST(:flags AS jsonb), :status)
+                """), base_params)
             await session.commit()
 
         logger.info("store_case_saved", case_id=case.case_id, backend=self.backend)

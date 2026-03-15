@@ -1,17 +1,40 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { DM_Serif_Display, Sora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 import { AuthGuard } from "@/components/AuthGuard";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+// Display serif — page titles only
+const displayFont = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+// Refined grotesque — all UI text
+const sansFont = Sora({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
+// Monospace — IDs, codes, amounts, section labels
+const monoFont = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "VIGIL - Healthcare Billing Fraud Detection",
+  title: "VIGIL — Your Student Health Copilot",
   description:
-    "Multi-agent system for detecting billing fraud and discovering unused insurance benefits",
+    "Make the most of your student health plan. Submit a receipt to see what you're covered for.",
 };
 
 export default function RootLayout({
@@ -20,17 +43,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased`}>
+    <html lang="en">
       <body className={inter.className}>
-        <TooltipProvider>
-          <div className="min-h-screen bg-background">
-            <Nav />
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <AuthGuard>{children}</AuthGuard>
-            </main>
-          </div>
-          <Toaster richColors position="top-right" />
-        </TooltipProvider>
+        <div className="min-h-screen bg-slate-50/80 bg-mesh-gradient">
+          <Nav />
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <AuthGuard>
+              {children}
+            </AuthGuard>
+          </main>
+        </div>
       </body>
     </html>
   );

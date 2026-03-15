@@ -5,25 +5,13 @@ from datetime import datetime
 from backend.models.state import VigilState
 from backend.models.fraud import FraudFlag, FraudType
 from backend.config.settings import Settings
+from agents.reasoning.scoring_engine import load_policy
 
 logger = structlog.get_logger()
 settings = Settings()
 
-POLICY_PATH = Path(__file__).parent / "fraud_policy.yaml"
-
-_policy_cache: dict | None = None
-
-
-def _load_policy() -> dict:
-    global _policy_cache
-    if _policy_cache is None:
-        with open(POLICY_PATH) as f:
-            _policy_cache = yaml.safe_load(f)
-    return _policy_cache
-
-
-# ODA fee guide reference (2024 Ontario Dental Association suggested fees)
-# Subset for demo; production would query a complete fee database
+# ODA fee guide reference (subset for demo)
+# Version: 2025 ODA Suggested Fee Guide, effective 2025-01-01
 ODA_FEE_GUIDE: dict[str, dict] = {
     "11101": {"description": "Exam, recall", "suggested_fee": 78.00},
     "11102": {"description": "Exam, complete", "suggested_fee": 120.00},
@@ -47,6 +35,8 @@ ODA_FEE_GUIDE: dict[str, dict] = {
     "41101": {"description": "Pulpotomy", "suggested_fee": 180.00},
     "33111": {"description": "Extraction, deciduous tooth", "suggested_fee": 95.00},
 }
+ODA_FEE_GUIDE_VERSION = "2025"
+ODA_FEE_GUIDE_EFFECTIVE = "2025-01-01"
 
 # Known upcoding pairs (cheaper code -> expensive code)
 UPCODING_PAIRS: dict[str, str] = {
@@ -61,10 +51,14 @@ async def run_fraud_analyst(state: VigilState) -> dict:
     logger.info("agent_start", agent="fraud_analyst")
 
     try:
-        policy = _load_policy()
-        tolerance_config = policy["fee_deviation_tolerance"]
-        confidence_levels = policy["confidence_levels"]
-        high_risk_codes = set(tolerance_config.get("high_risk_codes", []))
+        policy = load_policy()
+        fee_tol = policy["fee_deviation_tolerance"]
+        confidence_defaults = policy["confidence_defaults"]
+        unbundling_rules = policy["unbundling_rules"]
+
+        high_risk_codes = set(fee_tol["high_risk_codes"])
+        default_tolerance = fee_tol["default"]
+        high_risk_tolerance = fee_tol["high_risk_tolerance"]
 
         enriched = state.get("enriched_claim")
         ocr_result = state.get("ocr_result")
@@ -86,9 +80,9 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                 deviation = 0.0
 
             # Use stricter tolerance for high-risk codes
-            tolerance = tolerance_config["high_risk_tolerance"] if proc.code in high_risk_codes else tolerance_config["default"]
+            tolerance = high_risk_tolerance if proc.code in high_risk_codes else default_tolerance
 
-            # Check fee deviation against policy tolerance
+            # Check fee deviation against policy-driven tolerance
             if deviation > tolerance:
                 flags.append(FraudFlag(
                     fraud_type=FraudType.FEE_DEVIATION,
@@ -96,8 +90,8 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                     billed_fee=proc.fee_charged,
                     suggested_fee=suggested_fee,
                     deviation_pct=round(deviation, 3),
-                    confidence=confidence_levels["fee_deviation"],
-                    evidence=f"Fee ${proc.fee_charged:.2f} exceeds ODA guide ${suggested_fee:.2f} by {deviation*100:.1f}%",
+                    confidence=confidence_defaults["fee_deviation"],
+                    evidence=f"Fee ${proc.fee_charged:.2f} exceeds ODA guide ${suggested_fee:.2f} by {deviation*100:.1f}% (tolerance: {tolerance*100:.0f}%)",
                 ))
 
             # Check for upcoding
@@ -118,7 +112,7 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                                 (proc.fee_charged - cheaper_entry["suggested_fee"]) / cheaper_entry["suggested_fee"],
                                 3,
                             ),
-                            confidence=confidence_levels["upcoding"],
+                            confidence=confidence_defaults["upcoding"],
                             evidence=(
                                 f"Procedure {proc.code} ({guide_entry['description']}) may be upcoded from "
                                 f"{cheaper_code} ({cheaper_entry['description']}). "
@@ -128,18 +122,22 @@ async def run_fraud_analyst(state: VigilState) -> dict:
 
         # Check for unbundling
         code_set = {p.code for p in procedures}
+        min_units = unbundling_rules["min_scaling_units"]
+        bundled_units = unbundling_rules["bundled_units"]
+
         if "11101" in code_set and "11117" in code_set:
             scaling_count = sum(1 for p in procedures if p.code == "11117")
-            if scaling_count >= 3:
+            if scaling_count >= min_units:
+                scaling_fee = ODA_FEE_GUIDE["11117"]["suggested_fee"]
                 total_scaling_fee = sum(p.fee_charged for p in procedures if p.code == "11117")
-                bundled_ref = ODA_FEE_GUIDE["11117"]["suggested_fee"] * 2
+                expected_fee = scaling_fee * bundled_units
                 flags.append(FraudFlag(
                     fraud_type=FraudType.UNBUNDLING,
                     code="11117",
                     billed_fee=total_scaling_fee,
-                    suggested_fee=bundled_ref,
-                    deviation_pct=round((total_scaling_fee - bundled_ref) / bundled_ref, 3),
-                    confidence=confidence_levels["unbundling"],
+                    suggested_fee=expected_fee,
+                    deviation_pct=round((total_scaling_fee - expected_fee) / expected_fee, 3),
+                    confidence=confidence_defaults["unbundling"],
                     evidence=f"Multiple scaling units ({scaling_count}) billed separately, may represent unbundled comprehensive cleaning",
                 ))
 

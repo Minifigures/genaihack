@@ -1,157 +1,162 @@
 "use client";
 
 import type { FraudScore, FraudFlag } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
-import { ShieldAlert, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FraudCaseCardProps {
   fraudScore: FraudScore | null;
   flags: FraudFlag[];
 }
 
-const levelConfig: Record<string, { color: string; gaugeColor: string; label: string; variant: "destructive" | "secondary" | "outline" }> = {
-  low: { color: "text-emerald-700", gaugeColor: "#22c55e", label: "LOW RISK", variant: "secondary" },
-  elevated: { color: "text-amber-700", gaugeColor: "#f59e0b", label: "ELEVATED", variant: "outline" },
-  high: { color: "text-orange-700", gaugeColor: "#f97316", label: "HIGH RISK", variant: "destructive" },
-  critical: { color: "text-red-700", gaugeColor: "#ef4444", label: "CRITICAL", variant: "destructive" },
+// Level config — maps to CSS variables for status semantics
+const levelConfig: Record<string, {
+  bg: string; fg: string; border: string; bar: string; label: string;
+}> = {
+  low: {
+    bg:     "bg-[hsl(var(--status-resolved-bg))]",
+    fg:     "text-[hsl(var(--status-resolved-fg))]",
+    border: "border-[hsl(var(--status-resolved-border))]",
+    bar:    "bg-primary",
+    label:  "Looks Good",
+  },
+  elevated: {
+    bg:     "bg-[hsl(var(--status-review-bg))]",
+    fg:     "text-[hsl(var(--status-review-fg))]",
+    border: "border-[hsl(var(--status-review-border))]",
+    bar:    "bg-[hsl(43_96%_50%)]",
+    label:  "Minor Note",
+  },
+  high: {
+    bg:     "bg-orange-50",
+    fg:     "text-orange-800",
+    border: "border-orange-200",
+    bar:    "bg-orange-500",
+    label:  "Review Recommended",
+  },
+  critical: {
+    bg:     "bg-red-50",
+    fg:     "text-red-800",
+    border: "border-red-200",
+    bar:    "bg-red-500",
+    label:  "Review Required",
+  },
 };
 
 const fraudTypeLabels: Record<string, string> = {
-  upcoding: "Upcoding",
-  unbundling: "Unbundling",
-  phantom_billing: "Phantom Billing",
-  fee_deviation: "Fee Deviation",
-  duplicate_claim: "Duplicate Claim",
+  upcoding:        "Overcharge Detected",
+  unbundling:      "Split Billing Detected",
+  phantom_billing: "Unrendered Service",
+  fee_deviation:   "Fee Above Guide",
+  duplicate_claim: "Duplicate Charge",
 };
 
 export function FraudCaseCard({ fraudScore, flags }: FraudCaseCardProps) {
   if (!fraudScore) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Fraud Analysis</h3>
-          <p className="text-sm text-muted-foreground">No fraud analysis available</p>
-        </CardContent>
-      </Card>
+      <div className="bg-card rounded-lg border border-border p-5">
+        <p className="text-sm font-medium text-foreground mb-1">Billing Review</p>
+        <p className="text-sm text-muted-foreground">No analysis available</p>
+      </div>
     );
   }
 
-  const config = levelConfig[fraudScore.level] || levelConfig.low;
+  const cfg   = levelConfig[fraudScore.level] ?? levelConfig.low;
+  const score = Math.round(Number(fraudScore.score) || 0);
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5" />
-            Fraud Analysis
-          </CardTitle>
-          <Badge variant={config.variant}>{config.label}</Badge>
+    <div className={cn("rounded-lg border p-5", cfg.bg, cfg.border)}>
+
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-base font-medium text-foreground">Billing Review</p>
+        <span className={cn(
+          "inline-flex items-center px-2 py-px text-[11px] font-medium rounded-sm border",
+          cfg.fg, cfg.bg, cfg.border
+        )}>
+          {cfg.label}
+        </span>
+      </div>
+
+      {/* Score */}
+      <div className="mb-4">
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className={cn("font-mono text-[2.5rem] font-medium leading-none tabular", cfg.fg)}>
+            {score}
+          </span>
+          <span className="text-sm text-muted-foreground">/ 100</span>
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* Gauge + Score */}
-        <div className="flex items-center gap-6 mb-6">
-          <AnimatedCircularProgressBar
-            value={fraudScore.score}
-            max={100}
-            min={0}
-            gaugePrimaryColor={config.gaugeColor}
-            gaugeSecondaryColor="#e5e7eb"
-            className="size-28 text-xl"
+        {/* Progress bar — 4px, flat, no rounded-full */}
+        <div className="w-full bg-white/60 rounded-sm h-1">
+          <div
+            className={cn("h-1 rounded-sm transition-all duration-500", cfg.bar)}
+            style={{ width: `${score}%` }}
           />
-          <div className="flex-1">
-            <p className="text-sm text-muted-foreground mb-3">Score Breakdown</p>
-            <div className="space-y-2">
-              <BreakdownBar label="Fee Deviation" value={fraudScore.breakdown.fee_deviation} max={40} />
-              <BreakdownBar label="Code Risk" value={fraudScore.breakdown.code_risk} max={25} />
-              <BreakdownBar label="Provider History" value={fraudScore.breakdown.provider_history} max={25} />
-              <BreakdownBar label="Pattern Bonus" value={fraudScore.breakdown.pattern_bonus} max={10} />
-            </div>
+        </div>
+      </div>
+
+      {/* Score breakdown — 2x2 grid of micro-stats */}
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        {[
+          { label: "Fee Diff",     value: `${fraudScore.breakdown.fee_deviation}/40` },
+          { label: "Billing",      value: `${fraudScore.breakdown.code_risk}/25` },
+          { label: "Provider",     value: `${fraudScore.breakdown.provider_history}/25` },
+          { label: "Repeat",       value: `${fraudScore.breakdown.pattern_bonus}/10` },
+        ].map((stat) => (
+          <div key={stat.label} className="bg-white/50 rounded-sm px-3 py-2 border border-white/60">
+            <p className="font-mono text-2xs text-muted-foreground uppercase tracking-wider mb-0.5">
+              {stat.label}
+            </p>
+            <p className={cn("font-mono text-sm font-medium tabular", cfg.fg)}>
+              {stat.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Irregularities */}
+      {flags.length > 0 && (
+        <div>
+          <p className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground mb-2">
+            Irregularities ({flags.length})
+          </p>
+          <div className="space-y-2">
+            {flags.map((flag, idx) => (
+              <div key={idx} className="bg-white/60 rounded-lg border border-white/80 px-3 py-2.5">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className={cn(
+                    "text-[11px] font-medium px-2 py-px rounded-sm border",
+                    "bg-[hsl(var(--status-review-bg))] text-[hsl(var(--status-review-fg))] border-[hsl(var(--status-review-border))]"
+                  )}>
+                    {fraudTypeLabels[flag.fraud_type] ?? flag.fraud_type}
+                  </span>
+                  <span className="font-mono text-2xs text-muted-foreground">
+                    Code {flag.code}
+                  </span>
+                  {flag.deviation_pct !== null && (
+                    <span className="font-mono text-2xs text-[hsl(var(--status-review-fg))] font-medium">
+                      +{(flag.deviation_pct * 100).toFixed(1)}% above guide
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-foreground">{flag.evidence}</p>
+                <div className="flex gap-4 mt-1">
+                  <span className="font-mono text-2xs text-muted-foreground tabular">
+                    Billed ${flag.billed_fee.toFixed(2)}
+                  </span>
+                  {flag.suggested_fee !== null && (
+                    <span className="font-mono text-2xs text-muted-foreground tabular">
+                      Expected ${flag.suggested_fee.toFixed(2)}
+                    </span>
+                  )}
+                  <span className="font-mono text-2xs text-muted-foreground">
+                    {(flag.confidence * 100).toFixed(0)}% confidence
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Fraud flags with comparison bars */}
-        {flags.length > 0 && (
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
-              Fraud Flags ({flags.length})
-            </h4>
-            <div className="space-y-3">
-              {flags.map((flag, idx) => (
-                <div key={idx} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="text-red-700 border-red-200 bg-red-50 text-xs">
-                      {fraudTypeLabels[flag.fraud_type] || flag.fraud_type}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">Code: {flag.code}</span>
-                    {flag.deviation_pct !== null && (
-                      <Badge variant="destructive" className="text-[10px] h-5">
-                        +{(flag.deviation_pct * 100).toFixed(0)}% overcharge
-                      </Badge>
-                    )}
-                  </div>
-
-                  <p className="text-sm text-gray-700 mb-2">{flag.evidence}</p>
-
-                  {/* What You Paid vs What You Should Have Paid */}
-                  {flag.suggested_fee !== null && flag.suggested_fee > 0 && (
-                    <div className="mt-2">
-                      <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                        <span>ODA Guide: ${flag.suggested_fee.toFixed(2)}</span>
-                        <span>Billed: ${flag.billed_fee.toFixed(2)}</span>
-                      </div>
-                      <div className="flex h-5 rounded-full overflow-hidden bg-gray-200">
-                        <div
-                          className="bg-emerald-500 flex items-center justify-center"
-                          style={{ width: `${Math.min(100, (flag.suggested_fee / flag.billed_fee) * 100)}%` }}
-                        >
-                          <span className="text-[9px] text-white font-medium">Fair</span>
-                        </div>
-                        <div
-                          className="bg-red-400 flex items-center justify-center"
-                          style={{ width: `${Math.max(0, 100 - (flag.suggested_fee / flag.billed_fee) * 100)}%` }}
-                        >
-                          <span className="text-[9px] text-white font-medium">
-                            +${(flag.billed_fee - flag.suggested_fee).toFixed(0)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                    <span>Confidence: {(flag.confidence * 100).toFixed(0)}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function BreakdownBar({ label, value, max }: { label: string; value: number; max: number }) {
-  const pct = Math.min(100, (value / max) * 100);
-  return (
-    <div>
-      <div className="flex justify-between text-xs mb-0.5">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">{value}/{max}</span>
-      </div>
-      <div className="h-1.5 bg-gray-200 rounded-full">
-        <div
-          className={`h-1.5 rounded-full transition-all duration-700 ${
-            pct > 70 ? "bg-red-500" : pct > 40 ? "bg-amber-500" : "bg-emerald-500"
-          }`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+      )}
     </div>
   );
 }
