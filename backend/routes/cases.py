@@ -9,13 +9,13 @@ router = APIRouter()
 
 
 @router.get("/cases")
-async def list_cases():
+async def list_cases(user: dict = Depends(get_current_user)):
     cases = await store.get_cases()
     return {"cases": cases, "total": len(cases)}
 
 
 @router.get("/cases/{case_id}")
-async def get_case(case_id: str):
+async def get_case(case_id: str, user: dict = Depends(get_current_user)):
     case = await store.get_case(case_id)
     if case is None:
         return {"error": "Case not found"}
@@ -23,7 +23,7 @@ async def get_case(case_id: str):
 
 
 @router.post("/cases/{case_id}/approve")
-async def approve_case(case_id: str):
+async def approve_case(case_id: str, user: dict = Depends(get_current_user)):
     success = await store.update_case_status(case_id, "approved")
     if not success:
         return {"error": "Case not found"}
@@ -33,7 +33,7 @@ async def approve_case(case_id: str):
 
 
 @router.post("/cases/{case_id}/dismiss")
-async def dismiss_case(case_id: str):
+async def dismiss_case(case_id: str, user: dict = Depends(get_current_user)):
     success = await store.update_case_status(case_id, "dismissed")
     if not success:
         return {"error": "Case not found"}
