@@ -1,19 +1,37 @@
+# ============================================================
+# VIGIL Fraud Policy Configuration
+# ============================================================
+# Single source of truth for ALL scoring parameters.
+# Every threshold, weight, and cap in the scoring engine and
+# fraud analyst is driven by this file — nothing is hardcoded.
+# ============================================================
+
+# --- Risk-band thresholds (score 0-100) ----------------------
 thresholds:
   low: 0
   elevated: 26
-  high: 51
+  high: 51        # >= 51 auto-creates a fraud case
   critical: 76
 
+# --- Scoring component caps (must sum to 100) ----------------
+scoring_caps:
+  fee_deviation: 40
+  code_risk: 25
+  provider_history: 25
+  pattern_bonus: 10
+
+# --- Fee-deviation detection ---------------------------------
 fee_deviation_tolerance:
   default: 0.30
   high_risk_codes:
-    - "43421"   # Root planing
-    - "43427"   # Root planing
-    - "11117"   # Scaling additional units
-    - "27201"   # Crown porcelain
-    - "27211"   # Crown metal
+    - "43421"     # Root planing, per quadrant
+    - "43427"     # Root planing, 3+ quadrants
+    - "11117"     # Scaling, additional unit
+    - "27201"     # Crown, porcelain
+    - "27211"     # Crown, metal
   high_risk_tolerance: 0.15
 
+# --- Code-risk weights (per fraud type, 0.0 – 1.0) ----------
 code_risk_weights:
   upcoding: 0.9
   unbundling: 0.7
@@ -21,8 +39,34 @@ code_risk_weights:
   fee_deviation: 0.4
   duplicate_claim: 0.8
 
+# --- Provider-history multipliers ----------------------------
 provider_history_weights:
   clean: 0.8
   flagged_once: 1.2
   flagged_multiple: 1.5
   confirmed_fraud: 2.0
+
+# --- Provider-history flag thresholds ------------------------
+provider_history_flag_rules:
+  severe_deviation: 0.30      # avg deviation > this = 3 flags
+  moderate_deviation: 0.15    # avg deviation > this = 1 flag
+  severe_flags: 3
+  moderate_flags: 1
+
+# --- Pattern bonus rules -------------------------------------
+pattern_bonus_rules:
+  multi_flag_threshold: 3     # >= this many flags = full bonus
+  per_flag_points: 3          # points per flag when below threshold
+
+# --- Confidence defaults (per fraud type) --------------------
+confidence_defaults:
+  fee_deviation: 0.85
+  upcoding: 0.75
+  unbundling: 0.70
+  phantom_billing: 0.90
+  duplicate_claim: 0.80
+
+# --- Unbundling detection ------------------------------------
+unbundling_rules:
+  min_scaling_units: 3        # flag when >= this many units billed
+  bundled_units: 2            # expected units for a single cleaning

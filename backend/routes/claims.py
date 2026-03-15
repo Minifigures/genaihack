@@ -7,6 +7,7 @@ from backend.websocket.trace import manager
 from backend.config.settings import Settings
 from backend.store import store
 from backend.auth import get_current_user
+from agents.reasoning.scoring_engine import load_policy
 from fastapi import Depends
 
 logger = structlog.get_logger()
@@ -99,7 +100,9 @@ async def upload_claim(
         _pipeline_results[claim_id] = result
 
         # Auto-create a fraud case for HIGH / CRITICAL risk claims
-        if fraud_score and fraud_score.score >= 51:
+        policy = load_policy()
+        case_threshold = policy["thresholds"]["high"]
+        if fraud_score and fraud_score.score >= case_threshold:
             from backend.models.fraud import FraudCase
             fraud_case = FraudCase(
                 case_id=case_id or str(uuid.uuid4()),
