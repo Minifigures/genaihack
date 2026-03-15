@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: vigil-backend
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: ENABLE_WATSONX
+        value: "false"
+      - key: CORS_ORIGINS
+        value: '["https://frontend-theta-seven-45.vercel.app","http://localhost:3000"]'
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: WATSONX_API_KEY
+        sync: false
