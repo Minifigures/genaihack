@@ -1,14 +1,28 @@
-# VIGIL - Healthcare Billing Fraud Detection
+# VIGIL - Student Healthcare Benefits & Fraud Protection
 
-Multi-agent system that detects billing fraud, discovers unused insurance benefits, and extracts health signals from healthcare receipts. Built for GenAI Genesis 2026 Hackathon, University of Toronto.
+AI-powered platform that protects student health benefits from billing fraud, discovers unused insurance coverage, and connects students with trusted clinics. Built for GenAI Genesis 2026 Hackathon, University of Toronto.
 
-## Overview & Objectives
+## What It Does
 
 Students upload photos of healthcare receipts (dental bills, pharmacy receipts). VIGIL simultaneously:
 
 1. **Detects billing fraud** (upcoding, unbundling, phantom billing) by comparing against the Ontario Dental Association fee guide
 2. **Discovers unused insurance benefits** (UTSU Health & Dental Plan coverage the student hasn't claimed)
-3. **Extracts health signals** (treatment patterns, preventive care gaps)
+3. **Finds eligible clinics** near campus with OHIP/UHIP coverage
+4. **Extracts health signals** (treatment patterns, preventive care gaps)
+
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Fraud Score Gauge** | Animated circular gauge with color-coded risk levels (Low/Elevated/High/Critical) |
+| **"What You Should Have Paid"** | Visual comparison bars showing overcharges vs ODA guide fees |
+| **Benefit Alerts** | Notifications for underutilized coverage ("$580 unused dental benefits") |
+| **Clinic Finder** | OHIP/UHIP eligible healthcare providers near UofT with filters |
+| **Fee Guide Explorer** | Searchable ODA procedure code lookup with high-risk code warnings |
+| **Agent Trace Panel** | Real-time visualization of the 14-agent AI pipeline with layer progress |
+| **Human Review Layer** | Approve/dismiss fraud cases with confirmation dialogs |
+| **Savings Counter** | Running total of overcharges detected across all claims |
 
 ## Architecture
 
@@ -46,17 +60,21 @@ Receipt Image -> OCR Agent -> Normalizer -> History Enricher -> Persister
 | Action | Report Drafter, Compliance Gate, Audit Logger | Present results with human approval gate |
 | Reflection | Outcome Evaluator, Lesson Extractor | Learn from outcomes (stretch goal) |
 
+All scoring weights, thresholds, and tolerances are centralized in `agents/reasoning/fraud_policy.yaml`. Agents read from this single source of truth at runtime.
+
 ## Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Recharts
-- **Backend**: FastAPI (Python 3.11–3.14), WebSocket for real-time agent tracing
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS, ShadCN UI, Magic UI
+- **Backend**: FastAPI (Python 3.11+), WebSocket for real-time agent tracing
 - **Orchestration**: LangGraph (StateGraph with parallel branching)
 - **AI**: Gemini 2.0 Flash (OCR + reasoning), IBM watsonx.ai (compliance, optional)
 - **Memory**: Moorcheh SDK (episodic, semantic, provider namespaces)
 - **Database**: Supabase PostgreSQL (operational database)
-- **Config**: pydantic-settings, YAML policy files (fraud_policy.yaml, action_library.yaml)
+- **Auth**: Supabase Auth (JWT)
+- **Testing**: Playwright (26 E2E tests), pytest
+- **Config**: pydantic-settings, YAML policy files
 
-## Quick Start (One Command)
+## Quick Start
 
 **Windows (PowerShell):**
 ```powershell
@@ -72,111 +90,48 @@ cd genaihack
 chmod +x start.sh && ./start.sh
 ```
 
-The scripts will:
-- Copy `.env.example` → `.env` if it doesn't exist yet
-- Create a Python virtual environment and install dependencies
-- Install Node dependencies
-- Launch backend (port 8000) + frontend (port 3000)
-
 Open **http://localhost:3000** in your browser.
 
-To stop both servers (Windows): `.\kill_servers.ps1`
-
----
-
-## Manual Setup
-
-### Prerequisites
-
-- Python 3.11–3.14
-- Node.js 18+
-- npm
-
-### 1. Clone the repository
+### Manual Setup
 
 ```bash
-git clone https://github.com/Minifigures/genaihack.git
-cd genaihack
-```
-
-### 2. Backend setup
-
-```bash
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate        # macOS / Linux
-# .venv\Scripts\Activate.ps1    # Windows PowerShell
-
-# Install dependencies
+# Backend (Terminal 1)
 pip install -r requirements.txt
-
-# Create your environment file from the template
 cp .env.example .env
-# Edit .env with your API keys — demo mode works without them
-```
+uvicorn backend.main:app --reload --port 8000
 
-### 3. Frontend setup
-
-```bash
+# Frontend (Terminal 2)
 cd frontend
 npm install
-```
-
-### 4. Run the application
-
-Open two terminals from the repo root:
-
-**Terminal 1 — Backend:**
-```bash
-source .venv/bin/activate        # macOS / Linux
-# .venv\Scripts\Activate.ps1    # Windows
-uvicorn backend.main:app --reload --port 8000
-```
-
-**Terminal 2 — Frontend:**
-```bash
-cd genaihack
-cd frontend
 npm run dev
-# or
-npx create-next-app@latest frontend --typescript --tailwind --app --eslint --src-dir=false --import-alias="@/*"
 ```
 
-Open **http://localhost:3000** in your browser.
-
-### 5. Run tests
+### Run Tests
 
 ```bash
+# Backend
 pytest -v
+
+# Frontend E2E (requires servers running)
+cd frontend
+node node_modules/@playwright/test/cli.js test
 ```
-
-### 6. Docker (alternative)
-
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
----
 
 ## Demo Mode
 
-`DEMO_MODE=true` is set by default in `.env.example`. In demo mode:
+`DEMO_MODE=true` is set by default. No API keys required.
 
-- **No API keys required** — the full 14-agent pipeline runs on synthetic data
-- All three demo receipts return distinct, realistic results
+### Demo Receipts
 
-### Demo receipts
-
-Test receipts are in `data/demo_receipts/`. Upload them on the `/upload` page:
+Upload these from `data/demo_receipts/` on the `/upload` page:
 
 | File | Scenario | Expected Result |
 |------|----------|-----------------|
-| `clean_dental.pdf` | Routine checkup — all fees within ODA guide | Score: 0 / LOW — no flags |
-| `upcoded_dental.pdf` | Root planing upcoded from scaling, fees 40–60% above guide | Score: ~54 / HIGH — 3 flags |
-| `unbundled_dental.pdf` | Same composite billed twice on same tooth + 3× scaling units | Score: ~56 / HIGH — 6 flags |
+| `clean_dental.pdf` | Routine checkup, all fees within ODA guide | Score: 0 / LOW, no flags |
+| `upcoded_dental.pdf` | Root planing upcoded from scaling, fees 40-60% above guide | Score: ~54 / HIGH, 3 flags |
+| `unbundled_dental.pdf` | Same composite billed twice + 3x scaling units | Score: ~56 / HIGH, 6 flags |
 
-To use real AI services, fill in the relevant keys in `.env`:
+### Environment Variables
 
 | Variable | Service | Required for |
 |----------|---------|-------------|
@@ -184,8 +139,8 @@ To use real AI services, fill in the relevant keys in `.env`:
 | `MOORCHEH_API_KEY` | Moorcheh SDK | Memory/RAG retrieval |
 | `WATSONX_API_KEY` | IBM watsonx.ai | Compliance validation (optional) |
 | `DATABASE_URL` | PostgreSQL | Supabase connection string |
-
----
+| `SUPABASE_URL` | Supabase | Auth + database |
+| `SUPABASE_KEY` | Supabase | Anon key for client auth |
 
 ## API Endpoints
 
@@ -200,55 +155,80 @@ To use real AI services, fill in the relevant keys in `.env`:
 | `GET` | `/api/benefits/{student_id}` | Get student benefits report |
 | `GET` | `/api/providers` | List provider risk profiles |
 | `GET` | `/api/audit` | View audit log |
+| `GET` | `/api/metrics` | System metrics |
 | `GET` | `/api/health` | Health check |
 | `WS` | `/ws/trace` | Real-time agent trace stream |
 
----
+## Frontend Pages
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Dashboard | Benefits overview, alerts, quick actions, recent submissions |
+| `/upload` | Upload | Drag-drop receipt upload with real-time agent pipeline trace |
+| `/benefits` | Benefits | Coverage breakdown with progress bars and recommendations |
+| `/clinics` | Clinic Finder | OHIP/UHIP eligible providers near UofT with search/filter |
+| `/fee-guide` | Fee Guide | Searchable ODA procedure code lookup |
+| `/cases` | Fraud Cases | Approve/dismiss cases with confirmation dialogs |
+| `/logs` | Audit Log | Full audit trail of all system actions |
+| `/login` | Sign In | Supabase email/password auth |
+| `/signup` | Sign Up | Account creation |
 
 ## Project Structure
 
 ```
 genaihack/
-├── start.ps1          # One-command startup (Windows)
-├── start.sh           # One-command startup (macOS/Linux)
-├── kill_servers.ps1   # Stop both servers (Windows)
-├── requirements.txt   # Python dependencies (compatible with Python 3.11–3.14)
-├── frontend/          # Next.js 14 app (TypeScript + Tailwind)
-├── backend/           # FastAPI server
-│   ├── models/        # Pydantic data models
-│   ├── routes/        # API endpoints
-│   ├── config/        # Settings + logging
-│   └── websocket/     # WebSocket connection manager
-├── agents/            # LangGraph agent implementations
-│   ├── graph.py       # StateGraph with all nodes + edges
-│   ├── perception/    # OCR, normalizer, enricher, persister
-│   ├── reasoning/     # Fraud analyst, health extractor, scoring engine
-│   ├── planning/      # Benefits nav, action gen, optimization
-│   ├── action/        # Report drafter, compliance gate, audit logger
-│   ├── reflection/    # Stretch goal agents
-│   └── memory/        # Moorcheh SDK wrapper
+├── frontend/                # Next.js 14 (TypeScript + Tailwind + ShadCN)
+│   ├── app/                 # App Router pages
+│   │   ├── benefits/        # Benefits explorer
+│   │   ├── cases/           # Fraud cases + detail pages
+│   │   ├── clinics/         # Clinic finder
+│   │   ├── fee-guide/       # ODA fee guide explorer
+│   │   ├── login/           # Auth pages
+│   │   ├── signup/
+│   │   ├── upload/          # Receipt upload + analysis
+│   │   └── logs/            # Audit log
+│   ├── components/          # React components
+│   │   ├── ui/              # ShadCN + Magic UI components
+│   │   ├── Dashboard.tsx    # Student health dashboard
+│   │   ├── FraudCaseCard.tsx # Animated fraud gauge + comparison bars
+│   │   ├── AgentTracePanel.tsx # Pipeline visualization
+│   │   └── ...
+│   ├── e2e/                 # Playwright E2E tests (26 tests)
+│   └── lib/                 # API client + utilities
+├── backend/                 # FastAPI server
+│   ├── models/              # Pydantic data models
+│   ├── routes/              # API endpoints
+│   ├── store.py             # VigilStore (Supabase PostgreSQL)
+│   ├── auth.py              # Supabase JWT auth
+│   └── config/              # Settings + logging
+├── agents/                  # LangGraph agent implementations
+│   ├── graph.py             # StateGraph with all nodes + edges
+│   ├── perception/          # OCR, normalizer, enricher, persister
+│   ├── reasoning/           # Fraud analyst, health extractor, scoring engine
+│   │   └── fraud_policy.yaml # Single source of truth for all scoring config
+│   ├── planning/            # Benefits nav, action gen, optimization
+│   ├── action/              # Report drafter, compliance gate, audit logger
+│   └── reflection/          # Outcome evaluator, lesson extractor
 ├── data/
-│   ├── demo_receipts/ # Test PDFs: clean, upcoded, unbundled
-│   ├── student_profiles.json
-│   ├── provider_profiles.json
-│   └── utsu_plan.json
-├── database/          # Database schema and fee guide
-├── tests/             # pytest test suite
-└── docs/              # Architecture + API documentation
+│   ├── demo_receipts/       # Test PDFs: clean, upcoded, unbundled
+│   └── *.json               # Student/provider/plan profiles
+├── tests/                   # pytest test suite
+└── docs/                    # Architecture + API documentation
 ```
 
----
-
-## Security Notes
+## Security
 
 - **Never commit `.env` files** (blocked by .gitignore)
-- All secrets are loaded via `pydantic-settings` from environment variables
-- No hardcoded API keys, passwords, or tokens in source code
+- All secrets loaded via `pydantic-settings` from environment variables
+- Supabase JWT auth on all protected endpoints
 - Compliance gate validates fraud flags for bias and explainability
 - Audit logger tracks every pipeline decision for accountability
 
----
-
 ## Team
 
-Built for GenAI Genesis 2026 Hackathon, University of Toronto (March 13–15, 2026).
+Built for GenAI Genesis 2026 Hackathon, University of Toronto (March 14-15, 2026).
+
+- Marco Ayuste
+- Peter Lee
+- Kasem Okah (Perakasem)
+- Aahiro
