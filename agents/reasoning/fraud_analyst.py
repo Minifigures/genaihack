@@ -34,6 +34,10 @@ ODA_FEE_GUIDE: dict[str, dict] = {
     "25201": {"description": "Prefabricated crown, primary", "suggested_fee": 240.00},
     "41101": {"description": "Pulpotomy", "suggested_fee": 180.00},
     "33111": {"description": "Extraction, deciduous tooth", "suggested_fee": 95.00},
+    "71101": {"description": "Extraction, erupted tooth", "suggested_fee": 125.00},
+    "12101": {"description": "Polishing, coronal", "suggested_fee": 45.00},
+    "13401": {"description": "Fluoride treatment", "suggested_fee": 28.00},
+    "01202": {"description": "Bitewing radiographs, 2 films", "suggested_fee": 38.00},
 }
 ODA_FEE_GUIDE_VERSION = "2025"
 ODA_FEE_GUIDE_EFFECTIVE = "2025-01-01"
