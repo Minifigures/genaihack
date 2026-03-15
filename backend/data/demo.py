@@ -145,8 +145,18 @@ def get_demo_provider(provider_id: str) -> dict | None:
             result = provider.copy()
             result["last_claim_date"] = date.today().isoformat()
             result["updated_at"] = datetime.now().isoformat()
+            result["flagged_by_students"] = PROVIDER_STUDENT_FLAGS.get(provider_id, 0)
             return result
     return None
+
+
+# Cross-student provider intelligence: how many distinct students flagged each provider
+PROVIDER_STUDENT_FLAGS: dict[str, int] = {
+    "PRV-001": 5,
+    "PRV-002": 0,
+    "PRV-003": 14,
+    "PRV-004": 2,
+}
 
 
 def get_demo_providers() -> list[dict]:
@@ -156,6 +166,7 @@ def get_demo_providers() -> list[dict]:
         p = provider.copy()
         p["last_claim_date"] = date.today().isoformat()
         p["updated_at"] = datetime.now().isoformat()
+        p["flagged_by_students"] = PROVIDER_STUDENT_FLAGS.get(p["provider_id"], 0)
         result.append(p)
     return result
 
