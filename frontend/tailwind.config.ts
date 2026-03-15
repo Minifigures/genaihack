@@ -17,14 +17,15 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "Menlo", "monospace"],
       },
       fontSize: {
-        // 6-step type scale
-        "2xs": ["0.6875rem", { lineHeight: "1.4" }], // 11px — section labels
-        xs:   ["0.75rem",   { lineHeight: "1.5" }], // 12px — captions
-        sm:   ["0.8125rem", { lineHeight: "1.5" }], // 13px — UI labels
-        base: ["0.9375rem", { lineHeight: "1.6" }], // 15px — body
-        lg:   ["1.0625rem", { lineHeight: "1.5" }], // 17px — card titles
-        xl:   ["1.25rem",   { lineHeight: "1.4" }], // 20px — section heads
-        "2xl":["1.75rem",   { lineHeight: "1.2" }], // 28px — page titles (display serif)
+        "2xs": ["0.6875rem", { lineHeight: "1.4" }],
+        xs:   ["0.75rem",   { lineHeight: "1.5" }],
+        sm:   ["0.8125rem", { lineHeight: "1.5" }],
+        base: ["0.9375rem", { lineHeight: "1.6" }],
+        lg:   ["1.0625rem", { lineHeight: "1.5" }],
+        xl:   ["1.25rem",   { lineHeight: "1.4" }],
+        "2xl":["1.75rem",   { lineHeight: "1.2" }],
+        display: ["3.5rem", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+        heading: ["1.875rem", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "700" }],
       },
       colors: {
         vigil: {
@@ -120,24 +121,6 @@ const config: Config = {
           "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 20px -2px rgba(0, 0, 0, 0.08)",
         panel: "0 8px 30px rgba(0, 0, 0, 0.08)",
         "glow-green": "0 0 20px rgba(16, 185, 129, 0.15)",
-      },
-      fontSize: {
-        display: [
-          "3.5rem",
-          {
-            lineHeight: "1.1",
-            letterSpacing: "-0.02em",
-            fontWeight: "700",
-          },
-        ],
-        heading: [
-          "1.875rem",
-          {
-            lineHeight: "1.2",
-            letterSpacing: "-0.01em",
-            fontWeight: "700",
-          },
-        ],
       },
       keyframes: {
         "fade-in": {
