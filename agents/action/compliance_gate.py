@@ -2,6 +2,7 @@ import structlog
 from datetime import datetime
 from backend.models.state import VigilState
 from backend.config.settings import Settings
+from backend.store import store
 
 logger = structlog.get_logger()
 settings = Settings()
@@ -52,6 +53,25 @@ async def run_compliance_gate(state: VigilState) -> dict:
 
         if not approved:
             logger.warning("compliance_issues", issues=issues)
+
+        # Log audit entry for compliance check
+        claim_id = state.get("claim_id")
+        case_id = state.get("case_id")
+        student_id = state.get("student_id")
+        await store.save_audit_entry(
+            action="compliance_check",
+            agent="compliance_gate",
+            case_id=case_id,
+            claim_id=claim_id,
+            student_id=student_id,
+            tenant_id=state.get("tenant_id"),
+            session_id=state.get("session_id"),
+            details={
+                "approved": approved,
+                "issues": issues,
+                "issues_count": len(issues),
+            },
+        )
 
         duration = int((datetime.utcnow() - start).total_seconds() * 1000)
         logger.info(
