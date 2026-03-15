@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS fraud_cases (
     risk_level VARCHAR(20) NOT NULL,
     score_breakdown VARIANT,     -- JSON ScoreBreakdown
     flags VARIANT,               -- JSON array of FraudFlag
+    report_html TEXT,
     status VARCHAR(20) DEFAULT 'open',
     created_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
     updated_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()

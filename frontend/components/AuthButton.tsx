@@ -32,23 +32,21 @@ export function AuthButton() {
   };
 
   if (user) {
+    const initials = user.email?.slice(0, 2).toUpperCase() ?? "ST";
     return (
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-gray-700">{user.email}</span>
-        <button
-          onClick={handleSignOut}
-          className="text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md transition-colors"
-        >
-          Sign out
-        </button>
-      </div>
+      <Link href="/profile" className="flex items-center group">
+        {/* Square avatar — 4px radius per design system */}
+        <div className="w-7 h-7 rounded-sm bg-muted border border-border flex items-center justify-center font-mono text-[11px] font-semibold text-muted-foreground group-hover:border-primary group-hover:text-primary transition-colors">
+          {initials}
+        </div>
+      </Link>
     );
   }
 
   return (
     <Link
       href="/login"
-      className="text-sm font-medium text-white bg-vigil-600 hover:bg-vigil-700 px-4 py-1.5 rounded-md transition-colors"
+      className="inline-flex items-center text-sm font-medium text-primary-foreground bg-primary hover:opacity-90 px-3 py-1.5 rounded-md transition-opacity"
     >
       Sign in
     </Link>

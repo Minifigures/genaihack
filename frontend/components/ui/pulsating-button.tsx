@@ -36,7 +36,7 @@ export const PulsatingButton = React.forwardRef<
         }
         {...props}
       >
-        <div className="relative z-10">{children}</div>
+        <div className="relative z-10 flex items-center justify-center">{children}</div>
         <div className="absolute top-1/2 left-1/2 size-full -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-lg bg-inherit" />
       </button>
     )

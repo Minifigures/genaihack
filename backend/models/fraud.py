@@ -49,4 +49,5 @@ class FraudCase(BaseModel):
     provider_id: Optional[str] = None
     fraud_score: FraudScore
     flags: list[FraudFlag]
+    report_html: Optional[str] = None
     status: str = "open"         # open, approved, dismissed, resolved

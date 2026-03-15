@@ -90,7 +90,7 @@ export function AgentTracePanel({ traces, isRunning }: AgentTracePanelProps) {
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm">Agent Pipeline</CardTitle>
+          <CardTitle className="text-sm">How VIGIL analyzed this</CardTitle>
           {isRunning && (
             <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -138,7 +138,7 @@ export function AgentTracePanel({ traces, isRunning }: AgentTracePanelProps) {
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
               <Activity className="w-8 h-8 text-gray-300 mb-3" />
               <p className="text-sm text-muted-foreground">
-                Upload a receipt to see the agent pipeline in action
+                Submit a receipt to watch VIGIL analyze it in real time
               </p>
             </div>
           ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, DragEvent, ChangeEvent } from "react";
+import { FileText, CheckCircle2 } from "lucide-react";
 
 interface UploadZoneProps {
   onUpload: (file: File) => void;
@@ -61,8 +62,11 @@ export function UploadZone({ onUpload, isLoading }: UploadZoneProps) {
         </div>
       ) : (
         <>
-          <div className="text-4xl mb-4">
-            {fileName ? "\u2705" : "\uD83D\uDCC4"}
+          <div className="flex justify-center mb-4">
+            {fileName
+              ? <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+              : <FileText className="w-10 h-10 text-gray-400" />
+            }
           </div>
           <p className="text-lg font-medium text-gray-700">
             {fileName
