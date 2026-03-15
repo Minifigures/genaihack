@@ -144,3 +144,21 @@ export async function getMetrics(): Promise<Record<string, unknown>> {
   const response = await fetch(`${API_BASE}/api/metrics`, { headers });
   return response.json();
 }
+
+export async function approveCase(caseId: string): Promise<Record<string, unknown>> {
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/cases/${caseId}/approve`, {
+    method: "POST",
+    headers,
+  });
+  return response.json();
+}
+
+export async function dismissCase(caseId: string): Promise<Record<string, unknown>> {
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/cases/${caseId}/dismiss`, {
+    method: "POST",
+    headers,
+  });
+  return response.json();
+}
