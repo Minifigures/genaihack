@@ -14,6 +14,7 @@ import {
   Building2,
   ScrollText,
   Shield,
+  ShieldCheck,
   LucideIcon,
 } from "lucide-react";
 
@@ -24,6 +25,7 @@ const navItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/benefits", label: "Benefits", icon: Heart },
   { href: "/providers", label: "Providers", icon: Building2 },
   { href: "/logs", label: "Audit Log", icon: ScrollText },
+  { href: "/governance", label: "AI Governance", icon: ShieldCheck },
 ];
 
 export function Nav() {
