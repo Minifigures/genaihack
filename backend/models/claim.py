@@ -31,6 +31,7 @@ class NormalizedClaim(BaseModel):
     total: float
     ocr_confidence: float
     category_codes: dict[str, str]  # code -> category mapping
+    warnings: list[str] = []     # Validation warnings from normalizer
 
 
 class EnrichedClaim(NormalizedClaim):
