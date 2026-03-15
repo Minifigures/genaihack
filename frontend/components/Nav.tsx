@@ -12,7 +12,7 @@ import {
   Upload,
   ShieldAlert,
   Heart,
-  Building2,
+  MapPin,
   ScrollText,
   Shield,
 } from "lucide-react";
@@ -20,9 +20,9 @@ import {
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/upload", label: "Upload", icon: Upload },
-  { href: "/cases", label: "Cases", icon: ShieldAlert },
   { href: "/benefits", label: "Benefits", icon: Heart },
-  { href: "/providers", label: "Providers", icon: Building2 },
+  { href: "/clinics", label: "Clinics", icon: MapPin },
+  { href: "/cases", label: "Cases", icon: ShieldAlert },
   { href: "/logs", label: "Audit Log", icon: ScrollText },
 ];
 

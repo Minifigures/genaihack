@@ -61,7 +61,7 @@ export default function Home() {
           <BlurFade delay={0.1}>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-8">
               <ShieldCheck className="w-4 h-4" />
-              AI-Powered Fraud Detection
+              Built for Students, Powered by AI
             </div>
           </BlurFade>
           <BlurFade delay={0.2}>
@@ -73,8 +73,7 @@ export default function Home() {
           </BlurFade>
           <BlurFade delay={0.3}>
             <p className="text-xl md:text-2xl text-gray-400 font-light mb-10 max-w-2xl leading-relaxed">
-              Next-generation intelligent, real-time healthcare billing fraud
-              detection. Protect your enterprise with advanced AI verification.
+              Protect your student health benefits from billing fraud. Upload receipts, discover unused coverage, and find trusted clinics near campus.
             </p>
           </BlurFade>
           <BlurFade delay={0.4}>
@@ -104,9 +103,9 @@ export default function Home() {
       <section className="w-full max-w-6xl px-4 -mt-12 z-20 relative">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Claims Analyzed", value: 14200, suffix: "+", icon: FileSearch },
-            { label: "Fraud Detected", value: 3.4, prefix: "$", suffix: "B", icon: ShieldCheck, decimals: 1 },
-            { label: "AI Agents", value: 14, suffix: "", icon: Users },
+            { label: "Students Protected", value: 2400, suffix: "+", icon: Users },
+            { label: "Savings Found", value: 847, prefix: "$", suffix: "K", icon: ShieldCheck },
+            { label: "Clinics Listed", value: 120, suffix: "+", icon: FileSearch },
             { label: "Accuracy Rate", value: 98.7, suffix: "%", icon: TrendingUp, decimals: 1 },
           ].map((stat, i) => (
             <BlurFade key={stat.label} delay={0.5 + i * 0.1}>
