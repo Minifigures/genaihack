@@ -4,6 +4,7 @@ from pathlib import Path
 from datetime import datetime
 from backend.models.state import VigilState
 from backend.models.fraud import FraudFlag, FraudScore, ScoreBreakdown, RiskLevel
+from backend.store import store
 
 logger = structlog.get_logger()
 POLICY_PATH = Path(__file__).parent / "fraud_policy.yaml"
@@ -101,6 +102,24 @@ async def run_scoring_engine(state: VigilState) -> dict:
                 provider_history_flags = 1
 
         score = compute_fraud_score(flags, provider_history_flags)
+
+        # Log audit entry for fraud analysis completion
+        claim_id = state.get("claim_id")
+        student_id = state.get("student_id")
+        await store.save_audit_entry(
+            action="fraud_analysis_complete",
+            agent="scoring_engine",
+            claim_id=claim_id,
+            student_id=student_id,
+            tenant_id=state.get("tenant_id"),
+            session_id=state.get("session_id"),
+            details={
+                "fraud_score": score.score,
+                "risk_level": score.level.value,
+                "flags_count": len(flags),
+                "breakdown": score.breakdown.model_dump(),
+            },
+        )
 
         duration = int((datetime.utcnow() - start).total_seconds() * 1000)
         logger.info(

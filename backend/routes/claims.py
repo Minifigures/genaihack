@@ -5,14 +5,11 @@ import structlog
 
 from backend.websocket.trace import manager
 from backend.config.settings import Settings
+from backend.store import store
 
 logger = structlog.get_logger()
 settings = Settings()
 router = APIRouter()
-
-# In-memory store for demo
-_claims_store: list[dict] = []
-_pipeline_results: dict[str, dict] = {}
 
 
 @router.post("/claims/upload")
@@ -23,8 +20,22 @@ async def upload_claim(
     logger.info("claim_upload", filename=file.filename, student_id=student_id)
 
     image_bytes = await file.read()
+    file_size = len(image_bytes)
 
     await manager.send_agent_event("pipeline", "start", "Starting VIGIL analysis pipeline")
+
+    # Log upload event
+    temp_claim_id = str(uuid.uuid4())
+    await store.save_audit_entry(
+        action="claim_uploaded",
+        agent="api",
+        student_id=student_id,
+        details={
+            "filename": file.filename,
+            "file_size": file_size,
+            "temp_claim_id": temp_claim_id,
+        },
+    )
 
     try:
         from agents.graph import build_graph
@@ -75,9 +86,6 @@ async def upload_claim(
             "errors": final_state.get("errors", []),
         }
 
-        _claims_store.append(result)
-        _pipeline_results[claim_id] = result
-
         await manager.send_agent_event("pipeline", "complete", "Analysis complete")
         return result
 
@@ -89,12 +97,13 @@ async def upload_claim(
 
 @router.get("/claims")
 async def list_claims():
-    return {"claims": _claims_store, "total": len(_claims_store)}
+    claims = await store.get_claims()
+    return {"claims": claims, "total": len(claims)}
 
 
 @router.get("/claims/{claim_id}")
 async def get_claim(claim_id: str):
-    result = _pipeline_results.get(claim_id)
-    if result is None:
+    claim = await store.get_claim(claim_id)
+    if claim is None:
         return {"error": "Claim not found"}
-    return result
+    return claim

@@ -53,7 +53,7 @@ Receipt Image -> OCR Agent -> Normalizer -> History Enricher -> Persister
 - **Orchestration**: LangGraph (StateGraph with parallel branching)
 - **AI**: Gemini 2.0 Flash (OCR + reasoning), IBM watsonx.ai (compliance, optional)
 - **Memory**: Moorcheh SDK (episodic, semantic, provider namespaces)
-- **Database**: Snowflake (structured data)
+- **Database**: Supabase PostgreSQL (operational database)
 - **Config**: pydantic-settings, YAML policy files (fraud_policy.yaml, action_library.yaml)
 
 ## Quick Start (One Command)
@@ -180,7 +180,7 @@ To use real AI services, fill in the relevant keys in `.env`:
 | `GOOGLE_API_KEY` | Gemini 2.0 Flash | Real OCR + fraud reasoning |
 | `MOORCHEH_API_KEY` | Moorcheh SDK | Memory/RAG retrieval |
 | `WATSONX_API_KEY` | IBM watsonx.ai | Compliance validation (optional) |
-| `SNOWFLAKE_*` | Snowflake | Persistent data storage (optional) |
+| `DATABASE_URL` | PostgreSQL | Supabase connection string |
 
 ---
 
@@ -229,7 +229,7 @@ genaihack/
 │   ├── student_profiles.json
 │   ├── provider_profiles.json
 │   └── utsu_plan.json
-├── database/          # Snowflake schema, seed data, fee guide
+├── database/          # Database schema and fee guide
 ├── tests/             # pytest test suite
 └── docs/              # Architecture + API documentation
 ```
