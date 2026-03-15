@@ -220,21 +220,15 @@ def _demo_clean() -> OCRResult:
         provider_address="456 Bloor St W, Toronto, ON M5S 1X8",
         claim_date="2025-02-10",
         procedures=[
-            Procedure(code="11101", description="Exam, recall", fee_charged=82.00),
-            Procedure(
-                code="02202",
-                description="Radiographs, periapical, 2 films",
-                fee_charged=44.00,
-            ),
-            Procedure(
-                code="11111", description="Scaling, first unit", fee_charged=57.00
-            ),
+            Procedure(code="11101", description="Exam, recall", fee_charged=78.00),
+            Procedure(code="02202", description="Radiographs, periapical, 2 films", fee_charged=42.00),
+            Procedure(code="11111", description="Scaling, first unit", fee_charged=55.00),
         ],
-        subtotal=183.00,
+        subtotal=175.00,
         tax=None,
-        total=183.00,
+        total=175.00,
         ocr_confidence=0.97,
-        raw_text="Maple Dental Centre\n456 Bloor St W\nDate: Feb 10, 2025\n11101 Exam recall $82.00\n02202 Periapical 2 films $44.00\n11111 Scaling first unit $57.00\nTotal: $183.00",
+        raw_text="Maple Dental Centre\n456 Bloor St W\nDate: Feb 10, 2025\n11101 Exam recall $78.00\n02202 Periapical 2 films $42.00\n11111 Scaling first unit $55.00\nTotal: $175.00",
     )
 
 
@@ -245,27 +239,16 @@ def _demo_upcoded() -> OCRResult:
         provider_address="123 University Ave, Toronto, ON M5H 1T1",
         claim_date="2025-01-15",
         procedures=[
-            Procedure(code="11101", description="Exam, recall", fee_charged=82.00),
-            Procedure(
-                code="02202",
-                description="Radiographs, periapical, 2 films",
-                fee_charged=48.00,
-            ),
-            Procedure(
-                code="43421",
-                description="Root planing, per quadrant",
-                fee_charged=285.00,
-                tooth_number="14",
-            ),
-            Procedure(
-                code="11117", description="Scaling, additional unit", fee_charged=75.00
-            ),
+            Procedure(code="11101", description="Exam, recall", fee_charged=150.00),
+            Procedure(code="02202", description="Radiographs, periapical, 2 films", fee_charged=85.00),
+            Procedure(code="43421", description="Root planing, per quadrant", fee_charged=350.00, tooth_number="14"),
+            Procedure(code="11117", description="Scaling, additional unit", fee_charged=95.00),
         ],
-        subtotal=490.00,
+        subtotal=680.00,
         tax=None,
-        total=490.00,
+        total=680.00,
         ocr_confidence=0.95,
-        raw_text="Dr. Smith Dental Clinic\n123 University Ave\nDate: Jan 15, 2025\n11101 Exam recall $82.00\n02202 Periapical 2 films $48.00\n43421 Root planing Q1 $285.00\n11117 Scaling add unit $75.00\nTotal: $490.00",
+        raw_text="Dr. Smith Dental Clinic\n123 University Ave\nDate: Jan 15, 2025\n11101 Exam recall $150.00\n02202 Periapical 2 films $85.00\n43421 Root planing Q1 $350.00\n11117 Scaling add unit $95.00\nTotal: $680.00",
     )
 
 
