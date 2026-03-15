@@ -27,11 +27,15 @@ async def run_audit_logger(state: VigilState) -> dict:
             "timestamp": datetime.utcnow().isoformat(),
         }
 
-        if settings.demo_mode:
-            logger.info("audit_logged", **audit_entry)
-        else:
-            # TODO: Write to Snowflake audit_log table
+        # Always write to the in-memory audit log (visible on /audit page)
+        from backend.routes.audit import add_audit_entry
+        add_audit_entry(audit_entry)
+
+        if not settings.demo_mode:
+            # TODO: Also write to Snowflake audit_log table in production
             pass
+
+        logger.info("audit_logged", **audit_entry)
 
         duration = int((datetime.utcnow() - start).total_seconds() * 1000)
         logger.info("agent_complete", agent="audit_logger", duration_ms=duration, case_id=case_id)
