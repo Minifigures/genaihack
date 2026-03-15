@@ -5,6 +5,11 @@ import Link from "next/link";
 import { KPICard } from "@/components/KPICard";
 import { getClaims, getProviders } from "@/lib/api";
 import type { PipelineResult, ProviderStats } from "@/lib/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Upload, ArrowRight } from "lucide-react";
 
 export default function DashboardPage() {
   const [claims, setClaims] = useState<PipelineResult[]>([]);
@@ -29,10 +34,15 @@ export default function DashboardPage() {
     load();
   }, []);
 
-  const totalFlags = claims.reduce((sum, c) => sum + (c.fraud_flags?.length || 0), 0);
-  const avgScore = claims.length > 0
-    ? claims.reduce((sum, c) => sum + (c.fraud_score?.score || 0), 0) / claims.length
-    : 0;
+  const totalFlags = claims.reduce(
+    (sum, c) => sum + (c.fraud_flags?.length || 0),
+    0
+  );
+  const avgScore =
+    claims.length > 0
+      ? claims.reduce((sum, c) => sum + (c.fraud_score?.score || 0), 0) /
+        claims.length
+      : 0;
   const highRiskProviders = providers.filter(
     (p) => p.risk_tier === "confirmed_fraud" || p.risk_tier === "flagged_multiple"
   );
@@ -42,20 +52,22 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">VIGIL Dashboard</h1>
-          <p className="text-gray-500 mt-1">Healthcare billing fraud detection system</p>
+          <p className="text-muted-foreground mt-1">
+            Healthcare billing fraud detection system
+          </p>
         </div>
-        <Link
-          href="/upload"
-          className="bg-vigil-600 text-white px-6 py-2.5 rounded-lg hover:bg-vigil-700 transition-colors font-medium"
-        >
-          Upload Receipt
+        <Link href="/upload">
+          <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+            <Upload className="w-4 h-4" />
+            Upload Receipt
+          </Button>
         </Link>
       </div>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
+            <Skeleton key={i} className="h-32 rounded-lg" />
           ))}
         </div>
       ) : (
@@ -87,56 +99,60 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Recent claims */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800">Recent Claims</h2>
-            </div>
-            {claims.length === 0 ? (
-              <div className="p-8 text-center">
-                <p className="text-gray-500 mb-4">No claims analyzed yet</p>
-                <Link
-                  href="/upload"
-                  className="text-vigil-600 hover:text-vigil-700 font-medium"
-                >
-                  Upload your first receipt
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Recent Claims</CardTitle>
+              {claims.length > 0 && (
+                <Link href="/cases">
+                  <Button variant="ghost" size="sm" className="gap-1 text-emerald-700">
+                    View all <ArrowRight className="w-3 h-3" />
+                  </Button>
                 </Link>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-100">
-                {claims.slice(0, 5).map((claim) => (
-                  <div key={claim.claim_id} className="px-6 py-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        Claim {claim.claim_id.slice(0, 8)}...
-                      </p>
-                      <p className="text-xs text-gray-500">{claim.timestamp}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {claim.fraud_score && (
-                        <span
-                          className={`text-sm font-medium px-2 py-1 rounded ${
-                            claim.fraud_score.level === "critical"
-                              ? "bg-red-100 text-red-700"
-                              : claim.fraud_score.level === "high"
-                              ? "bg-orange-100 text-orange-700"
-                              : claim.fraud_score.level === "elevated"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-green-100 text-green-700"
-                          }`}
-                        >
-                          {claim.fraud_score.score}/100
+              )}
+            </CardHeader>
+            <CardContent>
+              {claims.length === 0 ? (
+                <div className="p-8 text-center">
+                  <p className="text-muted-foreground mb-4">No claims analyzed yet</p>
+                  <Link href="/upload">
+                    <Button variant="outline" className="gap-2">
+                      <Upload className="w-4 h-4" />
+                      Upload your first receipt
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-100">
+                  {claims.slice(0, 5).map((claim) => (
+                    <div key={claim.claim_id} className="py-4 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">
+                          Claim {claim.claim_id.slice(0, 8)}...
+                        </p>
+                        <p className="text-xs text-muted-foreground">{claim.timestamp}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {claim.fraud_score && (
+                          <Badge
+                            variant={
+                              claim.fraud_score.level === "critical" || claim.fraud_score.level === "high"
+                                ? "destructive"
+                                : "secondary"
+                            }
+                          >
+                            {claim.fraud_score.score}/100
+                          </Badge>
+                        )}
+                        <span className="text-xs text-muted-foreground">
+                          {claim.fraud_flags?.length || 0} flags
                         </span>
-                      )}
-                      <span className="text-xs text-gray-400">
-                        {claim.fraud_flags?.length || 0} flags
-                      </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </>
       )}
     </div>

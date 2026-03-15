@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import DashboardPage from "@/components/Dashboard";
+import { FlickeringGrid } from "@/components/ui/flickering-grid";
+import { HyperText } from "@/components/ui/hyper-text";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { NumberTicker } from "@/components/ui/number-ticker";
+import { BlurFade } from "@/components/ui/blur-fade";
+import { ShieldCheck, TrendingUp, FileSearch, Users, DollarSign, AlertTriangle, FileText, Building2 } from "lucide-react";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -17,11 +22,11 @@ export default function Home() {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -29,7 +34,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-12 h-12 border-4 border-vigil-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -39,104 +44,125 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center -mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
       {/* Hero Section */}
-      <section className="w-full relative bg-gray-900 text-white rounded-3xl overflow-hidden shadow-2xl mb-16">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero.png"
-            alt="SecureFlow AI Dashboard Preview"
-            fill
-            className="object-cover object-center opacity-40 mix-blend-luminosity"
-            priority
+      <section className="w-full relative overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-gray-950">
+          <FlickeringGrid
+            className="absolute inset-0 z-0"
+            squareSize={4}
+            gridGap={6}
+            color="#22c55e"
+            maxOpacity={0.15}
+            flickerChance={0.3}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/90 to-transparent z-10"></div>
         </div>
-        <div className="relative z-20 px-8 lg:px-16 py-24 md:py-32 w-full max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-            SecureFlow AI
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 font-light mb-10 max-w-2xl leading-relaxed">
-            The next generation of intelligent, real-time healthcare billing fraud detection. Protect your enterprise with advanced AI verification.
-          </p>
-          <div className="flex gap-4">
-            <Link
-              href="/signup"
-              className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30"
-            >
-              Get Started
-            </Link>
-            <Link
-              href="/login"
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
-            >
-              Log In
-            </Link>
-          </div>
+        <div className="relative z-10 px-8 lg:px-16 py-28 md:py-40 max-w-5xl mx-auto">
+          <BlurFade delay={0.1}>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-8">
+              <ShieldCheck className="w-4 h-4" />
+              AI-Powered Fraud Detection
+            </div>
+          </BlurFade>
+          <BlurFade delay={0.2}>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-white">
+              <HyperText className="text-5xl md:text-7xl font-extrabold text-white">
+                SecureFlow AI
+              </HyperText>
+            </h1>
+          </BlurFade>
+          <BlurFade delay={0.3}>
+            <p className="text-xl md:text-2xl text-gray-400 font-light mb-10 max-w-2xl leading-relaxed">
+              Next-generation intelligent, real-time healthcare billing fraud
+              detection. Protect your enterprise with advanced AI verification.
+            </p>
+          </BlurFade>
+          <BlurFade delay={0.4}>
+            <div className="flex gap-4 flex-wrap">
+              <Link href="/signup">
+                <ShimmerButton
+                  className="px-8 py-4 text-lg font-semibold"
+                  shimmerColor="#22c55e"
+                  shimmerSize="0.1em"
+                  background="rgba(22, 163, 74, 0.9)"
+                >
+                  Get Started
+                </ShimmerButton>
+              </Link>
+              <Link
+                href="/login"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg transition-all inline-flex items-center"
+              >
+                Log In
+              </Link>
+            </div>
+          </BlurFade>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="w-full max-w-6xl px-4 -mt-12 z-20 relative">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Claims Analyzed", value: 14200, suffix: "+", icon: FileSearch },
+            { label: "Fraud Detected", value: 3.4, prefix: "$", suffix: "B", icon: ShieldCheck, decimals: 1 },
+            { label: "AI Agents", value: 14, suffix: "", icon: Users },
+            { label: "Accuracy Rate", value: 98.7, suffix: "%", icon: TrendingUp, decimals: 1 },
+          ].map((stat, i) => (
+            <BlurFade key={stat.label} delay={0.5 + i * 0.1}>
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg shadow-gray-200/50 text-center">
+                <stat.icon className="w-6 h-6 text-emerald-600 mx-auto mb-2" />
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {stat.prefix || ""}
+                  <NumberTicker value={stat.value} decimalPlaces={stat.decimals || 0} />
+                  {stat.suffix}
+                </div>
+                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+              </div>
+            </BlurFade>
+          ))}
         </div>
       </section>
 
       {/* Info Section */}
-      <section className="w-full max-w-5xl mb-16 px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">The Cost of Healthcare Fraud in Canada</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Healthcare billing fraud is a multi-billion dollar problem that affects premiums, resources, and trust in the system.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">$600M - $3.4 Billion Annual Loss</h3>
-            <p className="text-gray-600 mb-4 leading-relaxed">
-              For private insurers in Canada, fraudulent claims are estimated to range from 2% to 10% of the $34 billion paid out in health claims annually.
+      <section className="w-full max-w-5xl mb-16 px-4 mt-20">
+        <BlurFade delay={0.6}>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              The Cost of Healthcare Fraud in Canada
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Healthcare billing fraud is a multi-billion dollar problem that
+              affects premiums, resources, and trust in the system.
             </p>
-            <p className="text-xs text-gray-400">Source: Canadian Broadcasting Corporation (CBC)</p>
           </div>
+        </BlurFade>
 
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Increased Premiums</h3>
-            <p className="text-gray-600 mb-4 leading-relaxed">
-              Insurance scams, including those tied to medical and auto claims, add over $1 billion to Canadian insurance premiums annually.
-            </p>
-            <p className="text-xs text-gray-400">Source: RestoraCare Health</p>
-          </div>
-
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Phantom & Upcoding</h3>
-            <p className="text-gray-600 mb-4 leading-relaxed">
-              Common frauds include billing for services never delivered and intentionally assigning higher billing codes to inflate reimbursement amounts.
-            </p>
-            <p className="text-xs text-gray-400">Source: GetDefended.ca</p>
-          </div>
-
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">Collusion & Clinics</h3>
-            <p className="text-gray-600 mb-4 leading-relaxed">
-              Major insurers have delisted thousands of providers due to false claims, often involving collusion between clinics and employees.
-            </p>
-            <p className="text-xs text-gray-400">Source: Canadian Broadcasting Corporation (CBC)</p>
-          </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          {[
+            { icon: DollarSign, color: "red", title: "$600M - $3.4 Billion Annual Loss", desc: "For private insurers in Canada, fraudulent claims are estimated to range from 2% to 10% of the $34 billion paid out in health claims annually.", source: "Canadian Broadcasting Corporation (CBC)" },
+            { icon: AlertTriangle, color: "orange", title: "Increased Premiums", desc: "Insurance scams, including those tied to medical and auto claims, add over $1 billion to Canadian insurance premiums annually.", source: "RestoraCare Health" },
+            { icon: FileText, color: "blue", title: "Phantom & Upcoding", desc: "Common frauds include billing for services never delivered and intentionally assigning higher billing codes to inflate reimbursement amounts.", source: "GetDefended.ca" },
+            { icon: Building2, color: "purple", title: "Collusion & Clinics", desc: "Major insurers have delisted thousands of providers due to false claims, often involving collusion between clinics and employees.", source: "Canadian Broadcasting Corporation (CBC)" },
+          ].map((card, i) => (
+            <BlurFade key={card.title} delay={0.7 + i * 0.1}>
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all group">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
+                  card.color === "red" ? "bg-red-100 text-red-600" :
+                  card.color === "orange" ? "bg-orange-100 text-orange-600" :
+                  card.color === "blue" ? "bg-blue-100 text-blue-600" :
+                  "bg-purple-100 text-purple-600"
+                }`}>
+                  <card.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-700 transition-colors">
+                  {card.title}
+                </h3>
+                <p className="text-gray-600 mb-4 leading-relaxed">{card.desc}</p>
+                <p className="text-xs text-gray-400">Source: {card.source}</p>
+              </div>
+            </BlurFade>
+          ))}
         </div>
       </section>
     </div>

@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ShieldAlert, AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -17,74 +21,63 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
     setMessage(null);
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    
+
+    const { error } = await supabase.auth.signUp({ email, password });
+
     if (error) {
       setError(error.message);
     } else {
-      setMessage('Account created! Depending on your settings, you may need to check your email to confirm, or you can go login directly.');
+      setMessage("Account created! Depending on your settings, you may need to check your email to confirm, or you can go login directly.");
     }
     setLoading(false);
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm text-center">
-        <h2 className="mt-10 text-2xl font-bold text-gray-900">Create a new account</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Or <Link href="/login" className="text-vigil-600 hover:text-vigil-500 font-medium">sign in to your existing account</Link>
-        </p>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onSubmit={handleSignUp}>
-          <div>
-            <label className="block text-sm font-medium leading-6 text-gray-900">
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                type="email"
-                required
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vigil-600 sm:text-sm sm:leading-6 px-3"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+    <div className="flex min-h-[70vh] flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center mb-6">
+          <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center">
+            <ShieldAlert className="w-6 h-6 text-white" />
           </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Password
-              </label>
-            </div>
-            <div className="mt-2">
-              <input
-                type="password"
-                required
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-vigil-600 sm:text-sm sm:leading-6 px-3"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          {message && <div className="text-green-500 text-sm">{message}</div>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-vigil-600"
-          >
-            Sign up
-          </button>
-        </form>
+        </div>
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Create a new account</CardTitle>
+            <CardDescription>
+              Or{" "}
+              <Link href="/login" className="text-emerald-600 hover:text-emerald-500 font-medium">
+                sign in to your existing account
+              </Link>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSignUp}>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900">Email address</label>
+                <Input type="email" required placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-900">Password</label>
+                <Input type="password" required placeholder="Create a password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              </div>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              {message && (
+                <Alert>
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  <AlertDescription>{message}</AlertDescription>
+                </Alert>
+              )}
+              <Button type="submit" disabled={loading} variant="outline" className="w-full">
+                {loading ? "Creating account..." : "Sign up"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
