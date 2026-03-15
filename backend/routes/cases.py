@@ -7,6 +7,14 @@ router = APIRouter()
 # In-memory store for demo
 _cases_store: list[dict] = []
 
+# Fraud score threshold for auto-creating a case (matches fraud_policy.yaml "high")
+_HIGH_FRAUD_THRESHOLD = 51
+
+
+def add_case(case: dict) -> None:
+    """Called by the claims pipeline when a HIGH/CRITICAL risk claim is detected."""
+    _cases_store.append(case)
+
 
 @router.get("/cases")
 async def list_cases():
