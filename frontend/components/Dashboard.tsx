@@ -127,7 +127,7 @@ export default function DashboardPage() {
                     <div key={claim.claim_id} className="py-4 flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-gray-800">
-                          Claim {claim.claim_id.slice(0, 8)}...
+                          Claim <span className="font-mono">{claim.claim_id.slice(0, 8).toUpperCase()}</span>
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {claim.timestamp ? new Date(claim.timestamp).toLocaleDateString() : "--"}

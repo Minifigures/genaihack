@@ -83,7 +83,7 @@ export default function UploadPage() {
             <Card>
               <CardHeader><CardTitle>Full Report</CardTitle></CardHeader>
               <CardContent>
-                <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: result.report_html }} />
+                <div className="prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: result.report_html }} />
               </CardContent>
             </Card>
           )}
