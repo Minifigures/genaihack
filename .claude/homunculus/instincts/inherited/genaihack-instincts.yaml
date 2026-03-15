@@ -1,0 +1,529 @@
+# Instincts generated from https://github.com/Minifigures/genaihack
+# Generated: 2026-03-15T03:11:10.043Z
+# Version: 2.0
+
+---
+id: genaihack-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Commit Length
+
+## Action
+
+Keep commit messages concise (under 50 characters)
+
+## Evidence
+
+- Average commit message length: 48 chars
+- Based on 9 commits
+
+---
+id: genaihack-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: genaihack-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: genaihack-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: genaihack-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: genaihack-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~17x per month
+- Files: frontend/app/benefits/*, frontend/app/cases/[id]/*, frontend/app/cases/*
+
+---
+id: genaihack-workflow-requirements-compatibility-fix
+trigger: "when doing requirements compatibility fix"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Requirements Compatibility Fix
+
+## Action
+
+Follow the requirements-compatibility-fix workflow:
+1. Identify problematic package versions
+2. Unpin strict version requirements
+3. Create alternative requirements files
+4. Test compatibility across Python versions
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: requirements.txt, requirements_compat.txt, requirements_no_ibm.txt
+
+---
+id: genaihack-workflow-demo-data-enhancement
+trigger: "when doing demo data enhancement"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Demo Data Enhancement
+
+## Action
+
+Follow the demo-data-enhancement workflow:
+1. Create demo data files
+2. Update OCR agent with new scenarios
+3. Add corresponding test files
+4. Update documentation with examples
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: agents/perception/ocr_agent.py, data/demo_receipts/*.pdf, data/*.json
+
+---
+id: genaihack-workflow-startup-script-creation
+trigger: "when doing startup script creation"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Startup Script Creation
+
+## Action
+
+Follow the startup-script-creation workflow:
+1. Create PowerShell scripts for Windows
+2. Create bash scripts for Unix/Linux
+3. Add kill/cleanup scripts
+4. Update README with usage instructions
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: start.ps1, start.sh, kill_servers.ps1
+
+---
+id: genaihack-workflow-agent-state-model-fix
+trigger: "when doing agent state model fix"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Agent State Model Fix
+
+## Action
+
+Follow the agent-state-model-fix workflow:
+1. Update state models with proper reducers
+2. Fix agent return values to return deltas not accumulations
+3. Update pipeline state capture
+4. Test agent communication
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: backend/models/state.py, agents/**/*.py, backend/routes/claims.py
+
+---
+id: genaihack-snake-case-files
+trigger: "When creating new Python files"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Snake Case Files
+
+## Action
+
+Use snake_case naming convention for file names
+
+## Evidence
+
+- Pattern in files like ocr_agent.py
+- Consistent across agents/ directory structure
+
+---
+id: genaihack-pascal-case-classes
+trigger: "When defining new classes"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Pascal Case Classes
+
+## Action
+
+Use PascalCase naming convention for class names
+
+## Evidence
+
+- Consistent pattern observed in codeStyle analysis
+- Standard Python convention followed
+
+---
+id: genaihack-camel-case-functions
+trigger: "When defining new functions"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Camel Case Functions
+
+## Action
+
+Use camelCase naming convention for function names
+
+## Evidence
+
+- Identified in namingConventions analysis
+- Mixed with some snake_case patterns
+
+---
+id: genaihack-alias-imports
+trigger: "When importing modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Alias Imports
+
+## Action
+
+Use import aliases for better readability
+
+## Evidence
+
+- importStyle marked as 'alias'
+- Common pattern in Python projects
+
+---
+id: genaihack-try-catch-errors
+trigger: "When handling potential errors"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Try Catch Errors
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- errorHandling.style identified as 'try-catch'
+- No custom error classes detected
+
+---
+id: genaihack-separate-tests
+trigger: "When writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Separate Tests
+
+## Action
+
+Place tests in separate tests/ directory
+
+## Evidence
+
+- testLocation marked as 'separate'
+- tests folder in commonFolders
+
+---
+id: genaihack-commit-prefix
+trigger: "When making commits"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Commit Prefix
+
+## Action
+
+Use prefixes like 'fix:', 'feat:', 'refactor:' for commit messages
+
+## Evidence
+
+- Seen in commit 'refactor: snowflake to supabase postgres'
+- Seen in commit 'feat: implement full VIGIL multi-agent pipeline'
+- Seen in commit 'fix: distinct fraud results per receipt'
+
+---
+id: genaihack-commit-length
+trigger: "When writing commit messages"
+confidence: 0.75
+domain: git
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Commit Length
+
+## Action
+
+Keep commit messages around 48 characters average length
+
+## Evidence
+
+- averageLength calculated as 48
+- Multiple examples follow this pattern
+
+---
+id: genaihack-requirements-compatibility
+trigger: "When encountering Python package version conflicts"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Requirements Compatibility
+
+## Action
+
+Create alternative requirements files and unpin strict versions
+
+## Evidence
+
+- requirements-compatibility-fix workflow frequency 2
+- Files requirements_compat.txt, requirements_no_ibm.txt exist
+
+---
+id: genaihack-demo-data-update
+trigger: "When adding new test scenarios"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Demo Data Update
+
+## Action
+
+Update OCR agent and create corresponding demo receipt files
+
+## Evidence
+
+- demo-data-enhancement workflow identified
+- Files in data/demo_receipts/*.pdf pattern
+
+---
+id: genaihack-cross-platform-scripts
+trigger: "When improving developer experience"
+confidence: 0.75
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Cross Platform Scripts
+
+## Action
+
+Create both PowerShell (.ps1) and bash (.sh) startup scripts
+
+## Evidence
+
+- startup-script-creation workflow
+- Files start.ps1, start.sh, kill_servers.ps1 exist
+
+---
+id: genaihack-agent-state-sync
+trigger: "When agents have state synchronization issues"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Agent State Sync
+
+## Action
+
+Update state models with proper reducers and fix agent return values to return deltas
+
+## Evidence
+
+- agent-state-model-fix workflow frequency 2
+- Files backend/models/state.py, agents/**/*.py involved
+
+---
+id: genaihack-full-pipeline-commits
+trigger: "When implementing major features"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Full Pipeline Commits
+
+## Action
+
+Follow sequence: implement feature → wire integrations → test end-to-end
+
+## Evidence
+
+- Commit sequence in feature-development
+- Seen in 'feat: implement full VIGIL multi-agent pipeline' → 'fix: wire missing API integrations' → 'fix: get full VIGIL pipeline working end-to-end'
+
+---
+id: genaihack-hybrid-module-org
+trigger: "When organizing code modules"
+confidence: 0.9
+domain: architecture
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Hybrid Module Org
+
+## Action
+
+Use hybrid organization with separate agents/, frontend/, backend/, data/ directories
+
+## Evidence
+
+- moduleOrganization marked as 'hybrid'
+- commonFolders include agents, frontend, backend, data, tests, database
+
+---
+id: genaihack-docker-config
+trigger: "When setting up project deployment"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Docker Config
+
+## Action
+
+Use docker-compose.yml with separate Dockerfiles for frontend and backend
+
+## Evidence
+
+- docker-compose.yml in configFiles
+- Dockerfile.backend, Dockerfile.frontend in workflow files
+
