@@ -89,30 +89,27 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",           // 4px — badges & tags
       },
       keyframes: {
-        "shimmer-slide": {
-          to: { transform: "translate(calc(100cqw - 100%), 0)" },
-        },
+        "shimmer-slide": { to: { transform: "translate(calc(100cqw - 100%), 0)" } },
         "spin-around": {
-          "0%":       { transform: "translateZ(0) rotate(0)" },
+          "0%": { transform: "translateZ(0) rotate(0)" },
           "15%, 35%": { transform: "translateZ(0) rotate(90deg)" },
           "65%, 85%": { transform: "translateZ(0) rotate(270deg)" },
-          "100%":     { transform: "translateZ(0) rotate(360deg)" },
+          "100%": { transform: "translateZ(0) rotate(360deg)" },
         },
-        shine: {
-          "0%":  { "background-position": "0% 0%" },
-          "50%": { "background-position": "100% 100%" },
-          to:    { "background-position": "0% 0%" },
-        },
-        "list-entry": {
-          "0%":   { opacity: "0", transform: "translateY(4px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
+        shine: { "0%": { "background-position": "0% 0%" }, "50%": { "background-position": "100% 100%" }, to: { "background-position": "0% 0%" } },
+        "list-entry": { "0%": { opacity: "0", transform: "translateY(4px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        "fade-in": { "0%": { opacity: "0", transform: "translateY(8px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        "slide-up": { "0%": { opacity: "0", transform: "translateY(16px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        shimmer: { "0%": { backgroundPosition: "-200% 0" }, "100%": { backgroundPosition: "200% 0" } },
       },
       animation: {
         "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
-        "spin-around":   "spin-around calc(var(--speed) * 2) infinite linear",
-        shine:           "shine var(--duration) infinite linear",
-        "list-entry":    "list-entry 220ms ease forwards",
+        "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
+        shine: "shine var(--duration) infinite linear",
+        "list-entry": "list-entry 220ms ease forwards",
+        "fade-in": "fade-in 0.5s ease-out",
+        "slide-up": "slide-up 0.6s ease-out",
+        shimmer: "shimmer 2s linear infinite",
       },
       boxShadow: {
         soft: "0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.06)",
@@ -121,25 +118,6 @@ const config: Config = {
           "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 20px -2px rgba(0, 0, 0, 0.08)",
         panel: "0 8px 30px rgba(0, 0, 0, 0.08)",
         "glow-green": "0 0 20px rgba(16, 185, 129, 0.15)",
-      },
-      keyframes: {
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(8px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "slide-up": {
-          "0%": { opacity: "0", transform: "translateY(16px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
-      },
-      animation: {
-        "fade-in": "fade-in 0.5s ease-out",
-        "slide-up": "slide-up 0.6s ease-out",
-        shimmer: "shimmer 2s linear infinite",
       },
     },
   },
