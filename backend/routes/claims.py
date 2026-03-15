@@ -13,6 +13,10 @@ logger = structlog.get_logger()
 settings = Settings()
 router = APIRouter()
 
+# In-memory stores for demo mode
+_claims_store = []
+_pipeline_results = {}
+
 
 @router.post("/claims/upload")
 async def upload_claim(

@@ -3,9 +3,9 @@ from datetime import datetime
 from backend.models.state import VigilState
 from backend.models.claim import EnrichedClaim
 from backend.config.settings import Settings
+from backend.store import store
 from agents.memory.moorcheh_client import MoorchehClient
 from agents.memory.episodic import get_claim_history
-from database.connection import execute_query
 
 logger = structlog.get_logger()
 settings = Settings()
@@ -26,41 +26,47 @@ async def _get_past_claims_at_provider(student_id: str, provider_name: str) -> i
         return 0
 
 
-def _get_total_claims_this_year(student_id: str) -> int:
-    """Count claims this calendar year from Snowflake."""
-    rows = execute_query(
-        "SELECT COUNT(*) AS cnt FROM claims "
-        "WHERE student_id = %(student_id)s AND YEAR(claim_date) = YEAR(CURRENT_DATE())",
-        {"student_id": student_id},
-    )
-    if rows:
-        return int(rows[0].get("cnt", 0))
-    return 0
+async def _get_total_claims_this_year(student_id: str) -> int:
+    """Count claims this calendar year from database."""
+    try:
+        claims = await store.get_claims(student_id=student_id, limit=1000)
+        current_year = datetime.utcnow().year
+        count = sum(1 for c in claims if c.get("claim_date", "").startswith(str(current_year)))
+        return count
+    except Exception as e:
+        logger.warning("claims_count_error", student_id=student_id, error=str(e))
+        return 0
 
 
-def _get_provider_avg_fee_deviation(provider_name: str) -> float | None:
-    """Look up avg_fee_deviation from provider_stats by name."""
-    rows = execute_query(
-        "SELECT avg_fee_deviation FROM provider_stats "
-        "WHERE provider_name = %(provider_name)s LIMIT 1",
-        {"provider_name": provider_name},
-    )
-    if rows:
-        return float(rows[0].get("avg_fee_deviation", 0))
-    return None
+async def _get_provider_avg_fee_deviation(provider_name: str) -> float | None:
+    """Look up avg_fee_deviation from providers table by name."""
+    try:
+        providers = await store.get_providers()
+        for p in providers:
+            if p.get("provider_name") == provider_name:
+                return float(p.get("avg_fee_deviation", 0))
+        return None
+    except Exception as e:
+        logger.warning("provider_deviation_error", provider_name=provider_name, error=str(e))
+        return None
 
 
-def _get_student_coverage_used_ytd(student_id: str) -> dict[str, float] | None:
+async def _get_student_coverage_used_ytd(student_id: str) -> dict[str, float] | None:
     """Fetch current plan-year usage from student_benefits table."""
-    rows = execute_query(
-        "SELECT category, used_ytd FROM student_benefits "
-        "WHERE student_id = %(student_id)s "
-        "AND plan_year = CONCAT(YEAR(CURRENT_DATE()), '-', YEAR(CURRENT_DATE()) + 1)",
-        {"student_id": student_id},
-    )
-    if rows:
-        return {row["category"]: float(row["used_ytd"]) for row in rows}
-    return None
+    try:
+        benefits = await store.get_student_benefits(student_id)
+        if benefits:
+            current_year = datetime.utcnow().year
+            plan_year = f"{current_year}-{current_year + 1}"
+            return {
+                b["category"]: float(b.get("used_ytd", 0))
+                for b in benefits
+                if b.get("plan_year") == plan_year
+            }
+        return None
+    except Exception as e:
+        logger.warning("benefits_fetch_error", student_id=student_id, error=str(e))
+        return None
 
 
 async def run_history_enricher(state: VigilState) -> dict:
@@ -92,13 +98,13 @@ async def run_history_enricher(state: VigilState) -> dict:
                 },
             )
         else:
-            # Live mode: query Moorcheh + Snowflake
+            # Live mode: query Moorcheh + Database
             past_at_provider = await _get_past_claims_at_provider(
                 normalized.student_id, provider_name,
             )
-            total_this_year = _get_total_claims_this_year(normalized.student_id)
-            avg_deviation = _get_provider_avg_fee_deviation(provider_name)
-            coverage_ytd = _get_student_coverage_used_ytd(normalized.student_id)
+            total_this_year = await _get_total_claims_this_year(normalized.student_id)
+            avg_deviation = await _get_provider_avg_fee_deviation(provider_name)
+            coverage_ytd = await _get_student_coverage_used_ytd(normalized.student_id)
 
             enriched = EnrichedClaim(
                 **normalized.model_dump(),
