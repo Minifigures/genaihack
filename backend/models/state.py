@@ -56,6 +56,7 @@ class VigilState(TypedDict):
     ranked_plans: Annotated[list[RankedPlan], operator.add]
 
     # Action outputs
+    watsonx_summary: Optional[str]
     report_html: Optional[str]
     compliance_approved: bool
     case_id: Optional[str]

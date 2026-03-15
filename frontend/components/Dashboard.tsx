@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { KPICard } from "@/components/KPICard";
-import { getClaims, getProviders } from "@/lib/api";
-import type { PipelineResult, ProviderStats } from "@/lib/api";
+import { getClaims, getProviders, getBenefits } from "@/lib/api";
+import type { PipelineResult, ProviderStats, BenefitsReport } from "@/lib/api";
 import {
   FileSearch,
   AlertTriangle,
@@ -17,20 +17,20 @@ import {
 
 export default function DashboardPage() {
   const [claims, setClaims] = useState<PipelineResult[]>([]);
-  const [benefits, setBenefits] = useState<BenefitsReport | null>(null);
+  const [providers, setProviders] = useState<ProviderStats[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const [claimsResult, benefitsResult] = await Promise.allSettled([
+      const [claimsResult, providersResult] = await Promise.allSettled([
         getClaims(),
-        getBenefits("STU-001"),
+        getProviders(),
       ]);
       if (claimsResult.status === "fulfilled") {
         setClaims(claimsResult.value.claims || []);
       }
-      if (benefitsResult.status === "fulfilled") {
-        setBenefits(benefitsResult.value);
+      if (providersResult.status === "fulfilled") {
+        setProviders(providersResult.value.providers || []);
       }
       setLoading(false);
     }
@@ -67,18 +67,6 @@ export default function DashboardPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="card p-5">
-              <div className="skeleton h-4 w-24 rounded mb-3" />
-              <div className="skeleton h-8 w-16 rounded mb-2" />
-              <div className="skeleton h-3 w-20 rounded" />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {loading ? (
         <div className="space-y-4">
           <div className="h-14 rounded-lg bg-muted animate-pulse" />
           <div className="grid grid-cols-2 gap-4">
@@ -96,6 +84,7 @@ export default function DashboardPage() {
               subtitle="receipts processed"
               color="blue"
               icon={FileSearch}
+              delay={0}
             />
             <KPICard
               title="Fraud Flags"
@@ -103,6 +92,7 @@ export default function DashboardPage() {
               subtitle="across all claims"
               color="red"
               icon={AlertTriangle}
+              delay={0.1}
             />
             <KPICard
               title="Avg Fraud Score"
@@ -110,6 +100,7 @@ export default function DashboardPage() {
               subtitle="out of 100"
               color="yellow"
               icon={Gauge}
+              delay={0.2}
             />
             <KPICard
               title="High Risk Providers"
@@ -117,6 +108,7 @@ export default function DashboardPage() {
               subtitle={`of ${providers.length} total`}
               color="red"
               icon={ShieldAlert}
+              delay={0.3}
             />
           </div>
 
@@ -145,12 +137,6 @@ export default function DashboardPage() {
                 >
                   Upload your first receipt
                 </Link>
-              )}
-            </div>
-
-            {claims.length === 0 ? (
-              <div className="px-5 py-10 text-center">
-                <p className="text-sm text-muted-foreground">No receipts submitted yet</p>
               </div>
             ) : (
               <>
@@ -198,8 +184,7 @@ export default function DashboardPage() {
               </>
             )}
           </div>
-
-        </div>
+        </>
       )}
     </div>
   );

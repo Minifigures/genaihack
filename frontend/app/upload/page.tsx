@@ -7,7 +7,8 @@ import { FraudCaseCard } from "@/components/FraudCaseCard";
 import { BenefitsCard } from "@/components/BenefitsCard";
 import { uploadClaim } from "@/lib/api";
 import type { PipelineResult, AgentTrace } from "@/lib/api";
-import { FileUp, AlertCircle, Sparkles, ShieldCheck, ShieldAlert } from "lucide-react";
+import { FileUp, AlertCircle, Sparkles, ShieldCheck, ShieldAlert, Brain } from "lucide-react";
+import { BlurFade } from "@/components/ui/blur-fade";
 
 function IbmLogo({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -86,7 +87,7 @@ export default function UploadPage() {
           >
             <Sparkles className="w-4 h-4" />
             {isLoading ? "Analyzing..." : "Analyze Receipt"}
-          </PulsatingButton>
+          </button>
 
           {error && (
             <div className="card border-red-200 bg-red-50 p-4 flex items-start gap-3">
@@ -95,74 +96,101 @@ export default function UploadPage() {
             </div>
           )}
 
-          {result && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FraudCaseCard
-                fraudScore={result.fraud_score}
-                flags={result.fraud_flags}
-              />
-              <BenefitsCard report={result.benefits_report} />
-              <FraudCaseCard fraudScore={result.fraud_score} flags={result.fraud_flags ?? []} />
-            </div>
+          {/* IBM Granite Analysis Summary */}
+          {result?.watsonx_summary && (
+            <BlurFade delay={0}>
+              <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+                    <IbmLogo className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-blue-900">IBM Granite Analysis</h3>
+                    <p className="text-[10px] text-blue-500 font-mono">ibm/granite-3-8b-instruct via watsonx.ai</p>
+                  </div>
+                  <span className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-600 text-white text-xs font-medium">
+                    <Brain className="w-3 h-3" />
+                    WatsonX
+                  </span>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed">{result.watsonx_summary}</p>
+              </div>
+            </BlurFade>
           )}
 
           {result && (
-            (() => {
-              const complianceTrace = traces.find(
-                (t) => t.agent === "compliance_gate" && t.event === "complete"
-              );
-              const usedWatsonx = !!complianceTrace;
-              const approved = result.compliance_approved;
+            <BlurFade delay={0.1}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FraudCaseCard
+                  fraudScore={result.fraud_score}
+                  flags={result.fraud_flags}
+                />
+                <BenefitsCard report={result.benefits_report} />
+              </div>
+            </BlurFade>
+          )}
 
-              return (
-                <div
-                  className={`rounded-lg border p-4 flex items-center gap-3 ${
-                    approved
-                      ? "bg-blue-50 border-blue-200"
-                      : "bg-amber-50 border-amber-200"
-                  }`}
-                >
-                  {approved ? (
-                    <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  ) : (
-                    <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <p
-                      className={`text-sm font-medium ${
-                        approved ? "text-blue-800" : "text-amber-800"
-                      }`}
-                    >
-                      {approved
-                        ? "Compliance Check Passed"
-                        : "Compliance Issues Detected"}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {usedWatsonx
-                        ? "Verified by IBM WatsonX Granite for bias, explainability & regulatory compliance"
-                        : "Verified by local compliance filter"}
-                    </p>
+          {result && (
+            <BlurFade delay={0.2}>
+              {(() => {
+                const complianceTrace = traces.find(
+                  (t) => t.agent === "compliance_gate" && t.event === "complete"
+                );
+                const usedWatsonx = !!complianceTrace;
+                const approved = result.compliance_approved;
+
+                return (
+                  <div
+                    className={`rounded-lg border p-4 flex items-center gap-3 ${
+                      approved
+                        ? "bg-blue-50 border-blue-200"
+                        : "bg-amber-50 border-amber-200"
+                    }`}
+                  >
+                    {approved ? (
+                      <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                    ) : (
+                      <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <p
+                        className={`text-sm font-medium ${
+                          approved ? "text-blue-800" : "text-amber-800"
+                        }`}
+                      >
+                        {approved
+                          ? "Compliance Check Passed"
+                          : "Compliance Issues Detected"}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {usedWatsonx
+                          ? "Verified by IBM WatsonX Granite for bias, explainability & regulatory compliance"
+                          : "Verified by local compliance filter"}
+                      </p>
+                    </div>
+                    {usedWatsonx && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-600 text-white text-xs font-medium flex-shrink-0">
+                        IBM WatsonX
+                      </span>
+                    )}
                   </div>
-                  {usedWatsonx && (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-600 text-white text-xs font-medium flex-shrink-0">
-                      IBM WatsonX
-                    </span>
-                  )}
-                </div>
-              );
-            })()
+                );
+              })()}
+            </BlurFade>
           )}
 
           {result?.report_html && (
-            <div className="card p-6">
-              <h3 className="text-base font-semibold text-slate-800 mb-4">
-                Full Report
-              </h3>
-              <div
-                className="prose prose-sm max-w-none prose-slate"
-                dangerouslySetInnerHTML={{ __html: result.report_html }}
-              />
-            </div>
+            <BlurFade delay={0.3}>
+              <div className="card p-6">
+                <h3 className="text-base font-semibold text-slate-800 mb-4">
+                  Full Report
+                </h3>
+                <div
+                  className="prose prose-sm max-w-none prose-slate"
+                  dangerouslySetInnerHTML={{ __html: result.report_html }}
+                />
+              </div>
+            </BlurFade>
           )}
         </div>
 

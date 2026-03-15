@@ -1,6 +1,7 @@
 "use client";
 
 import { LucideIcon } from "lucide-react";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 interface KPICardProps {
   title: string;
@@ -8,6 +9,7 @@ interface KPICardProps {
   subtitle?: string;
   color?: "green" | "red" | "yellow" | "blue" | "gray";
   icon?: LucideIcon;
+  delay?: number;
 }
 
 const colorConfig: Record<
@@ -52,6 +54,7 @@ export function KPICard({
   subtitle,
   color = "gray",
   icon: Icon,
+  delay = 0,
 }: KPICardProps) {
   const cfg = colorConfig[color];
   return (
@@ -69,7 +72,11 @@ export function KPICard({
         )}
       </div>
       <p className={`text-3xl font-bold ${cfg.valueTxt} tracking-tight`}>
-        {value}
+        {typeof value === "number" ? (
+          <NumberTicker value={value} delay={delay} className={cfg.valueTxt} />
+        ) : (
+          value
+        )}
       </p>
       {subtitle && (
         <p className="text-xs text-slate-400 mt-1">{subtitle}</p>

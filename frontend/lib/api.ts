@@ -67,6 +67,7 @@ export interface PipelineResult {
   benefits_report: BenefitsReport | null;
   health_signals: { treatments: Array<Record<string, unknown>>; gaps: Array<Record<string, unknown>> } | null;
   ranked_plans: Array<{ plan: Record<string, unknown>; priority_score: number }>;
+  watsonx_summary: string | null;
   report_html: string | null;
   compliance_approved: boolean;
   agent_traces: AgentTrace[];

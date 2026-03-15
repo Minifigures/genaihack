@@ -5,14 +5,18 @@ from contextlib import asynccontextmanager
 # Add project root to path so imports work
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import structlog
+
+from slowapi.errors import RateLimitExceeded
 
 from backend.config.settings import Settings
 from backend.config.logging import setup_logging
 from backend.websocket.trace import manager
 from backend.store import store
+from backend.rate_limit import limiter
 
 settings = Settings()
 setup_logging(settings.log_level)
@@ -32,6 +36,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="VIGIL API", version="0.1.0", lifespan=lifespan)
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"error": "Rate limit exceeded. Please try again later."},
+    )
+
 
 app.add_middleware(
     CORSMiddleware,

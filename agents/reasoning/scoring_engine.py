@@ -117,8 +117,6 @@ async def run_scoring_engine(state: VigilState) -> dict:
         enriched = state.get("enriched_claim")
 
         # Map provider deviation to history flags using policy thresholds
-        policy = load_policy()
-        ph = policy["provider_history"]
         provider_history_flags = 0
         if enriched and enriched.provider_avg_fee_deviation is not None:
             if enriched.provider_avg_fee_deviation > history_rules["severe_deviation"]:

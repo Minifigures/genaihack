@@ -1,7 +1,7 @@
 "use client";
 
 import type { AgentTrace } from "@/lib/api";
-import { Activity, Check, X, ShieldCheck } from "lucide-react";
+import { Activity, Check, X, ShieldCheck, Eye, Brain, Lightbulb, Zap, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 function IbmLogo({ className = "w-4 h-4" }: { className?: string }) {
   return (
@@ -21,7 +21,9 @@ function IbmLogo({ className = "w-4 h-4" }: { className?: string }) {
 }
 
 function isWatsonxTrace(trace: AgentTrace): boolean {
-  return trace.agent === "compliance_gate" && trace.event === "complete";
+  return (
+    trace.agent === "compliance_gate" || trace.agent === "watsonx_summarizer"
+  ) && trace.event === "complete";
 }
 
 interface AgentTracePanelProps {
@@ -48,8 +50,27 @@ const agentLayer: Record<string, string> = {
   action_generator: "Planning",
   optimization_engine: "Planning",
   report_drafter: "Action",
+  watsonx_summarizer: "Action",
   compliance_gate: "Action",
   audit_logger: "Action",
+};
+
+const agentColors: Record<string, string> = {
+  ocr_agent: "bg-blue-100 text-blue-700",
+  normalizer: "bg-blue-100 text-blue-700",
+  history_enricher: "bg-blue-100 text-blue-700",
+  persister: "bg-blue-100 text-blue-700",
+  fraud_analyst: "bg-red-100 text-red-700",
+  health_extractor: "bg-red-100 text-red-700",
+  scoring_engine: "bg-red-100 text-red-700",
+  watsonx_summarizer: "bg-blue-600 text-white",
+  benefits_navigator: "bg-amber-100 text-amber-700",
+  action_generator: "bg-amber-100 text-amber-700",
+  optimization_engine: "bg-amber-100 text-amber-700",
+  report_drafter: "bg-emerald-100 text-emerald-700",
+  compliance_gate: "bg-blue-600 text-white",
+  audit_logger: "bg-emerald-100 text-emerald-700",
+  pipeline: "bg-slate-100 text-slate-700",
 };
 
 const agentLabels: Record<string, string> = {
@@ -64,6 +85,7 @@ const agentLabels: Record<string, string> = {
   action_generator: "Action Generator",
   optimization_engine: "Optimization Engine",
   report_drafter: "Report Drafter",
+  watsonx_summarizer: "IBM WatsonX Summarizer",
   compliance_gate: "Compliance Gate",
   audit_logger: "Audit Logger",
   pipeline: "Pipeline",

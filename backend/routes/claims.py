@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Request, Depends
 from datetime import datetime
 import structlog
 
@@ -8,7 +8,7 @@ from backend.config.settings import Settings
 from backend.store import store
 from backend.auth import get_current_user
 from agents.reasoning.scoring_engine import load_policy
-from fastapi import Depends
+from backend.rate_limit import limiter
 
 logger = structlog.get_logger()
 settings = Settings()
@@ -20,7 +20,9 @@ _pipeline_results = {}
 
 
 @router.post("/claims/upload")
+@limiter.limit("5/minute")
 async def upload_claim(
+    request: Request,
     file: UploadFile = File(...),
     user: dict = Depends(get_current_user),
 ):
@@ -64,6 +66,7 @@ async def upload_claim(
             "benefits_report": None,
             "action_plans": [],
             "ranked_plans": [],
+            "watsonx_summary": None,
             "report_html": None,
             "compliance_approved": False,
             "case_id": None,
@@ -91,6 +94,7 @@ async def upload_claim(
             "health_signals": final_state.get("health_signals"),
             "ranked_plans": final_state.get("ranked_plans", []),
             "report_html": final_state.get("report_html"),
+            "watsonx_summary": final_state.get("watsonx_summary"),
             "compliance_approved": final_state.get("compliance_approved", False),
             "agent_traces": final_state.get("agent_traces", []),
             "errors": final_state.get("errors", []),
