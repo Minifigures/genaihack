@@ -25,6 +25,22 @@ const config: Config = {
         lg:   ["1.0625rem", { lineHeight: "1.5" }], // 17px — card titles
         xl:   ["1.25rem",   { lineHeight: "1.4" }], // 20px — section heads
         "2xl":["1.75rem",   { lineHeight: "1.2" }], // 28px — page titles (display serif)
+        display: [
+          "3.5rem",
+          {
+            lineHeight: "1.1",
+            letterSpacing: "-0.02em",
+            fontWeight: "700",
+          },
+        ],
+        heading: [
+          "1.875rem",
+          {
+            lineHeight: "1.2",
+            letterSpacing: "-0.01em",
+            fontWeight: "700",
+          },
+        ],
       },
       colors: {
         vigil: {
@@ -106,40 +122,6 @@ const config: Config = {
           "0%":   { opacity: "0", transform: "translateY(4px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-      },
-      animation: {
-        "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
-        "spin-around":   "spin-around calc(var(--speed) * 2) infinite linear",
-        shine:           "shine var(--duration) infinite linear",
-        "list-entry":    "list-entry 220ms ease forwards",
-      },
-      boxShadow: {
-        soft: "0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.06)",
-        card: "0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 4px 8px -1px rgba(0, 0, 0, 0.06)",
-        elevated:
-          "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 20px -2px rgba(0, 0, 0, 0.08)",
-        panel: "0 8px 30px rgba(0, 0, 0, 0.08)",
-        "glow-green": "0 0 20px rgba(16, 185, 129, 0.15)",
-      },
-      fontSize: {
-        display: [
-          "3.5rem",
-          {
-            lineHeight: "1.1",
-            letterSpacing: "-0.02em",
-            fontWeight: "700",
-          },
-        ],
-        heading: [
-          "1.875rem",
-          {
-            lineHeight: "1.2",
-            letterSpacing: "-0.01em",
-            fontWeight: "700",
-          },
-        ],
-      },
-      keyframes: {
         "fade-in": {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
@@ -154,9 +136,21 @@ const config: Config = {
         },
       },
       animation: {
+        "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
+        "spin-around":   "spin-around calc(var(--speed) * 2) infinite linear",
+        shine:           "shine var(--duration) infinite linear",
+        "list-entry":    "list-entry 220ms ease forwards",
         "fade-in": "fade-in 0.5s ease-out",
         "slide-up": "slide-up 0.6s ease-out",
         shimmer: "shimmer 2s linear infinite",
+      },
+      boxShadow: {
+        soft: "0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.06)",
+        card: "0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 4px 8px -1px rgba(0, 0, 0, 0.06)",
+        elevated:
+          "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 20px -2px rgba(0, 0, 0, 0.08)",
+        panel: "0 8px 30px rgba(0, 0, 0, 0.08)",
+        "glow-green": "0 0 20px rgba(16, 185, 129, 0.15)",
       },
     },
   },
