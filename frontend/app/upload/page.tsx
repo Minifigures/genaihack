@@ -7,6 +7,7 @@ import { FraudCaseCard } from "@/components/FraudCaseCard";
 import { BenefitsCard } from "@/components/BenefitsCard";
 import { uploadClaim } from "@/lib/api";
 import type { PipelineResult, AgentTrace } from "@/lib/api";
+import { FileUp, AlertCircle, Sparkles } from "lucide-react";
 
 export default function UploadPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +33,9 @@ export default function UploadPage() {
       setTraces(pipelineResult.agent_traces || []);
 
       if (pipelineResult.errors && pipelineResult.errors.length > 0) {
-        setError(`Pipeline completed with ${pipelineResult.errors.length} error(s)`);
+        setError(
+          `Pipeline completed with ${pipelineResult.errors.length} error(s)`
+        );
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
@@ -42,11 +45,17 @@ export default function UploadPage() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Upload Receipt</h1>
-        <p className="text-gray-500 mt-1">
-          Upload a healthcare receipt to analyze for fraud and discover unused benefits
+    <div className="animate-fade-in">
+      <div className="mb-8">
+        <h1 className="text-heading text-slate-900 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-vigil-50 flex items-center justify-center">
+            <FileUp className="w-5 h-5 text-vigil-600" />
+          </div>
+          Upload Receipt
+        </h1>
+        <p className="text-sm text-slate-500 mt-2 ml-[52px]">
+          Upload a healthcare receipt to analyze for fraud and discover unused
+          benefits
         </p>
       </div>
 
@@ -54,33 +63,41 @@ export default function UploadPage() {
         <div className="lg:col-span-2 space-y-6">
           <UploadZone onUpload={handleUpload} isLoading={isLoading} />
 
-          {/* User association runs via authenticated JWT on backend */}
-
           <button
             onClick={handleAnalyze}
             disabled={!selectedFile || isLoading}
-            className="w-full bg-vigil-600 text-white py-3 rounded-lg font-semibold text-base hover:bg-vigil-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="btn-primary w-full py-3 text-base"
           >
+            <Sparkles className="w-4 h-4" />
             {isLoading ? "Analyzing..." : "Analyze Receipt"}
           </button>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="card border-red-200 bg-red-50 p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
           {result && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FraudCaseCard fraudScore={result.fraud_score} flags={result.fraud_flags} />
+              <FraudCaseCard
+                fraudScore={result.fraud_score}
+                flags={result.fraud_flags}
+              />
               <BenefitsCard report={result.benefits_report} />
             </div>
           )}
 
           {result?.report_html && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Full Report</h3>
-              <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: result.report_html }} />
+            <div className="card p-6">
+              <h3 className="text-base font-semibold text-slate-800 mb-4">
+                Full Report
+              </h3>
+              <div
+                className="prose prose-sm max-w-none prose-slate"
+                dangerouslySetInnerHTML={{ __html: result.report_html }}
+              />
             </div>
           )}
         </div>
@@ -89,14 +106,20 @@ export default function UploadPage() {
           <AgentTracePanel traces={traces} isRunning={isLoading} />
 
           {result && result.ranked_plans && result.ranked_plans.length > 0 && (
-            <div className="mt-6 bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Recommended Actions</h3>
+            <div className="card mt-6 p-4">
+              <h3 className="text-sm font-semibold text-slate-700 mb-3">
+                Recommended Actions
+              </h3>
               <div className="space-y-2">
                 {result.ranked_plans.map((rp, idx) => (
-                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                  <div key={idx} className="p-3 bg-slate-50 rounded-lg">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-800">{rp.plan.name as string}</span>
-                      <span className="text-xs text-gray-500">Priority: {rp.priority_score}</span>
+                      <span className="text-sm font-medium text-slate-800">
+                        {rp.plan.name as string}
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        Priority: {rp.priority_score}
+                      </span>
                     </div>
                   </div>
                 ))}
