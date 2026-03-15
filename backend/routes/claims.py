@@ -173,6 +173,8 @@ async def upload_claim(
 
 @router.get("/claims")
 async def list_claims(user: dict = Depends(get_current_user)):
+    if settings.demo_mode:
+        return {"claims": _claims_store, "total": len(_claims_store)}
     user_claims = [c for c in _claims_store if c.get("student_id") == user["sub"]]
     return {"claims": user_claims, "total": len(user_claims)}
 
