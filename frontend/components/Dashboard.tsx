@@ -54,6 +54,17 @@ export default function DashboardPage() {
     0
   );
 
+  // Calculate total savings identified from overcharges
+  const totalSavings = claims.reduce((sum, c) => {
+    if (!c.fraud_flags) return sum;
+    return sum + c.fraud_flags.reduce((flagSum, f) => {
+      if (f.suggested_fee !== null && f.billed_fee > f.suggested_fee) {
+        return flagSum + (f.billed_fee - f.suggested_fee);
+      }
+      return flagSum;
+    }, 0);
+  }, 0);
+
   // Build benefit alerts
   const benefitAlerts: Array<{ message: string; type: "warning" | "info" | "success" }> = [];
   if (benefits) {
@@ -142,9 +153,9 @@ export default function DashboardPage() {
               icon={FileSearch}
             />
             <KPICard
-              title="Fraud Flags"
-              value={totalFlags}
-              subtitle="flagged for your protection"
+              title="Overcharges Found"
+              value={totalSavings > 0 ? `$${totalSavings.toFixed(0)}` : "--"}
+              subtitle={`${totalFlags} fraud flags detected`}
               color="red"
               icon={AlertTriangle}
             />
