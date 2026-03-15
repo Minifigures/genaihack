@@ -13,6 +13,8 @@ import {
   Upload,
   ArrowUpRight,
   FileX,
+  Heart,
+  Activity,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -95,21 +97,42 @@ export default function DashboardPage() {
               delay={0.1}
             />
             <KPICard
-              title="Avg Fraud Score"
-              value={avgScore > 0 ? avgScore.toFixed(1) : "--"}
-              subtitle="out of 100"
-              color="yellow"
-              icon={Gauge}
+              title="Wellness Score"
+              value={claims.length > 0 ? 72 : "--"}
+              subtitle="health readiness"
+              color="green"
+              icon={Heart}
               delay={0.2}
             />
             <KPICard
-              title="High Risk Providers"
-              value={highRiskProviders.length}
-              subtitle={`of ${providers.length} total`}
-              color="red"
-              icon={ShieldAlert}
+              title="Preventive Care"
+              value={claims.length > 0 ? "On Track" : "--"}
+              subtitle="next exam in 30 days"
+              color="green"
+              icon={Activity}
               delay={0.3}
             />
+          </div>
+
+          {/* Health Insights Banner */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <Link href="/health" className="group card p-5 border-l-4 border-l-emerald-500 hover:shadow-elevated transition-all">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Your Health Dashboard</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    View your treatment timeline, preventive care status, and wellness recommendations
+                  </p>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </div>
+            </Link>
+            <div className="card p-5 border-l-4 border-l-purple-500">
+              <p className="text-sm font-semibold text-slate-800">Mental Health Coverage</p>
+              <p className="text-xs text-slate-500 mt-1">
+                Your plan covers 100% of psychology services. 1 in 3 students benefit from regular counselling sessions.
+              </p>
+            </div>
           </div>
 
           {/* Recent claims */}

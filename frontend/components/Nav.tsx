@@ -16,17 +16,17 @@ import {
   Map,
   Info,
   ShieldCheck,
+  Activity,
   LucideIcon,
 } from "lucide-react";
 
 const navItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/upload", label: "Upload", icon: Upload },
-  { href: "/cases", label: "Cases", icon: FolderSearch },
+  { href: "/health", label: "My Health", icon: Activity },
   { href: "/benefits", label: "Benefits", icon: Heart },
+  { href: "/cases", label: "Cases", icon: FolderSearch },
   { href: "/providers", label: "Providers", icon: Building2 },
-  { href: "/map", label: "Map", icon: Map },
-  { href: "/governance", label: "AI Governance", icon: ShieldCheck },
   { href: "/about", label: "About", icon: Info },
 ];
 

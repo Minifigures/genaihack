@@ -73,7 +73,7 @@ async def websocket_trace(websocket: WebSocket):
 
 
 # Include route modules
-from backend.routes import claims, cases, benefits, providers, audit, metrics as metrics_router, clinics
+from backend.routes import claims, cases, benefits, providers, audit, metrics as metrics_router, clinics, health as health_router
 
 app.include_router(claims.router, prefix="/api")
 app.include_router(cases.router, prefix="/api")
@@ -82,3 +82,4 @@ app.include_router(providers.router, prefix="/api")
 app.include_router(audit.router, prefix="/api")
 app.include_router(metrics_router.router, prefix="/api")
 app.include_router(clinics.router, prefix="/api")
+app.include_router(health_router.router, prefix="/api")
