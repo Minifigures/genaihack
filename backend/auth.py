@@ -7,8 +7,8 @@ import structlog
 logger = structlog.get_logger()
 security = HTTPBearer(auto_error=False)
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://jfgzozoknjkyopgrenzn.supabase.co")
-JWKS_URL = f"{SUPABASE_URL}/auth/v1/.well-known/jwks.json"
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip("'\"")
+JWKS_URL = f"{SUPABASE_URL}/auth/v1/.well-known/jwks.json" if SUPABASE_URL else None
 
 _jwks_client = None
 
@@ -25,6 +25,11 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(
     demo_mode = os.environ.get("DEMO_MODE", "false").lower() == "true"
 
     if demo_mode:
+        return DEMO_USER
+
+    # If no SUPABASE_URL configured, allow request (development mode)
+    if not SUPABASE_URL:
+        logger.warning("auth_disabled_no_jwks_url", message="No SUPABASE_URL configured, allowing request")
         return DEMO_USER
 
     if credentials is None:

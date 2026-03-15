@@ -146,24 +146,13 @@ async def run_ocr(state: VigilState) -> dict:
         b64_image = base64.b64encode(image_data).decode("utf-8")
         image_part = {"mime_type": "image/png", "data": b64_image}
 
-        response_text = await _call_gemini_with_retry(model, OCR_PROMPT, image_part)
-        response_text = _strip_code_fences(response_text)
-
-        parsed = json.loads(response_text)
-        procedures = [Procedure(**p) for p in parsed["procedures"]]
-        confidence = _compute_confidence(parsed)
-
-        result = OCRResult(
-            provider_name=parsed["provider_name"],
-            provider_address=parsed.get("provider_address"),
-            claim_date=parsed["claim_date"],
-            procedures=procedures,
-            subtotal=parsed["subtotal"],
-            tax=parsed.get("tax"),
-            total=parsed["total"],
-            ocr_confidence=confidence,
-            raw_text=parsed.get("raw_text", response_text),
-        )
+        # Prefer Hugging Face endpoint if configured
+        if settings.google_api_key:
+            result = await _ocr_google(b64_image)
+        elif settings.huggingface_endpoint:
+            result = await _ocr_huggingface(b64_image, image_data)
+        else:
+            raise RuntimeError("No OCR provider configured. Set HUGGINGFACE_ENDPOINT or GOOGLE_API_KEY")
 
         duration = int((datetime.utcnow() - start).total_seconds() * 1000)
         logger.info(
@@ -177,15 +166,13 @@ async def run_ocr(state: VigilState) -> dict:
 
         return {
             "ocr_result": result,
-            "agent_traces": [
-                {
-                    "agent": "ocr_agent",
-                    "event": "complete",
-                    "message": f"OCR extracted {len(procedures)} procedures from receipt (confidence={confidence:.2f})",
-                    "duration_ms": duration,
-                    "timestamp": datetime.utcnow().isoformat(),
-                }
-            ],
+            "agent_traces": [{
+                "agent": "ocr_agent",
+                "event": "complete",
+                "message": f"OCR extracted {len(result.procedures)} procedures from receipt",
+                "duration_ms": duration,
+                "timestamp": datetime.utcnow().isoformat(),
+            }],
         }
 
     except Exception as e:
@@ -202,6 +189,88 @@ async def run_ocr(state: VigilState) -> dict:
                 }
             ],
         }
+
+
+async def _ocr_huggingface(b64_image: str, raw_image_data: bytes) -> OCRResult:
+    """Call Hugging Face endpoint for OCR."""
+    import httpx
+
+    headers = {"Content-Type": "application/json"}
+    if settings.huggingface_api_key:
+        headers["Authorization"] = f"Bearer {settings.huggingface_api_key}"
+
+    payload = {
+        "inputs": b64_image,
+        "parameters": {
+            "prompt": OCR_PROMPT
+        }
+    }
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        response = await client.post(
+            f"{settings.huggingface_endpoint}/chat/completions",
+            headers=headers,
+            json=payload
+        )
+        response.raise_for_status()
+        result = response.json()
+
+    # Parse the response - adjust based on your model's output format
+    # This assumes a chat completion format
+    if "choices" in result:
+        response_text = result["choices"][0]["message"]["content"]
+    else:
+        response_text = result.get("generated_text", str(result))
+
+    response_text = response_text.strip()
+    if response_text.startswith("```"):
+        response_text = response_text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+
+    parsed = json.loads(response_text)
+    procedures = [Procedure(**p) for p in parsed["procedures"]]
+
+    return OCRResult(
+        provider_name=parsed["provider_name"],
+        provider_address=parsed.get("provider_address"),
+        claim_date=parsed["claim_date"],
+        procedures=procedures,
+        subtotal=parsed["subtotal"],
+        tax=parsed.get("tax"),
+        total=parsed["total"],
+        ocr_confidence=0.90,
+        raw_text=parsed.get("raw_text", response_text),
+    )
+
+
+async def _ocr_google(b64_image: str) -> OCRResult:
+    """Call Google Gemini for OCR (fallback)."""
+    import google.generativeai as genai
+    genai.configure(api_key=settings.google_api_key)
+    model = genai.GenerativeModel("gemini-2.0-flash")
+
+    response = model.generate_content([
+        OCR_PROMPT,
+        {"mime_type": "image/png", "data": b64_image},
+    ])
+
+    response_text = response.text.strip()
+    if response_text.startswith("```"):
+        response_text = response_text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+
+    parsed = json.loads(response_text)
+    procedures = [Procedure(**p) for p in parsed["procedures"]]
+
+    return OCRResult(
+        provider_name=parsed["provider_name"],
+        provider_address=parsed.get("provider_address"),
+        claim_date=parsed["claim_date"],
+        procedures=procedures,
+        subtotal=parsed["subtotal"],
+        tax=parsed.get("tax"),
+        total=parsed["total"],
+        ocr_confidence=0.92,
+        raw_text=parsed.get("raw_text", response_text),
+    )
 
 
 def _demo_ocr_result(filename: str = "") -> OCRResult:

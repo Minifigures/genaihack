@@ -44,7 +44,7 @@ class FraudScore(BaseModel):
 
 class FraudCase(BaseModel):
     case_id: str
-    claim_id: str
+    claim_id: Optional[str] = None  # Optional if OCR fails
     student_id: str
     provider_id: Optional[str] = None
     fraud_score: FraudScore
