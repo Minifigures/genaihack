@@ -15,7 +15,9 @@ const techStack = [
 
 const teamMembers = [
   { name: "Marco Ayuste", role: "Full-Stack Developer" },
-  { name: "Aahiro Nishida", role: "UI/UX Designer" },
+  { name: "Pera Kasemsripitak", role: "Frontend Engineer" },
+  { name: "Aahir Chakra", role: "UI/UX Designer" },
+  { name: "Peter Lee", role: "Backend Engineer" },
 ];
 
 export default function AboutPage() {

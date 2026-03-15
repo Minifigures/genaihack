@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { AuthGuard } from "@/components/AuthGuard";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ChatWidget } from "@/components/chat-widget";
 
 // Display serif — page titles only
 const displayFont = DM_Serif_Display({
@@ -55,6 +56,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+          <ChatWidget />
           <Toaster richColors position="top-right" />
         </TooltipProvider>
       </body>
