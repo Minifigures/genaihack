@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     watsonx_project_id: str = ""
     watsonx_url: str = "https://us-south.ml.cloud.ibm.com"
 
+    # Firecrawl (clinic scraping)
+    firecrawl_api_key: str = ""
+
     # Database (Supabase PostgreSQL)
     database_url: str = ""
 

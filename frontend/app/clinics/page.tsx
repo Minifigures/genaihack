@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import {
   MapPin,
   Phone,
@@ -13,6 +9,7 @@ import {
   Star,
   Search,
   ExternalLink,
+  Globe,
 } from "lucide-react";
 
 interface Clinic {
@@ -26,110 +23,31 @@ interface Clinic {
   uhip: boolean;
   specialties: string[];
   accepting: boolean;
+  source?: string;
 }
 
-const clinics: Clinic[] = [
-  {
-    name: "UofT Health & Wellness Centre",
-    address: "214 College St, Toronto, ON M5T 2Z9",
-    phone: "(416) 978-8030",
-    hours: "Mon-Fri 9am-5pm",
-    distance: "On campus",
-    rating: 4.5,
-    ohip: true,
-    uhip: true,
-    specialties: ["General", "Mental Health", "Dental Referrals"],
-    accepting: true,
-  },
-  {
-    name: "Harbord Dental Centre",
-    address: "376 Harbord St, Toronto, ON M6G 1H8",
-    phone: "(416) 923-3434",
-    hours: "Mon-Sat 9am-6pm",
-    distance: "0.5 km",
-    rating: 4.3,
-    ohip: false,
-    uhip: true,
-    specialties: ["General Dentistry", "Cleanings", "Fillings", "Crowns"],
-    accepting: true,
-  },
-  {
-    name: "Bloor West Dental Group",
-    address: "2339 Bloor St W, Toronto, ON M6S 1P1",
-    phone: "(416) 762-2312",
-    hours: "Mon-Fri 8am-7pm, Sat 9am-4pm",
-    distance: "1.2 km",
-    rating: 4.6,
-    ohip: false,
-    uhip: true,
-    specialties: ["General Dentistry", "Orthodontics", "Oral Surgery"],
-    accepting: true,
-  },
-  {
-    name: "College Spadina Health Centre",
-    address: "720 Spadina Ave #200, Toronto, ON M5S 2T9",
-    phone: "(416) 323-9772",
-    hours: "Mon-Fri 9am-5pm",
-    distance: "0.3 km",
-    rating: 4.1,
-    ohip: true,
-    uhip: true,
-    specialties: ["Walk-in", "General Practice", "Lab Work"],
-    accepting: true,
-  },
-  {
-    name: "Kensington Health",
-    address: "25 Brunswick Ave, Toronto, ON M5S 2L9",
-    phone: "(416) 967-1500",
-    hours: "Mon-Fri 8:30am-4:30pm",
-    distance: "0.8 km",
-    rating: 4.4,
-    ohip: true,
-    uhip: true,
-    specialties: ["Physiotherapy", "Mental Health", "Dental"],
-    accepting: true,
-  },
-  {
-    name: "Bathurst-College Medical Centre",
-    address: "340 College St #500, Toronto, ON M5T 3A9",
-    phone: "(416) 920-3535",
-    hours: "Mon-Fri 9am-6pm",
-    distance: "0.4 km",
-    rating: 4.0,
-    ohip: true,
-    uhip: false,
-    specialties: ["Family Medicine", "Dermatology", "Pharmacy"],
-    accepting: false,
-  },
-  {
-    name: "Smile Zone Dental",
-    address: "181 University Ave #200, Toronto, ON M5H 3M7",
-    phone: "(416) 361-9333",
-    hours: "Mon-Sat 8am-8pm",
-    distance: "1.5 km",
-    rating: 4.7,
-    ohip: false,
-    uhip: true,
-    specialties: ["General Dentistry", "Cosmetic", "Emergency"],
-    accepting: true,
-  },
-  {
-    name: "Annex Paramedical Clinic",
-    address: "460 Bloor St W, Toronto, ON M5S 1X8",
-    phone: "(416) 966-1204",
-    hours: "Mon-Fri 10am-7pm, Sat 10am-3pm",
-    distance: "0.6 km",
-    rating: 4.2,
-    ohip: true,
-    uhip: true,
-    specialties: ["Physiotherapy", "Chiropractic", "Massage Therapy", "Acupuncture"],
-    accepting: true,
-  },
-];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function ClinicsPage() {
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "ohip" | "uhip" | "dental">("all");
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(`${API_BASE}/api/clinics`);
+        const data = await res.json();
+        setClinics(data.clinics || []);
+      } catch {
+        // API unavailable
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const filtered = clinics.filter((c) => {
     const matchesSearch =
@@ -144,6 +62,8 @@ export default function ClinicsPage() {
     return matchesSearch && matchesFilter;
   });
 
+  const hasScrapedData = clinics.some((c) => c.source === "firecrawl");
+
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
@@ -152,117 +72,147 @@ export default function ClinicsPage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Find a Clinic</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-500">
             OHIP and UHIP eligible healthcare providers near UofT
           </p>
         </div>
+        {hasScrapedData && (
+          <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-100 text-indigo-700 text-[10px] font-medium">
+            <Globe className="w-3 h-3" />
+            Live data via Firecrawl
+          </span>
+        )}
       </div>
 
       {/* Search and filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
+          <input
             placeholder="Search by name or specialty..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-vigil-500 focus:border-transparent"
           />
         </div>
         <div className="flex gap-2">
           {(["all", "ohip", "uhip", "dental"] as const).map((f) => (
-            <Button
+            <button
               key={f}
-              variant={filter === f ? "default" : "outline"}
-              size="sm"
               onClick={() => setFilter(f)}
-              className={filter === f ? "bg-emerald-600 hover:bg-emerald-700" : ""}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                filter === f
+                  ? "bg-emerald-600 text-white"
+                  : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}
             >
               {f === "all" ? "All" : f.toUpperCase()}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Results */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map((clinic) => (
-          <Card key={clinic.name} className="hover:shadow-md transition-shadow">
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900">{clinic.name}</h3>
-                  <div className="flex items-center gap-1 mt-1">
-                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                    <span className="text-xs text-muted-foreground">{clinic.rating}</span>
-                    <span className="text-xs text-muted-foreground mx-1">|</span>
-                    <MapPin className="w-3 h-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{clinic.distance}</span>
+      {/* Loading state */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="card p-6">
+              <div className="skeleton h-5 w-48 rounded mb-3" />
+              <div className="skeleton h-4 w-64 rounded mb-2" />
+              <div className="skeleton h-4 w-32 rounded" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Results */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filtered.map((clinic, idx) => (
+              <div key={`${clinic.name}-${idx}`} className="card-hover p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">{clinic.name}</h3>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                      <span className="text-xs text-gray-500">{clinic.rating}</span>
+                      {clinic.distance && (
+                        <>
+                          <span className="text-xs text-gray-400 mx-1">|</span>
+                          <MapPin className="w-3 h-3 text-gray-400" />
+                          <span className="text-xs text-gray-500">{clinic.distance}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    {clinic.ohip && (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        OHIP
+                      </span>
+                    )}
+                    {clinic.uhip && (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                        UHIP
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  {clinic.ohip && (
-                    <Badge variant="outline" className="text-emerald-700 border-emerald-200 bg-emerald-50 text-[10px]">
-                      OHIP
-                    </Badge>
+
+                <div className="space-y-1.5 text-xs text-gray-500 mb-3">
+                  {clinic.address && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-3 h-3 shrink-0" />
+                      {clinic.address}
+                    </div>
                   )}
-                  {clinic.uhip && (
-                    <Badge variant="outline" className="text-blue-700 border-blue-200 bg-blue-50 text-[10px]">
-                      UHIP
-                    </Badge>
+                  {clinic.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3 h-3 shrink-0" />
+                      {clinic.phone}
+                    </div>
+                  )}
+                  {clinic.hours && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3 h-3 shrink-0" />
+                      {clinic.hours}
+                    </div>
                   )}
                 </div>
-              </div>
 
-              <div className="space-y-1.5 text-xs text-muted-foreground mb-3">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-3 h-3" />
-                  {clinic.address}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-3 h-3" />
-                  {clinic.phone}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-3 h-3" />
-                  {clinic.hours}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-1 mb-3">
-                {clinic.specialties.map((s) => (
-                  <Badge key={s} variant="secondary" className="text-[10px]">
-                    {s}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                {clinic.accepting ? (
-                  <span className="flex items-center gap-1 text-xs text-emerald-600">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Accepting new patients
-                  </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">Not accepting new patients</span>
+                {clinic.specialties.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {clinic.specialties.map((s) => (
+                      <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
                 )}
-                <Button variant="ghost" size="sm" className="gap-1 text-xs h-7">
-                  <ExternalLink className="w-3 h-3" />
-                  Directions
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
-      {filtered.length === 0 && (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="text-muted-foreground">No clinics match your search. Try adjusting your filters.</p>
-          </CardContent>
-        </Card>
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                  {clinic.accepting ? (
+                    <span className="flex items-center gap-1 text-xs text-emerald-600">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Accepting new patients
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-400">Not accepting new patients</span>
+                  )}
+                  {clinic.source === "firecrawl" && (
+                    <span className="text-[10px] text-indigo-500 font-mono">scraped</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filtered.length === 0 && (
+            <div className="card p-12 text-center">
+              <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No clinics match your search. Try adjusting your filters.</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

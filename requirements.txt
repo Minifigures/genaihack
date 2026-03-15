@@ -23,6 +23,9 @@ ibm-watsonx-ai>=1.3.0
 # Rate limiting
 slowapi>=0.1.9
 
+# Web scraping
+firecrawl-py>=1.0.0
+
 # PDF generation
 fpdf2>=2.7.0
 
