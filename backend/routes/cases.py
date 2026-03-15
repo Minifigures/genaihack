@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 import structlog
+from backend.auth import get_current_user
 
 from backend.store import store
 

@@ -1,11 +1,13 @@
 import uuid
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File
 from datetime import datetime
 import structlog
 
 from backend.websocket.trace import manager
 from backend.config.settings import Settings
 from backend.store import store
+from backend.auth import get_current_user
+from fastapi import Depends
 
 logger = structlog.get_logger()
 settings = Settings()
@@ -15,8 +17,9 @@ router = APIRouter()
 @router.post("/claims/upload")
 async def upload_claim(
     file: UploadFile = File(...),
-    student_id: str = Form(default="STU-001"),
+    user: dict = Depends(get_current_user),
 ):
+    student_id = user["sub"]
     logger.info("claim_upload", filename=file.filename, student_id=student_id)
 
     image_bytes = await file.read()
@@ -70,9 +73,11 @@ async def upload_claim(
         claim_id = final_state.get("claim_id", str(uuid.uuid4()))
         fraud_score = final_state.get("fraud_score")
         benefits = final_state.get("benefits_report")
+        case_id = final_state.get("case_id")
 
         result = {
             "claim_id": claim_id,
+            "case_id": case_id,
             "student_id": student_id,
             "timestamp": datetime.utcnow().isoformat(),
             "fraud_score": fraud_score.model_dump() if fraud_score else None,
@@ -86,6 +91,26 @@ async def upload_claim(
             "errors": final_state.get("errors", []),
         }
 
+        _claims_store.append(result)
+        _pipeline_results[claim_id] = result
+
+        # Auto-create a fraud case for HIGH / CRITICAL risk claims
+        if fraud_score and fraud_score.score >= 51:
+            from backend.routes.cases import add_case
+            ocr = final_state.get("ocr_result")
+            add_case({
+                "case_id": case_id or str(uuid.uuid4()),
+                "claim_id": claim_id,
+                "student_id": student_id,
+                "fraud_score": fraud_score.score,
+                "fraud_level": fraud_score.level.value,
+                "fraud_flags": result["fraud_flags"],
+                "provider_name": ocr.provider_name if ocr else "Unknown",
+                "status": "pending",
+                "timestamp": datetime.utcnow().isoformat(),
+            })
+            logger.info("case_created", claim_id=claim_id, score=fraud_score.score)
+
         await manager.send_agent_event("pipeline", "complete", "Analysis complete")
         return result
 
@@ -96,14 +121,16 @@ async def upload_claim(
 
 
 @router.get("/claims")
-async def list_claims():
-    claims = await store.get_claims()
-    return {"claims": claims, "total": len(claims)}
+async def list_claims(user: dict = Depends(get_current_user)):
+    if settings.demo_mode:
+        return {"claims": _claims_store, "total": len(_claims_store)}
+    user_claims = [c for c in _claims_store if c.get("student_id") == user["sub"]]
+    return {"claims": user_claims, "total": len(user_claims)}
 
 
 @router.get("/claims/{claim_id}")
-async def get_claim(claim_id: str):
-    claim = await store.get_claim(claim_id)
-    if claim is None:
+async def get_claim(claim_id: str, user: dict = Depends(get_current_user)):
+    result = _pipeline_results.get(claim_id)
+    if result is None or result.get("student_id") != user["sub"]:
         return {"error": "Claim not found"}
     return claim
