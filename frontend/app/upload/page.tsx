@@ -46,65 +46,76 @@ export default function UploadPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Upload Receipt</h1>
-        <p className="text-muted-foreground mt-1">Upload a healthcare receipt to analyze for fraud and discover unused benefits</p>
+      <div className="mb-8">
+        <h1 className="font-display text-2xl font-normal text-foreground leading-tight">
+          Submit a Receipt
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1.5">
+          See what you&apos;re covered for — VIGIL checks your benefits and flags anything unusual
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           <UploadZone onUpload={handleUpload} isLoading={isLoading} />
 
           <PulsatingButton
             onClick={handleAnalyze}
             disabled={!selectedFile || isLoading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 font-semibold text-base disabled:opacity-40 disabled:cursor-not-allowed"
-            pulseColor="#22c55e"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 font-medium text-sm rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
+            pulseColor="hsl(142 63% 32%)"
           >
             <Scan className="w-4 h-4 mr-2" />
             {isLoading ? "Analyzing..." : "Analyze Receipt"}
           </PulsatingButton>
 
           {error && (
-            <Alert variant="destructive">
+            <Alert variant="destructive" className="rounded-lg border">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription className="text-sm">{error}</AlertDescription>
             </Alert>
           )}
 
           {result && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FraudCaseCard fraudScore={result.fraud_score} flags={result.fraud_flags} />
+            <div className="space-y-4">
               <BenefitsCard report={result.benefits_report} />
+              <FraudCaseCard fraudScore={result.fraud_score} flags={result.fraud_flags ?? []} />
             </div>
           )}
 
           {result?.report_html && (
             <Card>
-              <CardHeader><CardTitle>Full Report</CardTitle></CardHeader>
-              <CardContent>
-                <div className="prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: result.report_html }} />
+              <CardHeader className="border-b border-border pb-3">
+                <CardTitle className="text-base font-medium">Detailed Analysis</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div dangerouslySetInnerHTML={{ __html: result.report_html }} />
               </CardContent>
             </Card>
           )}
         </div>
 
-        <div>
+        <div className="space-y-4">
           <AgentTracePanel traces={traces} isRunning={isLoading} />
+
           {result && result.ranked_plans && result.ranked_plans.length > 0 && (
-            <Card className="mt-6">
-              <CardHeader><CardTitle className="text-sm">Recommended Actions</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
+            <div className="bg-card rounded-lg border border-border p-5">
+              <p className="font-mono text-2xs uppercase tracking-[0.1em] text-muted-foreground mb-3">
+                Recommended Actions
+              </p>
+              <div className="space-y-2">
                 {result.ranked_plans.map((rp, idx) => (
-                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-800">{rp.plan.name as string}</span>
-                      <span className="text-xs text-muted-foreground">Priority: {rp.priority_score}</span>
+                  <div key={idx} className="bg-muted rounded-sm px-3 py-2.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-sm text-foreground">{rp.plan.name as string}</span>
+                      <span className="font-mono text-2xs text-muted-foreground shrink-0">
+                        {rp.priority_score}
+                      </span>
                     </div>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       </div>

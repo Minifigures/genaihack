@@ -2,55 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scrollbar-gutter: stable;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   VIGIL Design System — Token Definitions
+   All values in: background, surface, text, border, accent,
+   status semantics, radius, shadow, animation timing.
+   ───────────────────────────────────────────────────────────── */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --radius: 0.625rem;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Background layers */
+    --background:        43 18% 96%;      /* #F7F6F3 — warm near-white page bg */
+    --surface:           0 0% 100%;       /* #FFFFFF — card surface */
+    --card:              0 0% 100%;
+    --card-foreground:   224 20% 8%;
+    --popover:           0 0% 100%;
+    --popover-foreground: 224 20% 8%;
+
+    /* ── Text hierarchy (3 levels) ── */
+    --foreground:        224 20% 8%;      /* --text-primary  #111827 approx */
+    --muted-foreground:  220 10% 52%;     /* --text-tertiary #8892A4 approx */
+
+    /* ── Neutral surface tokens ── */
+    --muted:             40 12% 93%;      /* warm light gray bg */
+    --secondary:         40 12% 93%;
+    --secondary-foreground: 224 20% 8%;
+
+    /* ── Border: single warm subtle line ── */
+    --border:            40 12% 87%;      /* #E3E0D9 — warm border */
+    --input:             40 12% 87%;
+
+    /* ── Accent: refined green ── */
+    --primary:           142 63% 32%;     /* #16a34a refined — slightly deeper */
+    --primary-foreground: 0 0% 100%;
+    --accent:            142 63% 32%;
+    --accent-foreground: 0 0% 100%;
+
+    /* ── Semantic status palette ── */
+    --status-review-bg:       43 96% 96%;   /* amber-50 approx */
+    --status-review-fg:       27 87% 28%;   /* amber-900 */
+    --status-review-border:   43 96% 80%;   /* amber-300 */
+
+    --status-resolved-bg:     140 70% 96%;  /* green-50 */
+    --status-resolved-fg:     142 71% 20%;  /* green-900 */
+    --status-resolved-border: 141 69% 78%;  /* green-300 */
+
+    --status-correct-bg:      220 14% 97%;  /* cool gray-50 */
+    --status-correct-fg:      220 9% 46%;   /* gray-500 */
+    --status-correct-border:  220 9% 82%;   /* gray-300 */
+
+    /* ── Destructive ── */
+    --destructive:       0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* ── Focus ring ── */
+    --ring:              142 63% 32%;
+
+    /* ── Border radius system ──
+       lg = cards (8px), md = buttons (6px), sm = badges (4px) */
+    --radius: 0.5rem;   /* 8px */
+
+    /* ── Elevation ── modals only */
+    --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+    /* ── Chart palette ── */
+    --chart-1: 142 63% 32%;
+    --chart-2: 220 10% 52%;
+    --chart-3: 43 96% 56%;
+    --chart-4: 220 9% 46%;
+    --chart-5: 142 50% 62%;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --background:        222 20% 9%;
+    --surface:           222 20% 11%;
+    --card:              222 20% 11%;
+    --card-foreground:   210 20% 97%;
+    --popover:           222 20% 11%;
+    --popover-foreground: 210 20% 97%;
+    --foreground:        210 20% 97%;
+    --muted:             222 20% 16%;
+    --muted-foreground:  220 10% 60%;
+    --secondary:         222 20% 16%;
+    --secondary-foreground: 210 20% 97%;
+    --border:            222 20% 20%;
+    --input:             222 20% 20%;
+    --primary:           142 60% 42%;
+    --primary-foreground: 0 0% 100%;
+    --accent:            142 60% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive:       0 62% 31%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --ring:              142 60% 42%;
   }
 }
 
@@ -60,53 +105,79 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Animations
+   ───────────────────────────────────────────────────────────── */
+
+/* Staggered list entry — 50ms per item, opacity + 4px lift */
+@keyframes list-entry {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-list-entry {
+  animation: list-entry 220ms ease forwards;
+  animation-delay: var(--entry-delay, 0ms);
+  opacity: 0; /* hidden until animation fires */
+}
+
+/* Badge fade-in on status change */
+@keyframes badge-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-badge-in {
+  animation: badge-in 150ms ease forwards;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Landing page effects (kept from original)
+   ───────────────────────────────────────────────────────────── */
+@keyframes shimmer-slide {
+  to { transform: translate(calc(100cqw - 100%), 0); }
+}
+
+@keyframes spin-around {
+  0%         { transform: translateZ(0) rotate(0); }
+  15%, 35%   { transform: translateZ(0) rotate(90deg); }
+  65%, 85%   { transform: translateZ(0) rotate(270deg); }
+  100%       { transform: translateZ(0) rotate(360deg); }
+}
+
+@keyframes shine {
+  0%  { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  to  { background-position: 0% 0%; }
+}
+
+@keyframes pulse-custom {
+  0%, 100% { box-shadow: 0 0 0 0 var(--pulse-color); }
+  50%      { box-shadow: 0 0 0 8px var(--pulse-color); }
 }
 
 @layer utilities {
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-}
-
-@keyframes shimmer-slide {
-  to {
-    transform: translate(calc(100cqw - 100%), 0);
+  /* Accent muted background — used for hover states */
+  .bg-accent-muted {
+    background-color: hsl(142 63% 32% / 0.06);
   }
-}
-
-@keyframes spin-around {
-  0% {
-    transform: translateZ(0) rotate(0);
-  }
-  15%, 35% {
-    transform: translateZ(0) rotate(90deg);
-  }
-  65%, 85% {
-    transform: translateZ(0) rotate(270deg);
-  }
-  100% {
-    transform: translateZ(0) rotate(360deg);
-  }
-}
-
-@keyframes shine {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  to {
-    background-position: 0% 0%;
-  }
-}
-
-@keyframes pulse-custom {
-  0%, 100% {
-    box-shadow: 0 0 0 0 var(--pulse-color);
-  }
-  50% {
-    box-shadow: 0 0 0 8px var(--pulse-color);
+  /* Monospace number display */
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }

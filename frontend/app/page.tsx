@@ -10,7 +10,7 @@ import { HyperText } from "@/components/ui/hyper-text";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { ShieldCheck, TrendingUp, FileSearch, Users, DollarSign, AlertTriangle, FileText, Building2 } from "lucide-react";
+import { ShieldCheck, TrendingUp, FileSearch, Users, Stethoscope, Sparkles, Receipt, BookOpen } from "lucide-react";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -61,20 +61,20 @@ export default function Home() {
           <BlurFade delay={0.1}>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-8">
               <ShieldCheck className="w-4 h-4" />
-              AI-Powered Fraud Detection
+              Your Student Health Copilot
             </div>
           </BlurFade>
           <BlurFade delay={0.2}>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-white">
               <HyperText className="text-5xl md:text-7xl font-extrabold text-white">
-                SecureFlow AI
+                VIGIL
               </HyperText>
             </h1>
           </BlurFade>
           <BlurFade delay={0.3}>
             <p className="text-xl md:text-2xl text-gray-400 font-light mb-10 max-w-2xl leading-relaxed">
-              Next-generation intelligent, real-time healthcare billing fraud
-              detection. Protect your enterprise with advanced AI verification.
+              Make the most of your student health plan. Submit a receipt to see
+              what you&apos;re covered for — VIGIL flags anything unusual automatically.
             </p>
           </BlurFade>
           <BlurFade delay={0.4}>
@@ -91,7 +91,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/login"
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-xl font-semibold text-lg transition-all inline-flex items-center"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-2xl font-semibold text-lg transition-all inline-flex items-center"
               >
                 Log In
               </Link>
@@ -104,8 +104,8 @@ export default function Home() {
       <section className="w-full max-w-6xl px-4 -mt-12 z-20 relative">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Claims Analyzed", value: 14200, suffix: "+", icon: FileSearch },
-            { label: "Fraud Detected", value: 3.4, prefix: "$", suffix: "B", icon: ShieldCheck, decimals: 1 },
+            { label: "Receipts Reviewed", value: 14200, suffix: "+", icon: FileSearch },
+            { label: "Avg Unused Benefits", value: 340, prefix: "$", suffix: "", icon: ShieldCheck },
             { label: "AI Agents", value: 14, suffix: "", icon: Users },
             { label: "Accuracy Rate", value: 98.7, suffix: "%", icon: TrendingUp, decimals: 1 },
           ].map((stat, i) => (
@@ -129,21 +129,21 @@ export default function Home() {
         <BlurFade delay={0.6}>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              The Cost of Healthcare Fraud in Canada
+              Your UTSU plan works harder with VIGIL
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Healthcare billing fraud is a multi-billion dollar problem that
-              affects premiums, resources, and trust in the system.
+              Over $1,700 in annual health coverage comes with your student fees —
+              VIGIL helps you find it, use it, and protect it.
             </p>
           </div>
         </BlurFade>
 
         <div className="grid md:grid-cols-2 gap-6">
           {[
-            { icon: DollarSign, color: "red", title: "$600M - $3.4 Billion Annual Loss", desc: "For private insurers in Canada, fraudulent claims are estimated to range from 2% to 10% of the $34 billion paid out in health claims annually.", source: "Canadian Broadcasting Corporation (CBC)" },
-            { icon: AlertTriangle, color: "orange", title: "Increased Premiums", desc: "Insurance scams, including those tied to medical and auto claims, add over $1 billion to Canadian insurance premiums annually.", source: "RestoraCare Health" },
-            { icon: FileText, color: "blue", title: "Phantom & Upcoding", desc: "Common frauds include billing for services never delivered and intentionally assigning higher billing codes to inflate reimbursement amounts.", source: "GetDefended.ca" },
-            { icon: Building2, color: "purple", title: "Collusion & Clinics", desc: "Major insurers have delisted thousands of providers due to false claims, often involving collusion between clinics and employees.", source: "Canadian Broadcasting Corporation (CBC)" },
+            { icon: Receipt, color: "blue", title: "Know before you go", desc: "Look up what your UTSU plan covers before your appointment — dental, vision, paramedical, psychology, and prescriptions, all in one place." },
+            { icon: Sparkles, color: "green", title: "Get what you're owed", desc: "Submit a receipt and see exactly how much you're entitled to claim back. VIGIL checks your annual limits and calculates your reimbursement." },
+            { icon: ShieldCheck, color: "orange", title: "Spot billing errors automatically", desc: "VIGIL's 14 AI agents flag overcharges, split billing, and fees above the ODA guide — so you can follow up with confidence." },
+            { icon: BookOpen, color: "purple", title: "Make the most of your plan", desc: "Many students don't use their psychology, vision, or paramedical benefits before they expire. VIGIL reminds you what's left and what to book." },
           ].map((card, i) => (
             <BlurFade key={card.title} delay={0.7 + i * 0.1}>
               <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all group">
@@ -151,6 +151,7 @@ export default function Home() {
                   card.color === "red" ? "bg-red-100 text-red-600" :
                   card.color === "orange" ? "bg-orange-100 text-orange-600" :
                   card.color === "blue" ? "bg-blue-100 text-blue-600" :
+                  card.color === "green" ? "bg-emerald-100 text-emerald-600" :
                   "bg-purple-100 text-purple-600"
                 }`}>
                   <card.icon className="w-6 h-6" />
@@ -158,8 +159,7 @@ export default function Home() {
                 <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-700 transition-colors">
                   {card.title}
                 </h3>
-                <p className="text-gray-600 mb-4 leading-relaxed">{card.desc}</p>
-                <p className="text-xs text-gray-400">Source: {card.source}</p>
+                <p className="text-gray-600 leading-relaxed">{card.desc}</p>
               </div>
             </BlurFade>
           ))}
