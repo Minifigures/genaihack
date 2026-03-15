@@ -1,6 +1,7 @@
 "use client";
 
 import type { AgentTrace } from "@/lib/api";
+import { Activity, Check, X } from "lucide-react";
 
 interface AgentTracePanelProps {
   traces: AgentTrace[];
@@ -42,23 +43,26 @@ const agentLayer: Record<string, string> = {
 
 export function AgentTracePanel({ traces, isRunning }: AgentTracePanelProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">Agent Trace</h3>
+    <div className="card overflow-hidden">
+      <div className="px-4 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+          <Activity className="w-4 h-4 text-slate-400" />
+          Agent Trace
+        </h3>
         {isRunning && (
-          <span className="flex items-center text-xs text-vigil-600">
-            <span className="animate-pulse mr-1 h-2 w-2 rounded-full bg-vigil-500 inline-block" />
+          <span className="flex items-center text-xs text-vigil-600 font-medium">
+            <span className="animate-pulse mr-1.5 h-2 w-2 rounded-full bg-vigil-500 inline-block" />
             Running
           </span>
         )}
       </div>
       <div className="max-h-96 overflow-y-auto">
         {traces.length === 0 ? (
-          <p className="p-4 text-sm text-gray-500 text-center">
+          <p className="p-6 text-sm text-slate-400 text-center">
             Upload a receipt to see the agent pipeline in action
           </p>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-slate-50">
             {traces.map((trace, idx) => (
               <div key={idx} className="px-4 py-3 flex items-start gap-3">
                 <div className="flex-shrink-0 mt-0.5">
@@ -71,15 +75,15 @@ export function AgentTracePanel({ traces, isRunning }: AgentTracePanelProps) {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-800">{trace.message}</p>
+                  <p className="text-sm text-slate-700">{trace.message}</p>
                   <div className="flex items-center gap-2 mt-1">
                     {agentLayer[trace.agent] && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-slate-400">
                         {agentLayer[trace.agent]}
                       </span>
                     )}
                     {trace.duration_ms !== null && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-slate-400">
                         {trace.duration_ms}ms
                       </span>
                     )}
@@ -87,10 +91,10 @@ export function AgentTracePanel({ traces, isRunning }: AgentTracePanelProps) {
                 </div>
                 <div className="flex-shrink-0">
                   {trace.event === "complete" && (
-                    <span className="text-green-500 text-sm">{"\u2713"}</span>
+                    <Check className="w-4 h-4 text-vigil-500" />
                   )}
                   {trace.event === "error" && (
-                    <span className="text-red-500 text-sm">{"\u2717"}</span>
+                    <X className="w-4 h-4 text-red-500" />
                   )}
                 </div>
               </div>

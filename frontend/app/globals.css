@@ -2,18 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 249, 250, 251;
+@layer base {
+  body {
+    color: rgb(15 23 42);
+    background: rgb(248 250 252);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-vigil-500 ring-offset-2;
+  }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+@layer components {
+  .card {
+    @apply bg-white rounded-xl border border-slate-200/60 shadow-card;
+  }
+
+  .card-hover {
+    @apply bg-white rounded-xl border border-slate-200/60 shadow-card transition-all duration-200 hover:shadow-elevated hover:border-slate-200;
+  }
+
+  .bg-mesh-gradient {
+    background:
+      radial-gradient(at 27% 37%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, rgba(59, 130, 246, 0.06) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
+      radial-gradient(at 10% 90%, rgba(99, 102, 241, 0.04) 0px, transparent 50%);
+  }
+
+  .skeleton {
+    @apply bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 animate-shimmer;
+    background-size: 200% 100%;
+  }
+
+  .input-field {
+    @apply block w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900
+           shadow-soft placeholder:text-slate-400
+           transition-all duration-150
+           hover:border-slate-400
+           focus:border-vigil-500 focus:ring-2 focus:ring-vigil-500/20 focus:outline-none;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-vigil-600 text-white font-semibold
+           px-5 py-2.5 rounded-lg text-sm
+           shadow-soft
+           transition-all duration-150
+           hover:bg-vigil-700 hover:shadow-card
+           active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-soft;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-white text-slate-700 font-medium
+           border border-slate-300
+           px-5 py-2.5 rounded-lg text-sm
+           shadow-soft
+           transition-all duration-150
+           hover:bg-slate-50 hover:border-slate-400
+           active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           text-slate-600 font-medium
+           px-3 py-2 rounded-lg text-sm
+           transition-all duration-150
+           hover:bg-slate-100 hover:text-slate-900;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
 }
 
 @layer utilities {
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .text-gradient-vigil {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-vigil-500 to-emerald-400;
   }
 }
