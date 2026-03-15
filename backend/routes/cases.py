@@ -49,6 +49,9 @@ def add_case(case: dict) -> None:
 
 @router.get("/cases")
 async def list_cases(user: dict = Depends(get_current_user)):
+    import os
+    if os.environ.get("DEMO_MODE", "false").lower() == "true":
+        return {"cases": _cases_store, "total": len(_cases_store)}
     user_cases = [c for c in _cases_store if c.get("student_id") == user["sub"]]
     return {"cases": user_cases, "total": len(user_cases)}
 
