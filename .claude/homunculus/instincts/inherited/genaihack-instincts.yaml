@@ -1,0 +1,539 @@
+# Instincts generated from https://github.com/Minifigures/genaihack
+# Generated: 2026-03-15T04:42:08.735Z
+# Version: 2.0
+
+---
+id: genaihack-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Commit Length
+
+## Action
+
+Keep commit messages concise (under 50 characters)
+
+## Evidence
+
+- Average commit message length: 45 chars
+- Based on 17 commits
+
+---
+id: genaihack-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: genaihack-import-alias
+trigger: "when importing modules"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Import Alias
+
+## Action
+
+Use path aliases (@/, ~/) instead of relative imports
+
+## Evidence
+
+- Import analysis shows alias pattern
+- Example: import { x } from '@/lib/x'
+
+---
+id: genaihack-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: genaihack-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: genaihack-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~9x per month
+- Files: frontend/app/benefits/*, frontend/app/cases/[id]/*, frontend/app/cases/*
+
+---
+id: genaihack-workflow-auth-backend-frontend-fix
+trigger: "when doing auth backend frontend fix"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Auth Backend Frontend Fix
+
+## Action
+
+Follow the auth-backend-frontend-fix workflow:
+1. Update backend auth.py
+2. Modify claims and cases routes
+3. Update frontend auth components
+4. Fix navigation and pages
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: backend/auth.py, backend/routes/claims.py, backend/routes/cases.py
+
+---
+id: genaihack-workflow-perception-agent-upgrade
+trigger: "when doing perception agent upgrade"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Perception Agent Upgrade
+
+## Action
+
+Follow the perception-agent-upgrade workflow:
+1. Update perception agents (OCR, normalizer, history enricher, persister)
+2. Modify claim models
+3. Add comprehensive tests
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: agents/perception/ocr_agent.py, agents/perception/normalizer.py, agents/perception/history_enricher.py
+
+---
+id: genaihack-workflow-full-stack-frontend-fix
+trigger: "when doing full stack frontend fix"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Full Stack Frontend Fix
+
+## Action
+
+Follow the full-stack-frontend-fix workflow:
+1. Update all frontend pages and components
+2. Modify backend routes
+3. Update package dependencies
+4. Add supporting assets
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: frontend/app/layout.tsx, frontend/app/page.tsx, frontend/app/upload/page.tsx
+
+---
+id: genaihack-workflow-multi-agent-state-fix
+trigger: "when doing multi agent state fix"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Multi Agent State Fix
+
+## Action
+
+Follow the multi-agent-state-fix workflow:
+1. Update state models with proper reducers
+2. Fix all agent files to return deltas
+3. Update pipeline state handling
+4. Fix backend routes
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: backend/models/state.py, agents/perception/*.py, agents/reasoning/*.py
+
+---
+id: genaihack-workflow-cases-claims-metrics-wiring
+trigger: "when doing cases claims metrics wiring"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/Minifigures/genaihack
+---
+
+# Genaihack Workflow Cases Claims Metrics Wiring
+
+## Action
+
+Follow the cases-claims-metrics-wiring workflow:
+1. Update metrics with real computations
+2. Wire cases to live fraud data
+3. Update claims processing
+4. Connect audit logging
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: backend/routes/metrics.py, backend/routes/cases.py, backend/routes/claims.py
+
+---
+id: genaihack-snake-case-files
+trigger: "When creating new Python files"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Snake Case Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Files like ocr_agent.py, audit_logger.py, history_enricher.py
+
+---
+id: genaihack-camel-case-functions
+trigger: "When defining functions in Python"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Camel Case Functions
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Detected camelCase pattern in codeStyle analysis
+
+---
+id: genaihack-pascal-case-classes
+trigger: "When defining classes"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Pascal Case Classes
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Standard PascalCase pattern detected in analysis
+
+---
+id: genaihack-alias-imports
+trigger: "When importing modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Alias Imports
+
+## Action
+
+Use aliased import style
+
+## Evidence
+
+- Import style detected as 'alias' in codeStyle analysis
+
+---
+id: genaihack-try-catch-errors
+trigger: "When handling errors"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Try Catch Errors
+
+## Action
+
+Use try-catch blocks without custom error classes
+
+## Evidence
+
+- Error handling style: try-catch, no custom error classes detected
+
+---
+id: genaihack-prefix-commits
+trigger: "When making commits"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Prefix Commits
+
+## Action
+
+Use prefixes: fix:, feat:, refactor:, merge:
+
+## Evidence
+
+- fix: resolve auth issue
+- feat: implement full VIGIL
+- refactor: snowflake to supabase
+
+---
+id: genaihack-descriptive-commits
+trigger: "When writing commit messages"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Descriptive Commits
+
+## Action
+
+Write descriptive messages around 45 characters explaining the specific change
+
+## Evidence
+
+- Average length: 45, examples show specific descriptions like 'resolve auth issue preventing file ingestion'
+
+---
+id: genaihack-separate-tests
+trigger: "When creating tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Separate Tests
+
+## Action
+
+Place tests in separate tests/ directory, not alongside source
+
+## Evidence
+
+- testLocation: 'separate', tests folder exists in commonFolders
+
+---
+id: genaihack-auth-workflow
+trigger: "When authentication is broken or needs updates"
+confidence: 0.92
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Auth Workflow
+
+## Action
+
+Update backend auth.py, modify routes, update frontend auth components, fix navigation
+
+## Evidence
+
+- auth-backend-frontend-fix workflow, frequency ~4x/day
+
+---
+id: genaihack-perception-upgrade
+trigger: "When improving OCR, normalization, or data processing capabilities"
+confidence: 0.88
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Perception Upgrade
+
+## Action
+
+Update perception agents, modify claim models, add comprehensive tests
+
+## Evidence
+
+- perception-agent-upgrade workflow, frequency ~3x/day
+
+---
+id: genaihack-frontend-fixes
+trigger: "When frontend needs major fixes or new features"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Frontend Fixes
+
+## Action
+
+Update all frontend pages/components, modify backend routes, update dependencies
+
+## Evidence
+
+- full-stack-frontend-fix workflow, frequency ~3x/day
+
+---
+id: genaihack-agent-state-fix
+trigger: "When agents crash or return incorrect state"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Agent State Fix
+
+## Action
+
+Update state models with reducers, fix agent files to return deltas, update pipeline handling
+
+## Evidence
+
+- multi-agent-state-fix workflow, frequency ~2x/day
+
+---
+id: genaihack-data-wiring
+trigger: "When dashboard or case management needs real data"
+confidence: 0.87
+domain: workflow
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Data Wiring
+
+## Action
+
+Update metrics with real computations, wire cases to live data, connect audit logging
+
+## Evidence
+
+- cases-claims-metrics-wiring workflow, frequency ~2x/day
+
+---
+id: genaihack-hybrid-organization
+trigger: "When organizing code modules"
+confidence: 0.85
+domain: architecture
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Hybrid Organization
+
+## Action
+
+Use hybrid module organization with clear separation of frontend, backend, agents, and data layers
+
+## Evidence
+
+- moduleOrganization: 'hybrid', clear folder structure with frontend, agents, backend, data separation
+
+---
+id: genaihack-docker-config
+trigger: "When setting up deployment configuration"
+confidence: 0.8
+domain: architecture
+source: repo-analysis
+source_repo: Minifigures/genaihack
+---
+
+# Genaihack Docker Config
+
+## Action
+
+Use docker-compose.yml with separate Dockerfiles for frontend and backend
+
+## Evidence
+
+- docker-compose.yml, Dockerfile.backend, Dockerfile.frontend in config files
+
