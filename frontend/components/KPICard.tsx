@@ -1,5 +1,9 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
+import { NumberTicker } from "@/components/ui/number-ticker";
+import { cn } from "@/lib/utils";
+
 interface KPICardProps {
   title: string;
   value: string | number;
@@ -8,20 +12,31 @@ interface KPICardProps {
   color?: "green" | "red" | "yellow" | "blue" | "gray";
 }
 
-const colorClasses: Record<string, string> = {
-  green: "bg-green-50 border-green-200 text-green-700",
-  red: "bg-red-50 border-red-200 text-red-700",
-  yellow: "bg-yellow-50 border-yellow-200 text-yellow-700",
-  blue: "bg-blue-50 border-blue-200 text-blue-700",
-  gray: "bg-gray-50 border-gray-200 text-gray-700",
+const colorConfig: Record<string, { border: string; icon: string; value: string }> = {
+  green: { border: "border-emerald-200", icon: "text-emerald-600", value: "text-emerald-700" },
+  red: { border: "border-red-200", icon: "text-red-600", value: "text-red-700" },
+  yellow: { border: "border-amber-200", icon: "text-amber-600", value: "text-amber-700" },
+  blue: { border: "border-blue-200", icon: "text-blue-600", value: "text-blue-700" },
+  gray: { border: "border-gray-200", icon: "text-gray-600", value: "text-gray-700" },
 };
 
 export function KPICard({ title, value, subtitle, color = "gray" }: KPICardProps) {
+  const colors = colorConfig[color];
+  const numericValue = typeof value === "number" ? value : null;
+
   return (
-    <div className={`rounded-lg border p-6 ${colorClasses[color]}`}>
-      <p className="text-sm font-medium opacity-80">{title}</p>
-      <p className="text-3xl font-bold mt-1">{value}</p>
-      {subtitle && <p className="text-sm mt-1 opacity-70">{subtitle}</p>}
-    </div>
+    <Card className={cn("border-l-4 hover:shadow-md transition-shadow", colors.border)}>
+      <CardContent className="pt-6">
+        <p className="text-sm font-medium text-muted-foreground">{title}</p>
+        <p className={cn("text-3xl font-bold mt-1", colors.value)}>
+          {numericValue !== null ? (
+            <NumberTicker value={numericValue} />
+          ) : (
+            value
+          )}
+        </p>
+        {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+      </CardContent>
+    </Card>
   );
 }
