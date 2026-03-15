@@ -1,25 +1,90 @@
 import uuid
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File
 from datetime import datetime
 import structlog
 
 from backend.websocket.trace import manager
 from backend.config.settings import Settings
+from backend.auth import get_current_user
+from fastapi import Depends
 
 logger = structlog.get_logger()
 settings = Settings()
 router = APIRouter()
 
 # In-memory store for demo
-_claims_store: list[dict] = []
-_pipeline_results: dict[str, dict] = {}
+_claims_store: list[dict] = [
+    {
+        "claim_id": "CLM-1001-DEMO",
+        "student_id": "STU-001",
+        "timestamp": datetime.utcnow().isoformat(),
+        "fraud_score": {
+            "score": 12.5,
+            "level": "low",
+            "breakdown": {
+                "fee_deviation": 2.5,
+                "code_risk": 0.0,
+                "provider_history": 0.0,
+                "pattern_bonus": 10.0,
+                "confidence_adj": 1.0
+            }
+        },
+        "fraud_flags": [],
+        "benefits_report": None,
+        "health_signals": None,
+        "ranked_plans": [],
+        "report_html": None,
+        "compliance_approved": True,
+        "agent_traces": [],
+        "errors": []
+    },
+    {
+        "claim_id": "CLM-1002-DEMO",
+        "student_id": "STU-002",
+        "timestamp": datetime.utcnow().isoformat(),
+        "fraud_score": {
+            "score": 87.5,
+            "level": "critical",
+            "breakdown": {
+                "fee_deviation": 35.0,
+                "code_risk": 20.0,
+                "provider_history": 15.0,
+                "pattern_bonus": 17.5,
+                "confidence_adj": 1.0
+            }
+        },
+        "fraud_flags": [
+            {
+                "fraud_type": "upcoding",
+                "code": "43421",
+                "billed_fee": 350.0,
+                "suggested_fee": 195.0,
+                "deviation_pct": 0.795,
+                "confidence": 0.85,
+                "evidence": "Procedure 43421 (Root planing, per quadrant) may be upcoded from 11111. Billed $350.00 vs typical $195.00"
+            }
+        ],
+        "benefits_report": None,
+        "health_signals": None,
+        "ranked_plans": [],
+        "report_html": None,
+        "compliance_approved": False,
+        "agent_traces": [],
+        "errors": []
+    }
+]
+
+_pipeline_results: dict[str, dict] = {
+    claim["claim_id"]: claim for claim in _claims_store
+}
 
 
 @router.post("/claims/upload")
 async def upload_claim(
     file: UploadFile = File(...),
-    student_id: str = Form(default="STU-001"),
+    user: dict = Depends(get_current_user),
 ):
+    student_id = user["sub"]
     logger.info("claim_upload", filename=file.filename, student_id=student_id)
 
     image_bytes = await file.read()
@@ -88,13 +153,14 @@ async def upload_claim(
 
 
 @router.get("/claims")
-async def list_claims():
-    return {"claims": _claims_store, "total": len(_claims_store)}
+async def list_claims(user: dict = Depends(get_current_user)):
+    user_claims = [c for c in _claims_store if c.get("student_id") == user["sub"]]
+    return {"claims": user_claims, "total": len(user_claims)}
 
 
 @router.get("/claims/{claim_id}")
-async def get_claim(claim_id: str):
+async def get_claim(claim_id: str, user: dict = Depends(get_current_user)):
     result = _pipeline_results.get(claim_id)
-    if result is None:
+    if result is None or result.get("student_id") != user["sub"]:
         return {"error": "Claim not found"}
     return result
