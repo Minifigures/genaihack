@@ -83,6 +83,7 @@ export interface ProviderStats {
   risk_tier: string;
   common_fraud_types: string[];
   last_claim_date: string | null;
+  flagged_by_students?: number;
 }
 
 export async function uploadClaim(file: File): Promise<PipelineResult> {
@@ -161,4 +162,25 @@ export async function dismissCase(caseId: string): Promise<Record<string, unknow
     headers,
   });
   return response.json();
+}
+
+export async function downloadDisputeLetter(caseId: string): Promise<void> {
+  const headers = await getAuthHeaders();
+  const response = await fetch(`${API_BASE}/api/cases/${caseId}/dispute-letter`, {
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to generate dispute letter");
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `dispute-letter-${caseId.slice(0, 8)}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 }

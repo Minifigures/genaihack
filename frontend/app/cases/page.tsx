@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCases, approveCase, dismissCase } from "@/lib/api";
+import { getCases, approveCase, dismissCase, downloadDisputeLetter } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,19 +14,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ShieldAlert, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { ShieldAlert, CheckCircle2, XCircle, Clock, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 interface FraudCase {
   case_id: string;
   claim_id: string | null;
   student_id: string;
+  provider_id?: string;
   fraud_score: number;
   risk_level: string;
   status: string;
   flags: Array<{ fraud_type: string; code: string }>;
   created_at?: string;
 }
+
+// Cross-student provider intelligence (matches backend demo data)
+const PROVIDER_STUDENT_FLAGS: Record<string, number> = {
+  "PRV-001": 5,
+  "PRV-003": 14,
+  "PRV-004": 2,
+};
 
 const levelVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   low: "secondary",
@@ -200,6 +208,19 @@ function CaseCard({
 }) {
   const status = statusConfig[fraudCase.status] || statusConfig.open;
   const StatusIcon = status.icon;
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownloadLetter() {
+    setDownloading(true);
+    try {
+      await downloadDisputeLetter(fraudCase.case_id);
+      toast.success("Dispute letter downloaded");
+    } catch {
+      toast.error("Failed to generate dispute letter");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -232,6 +253,16 @@ function CaseCard({
           </div>
         </div>
 
+        {/* Community intelligence banner */}
+        {fraudCase.provider_id && (PROVIDER_STUDENT_FLAGS[fraudCase.provider_id] ?? 0) > 0 && (
+          <div className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 bg-orange-50 border border-orange-200 rounded-lg">
+            <ShieldAlert className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+            <span className="text-xs font-medium text-orange-700">
+              {PROVIDER_STUDENT_FLAGS[fraudCase.provider_id]} other students have flagged this provider for similar billing patterns
+            </span>
+          </div>
+        )}
+
         {/* Flags */}
         {fraudCase.flags && fraudCase.flags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
@@ -252,11 +283,37 @@ function CaseCard({
               className="bg-emerald-600 hover:bg-emerald-700 gap-1"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              Approve
+              Approve Dispute
             </Button>
             <Button size="sm" variant="outline" onClick={onDismiss} className="gap-1">
               <XCircle className="w-3.5 h-3.5" />
               Dismiss
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDownloadLetter}
+              disabled={downloading}
+              className="gap-1 text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+            >
+              <FileDown className="w-3.5 h-3.5" />
+              {downloading ? "Generating..." : "Download Dispute Letter"}
+            </Button>
+          </div>
+        )}
+
+        {/* Download letter for approved cases too */}
+        {fraudCase.status === "approved" && (
+          <div className="flex gap-2 pt-2 border-t border-gray-100">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDownloadLetter}
+              disabled={downloading}
+              className="gap-1 text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+            >
+              <FileDown className="w-3.5 h-3.5" />
+              {downloading ? "Generating..." : "Download Dispute Letter"}
             </Button>
           </div>
         )}

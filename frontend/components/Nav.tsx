@@ -13,17 +13,20 @@ import {
   ShieldAlert,
   Heart,
   MapPin,
-  ScrollText,
   Shield,
+  Building2,
+  Info,
+  Map,
 } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/upload", label: "Upload", icon: Upload },
   { href: "/benefits", label: "Benefits", icon: Heart },
-  { href: "/clinics", label: "Clinics", icon: MapPin },
+  { href: "/providers", label: "Providers", icon: Building2 },
+  { href: "/map", label: "Map", icon: Map },
   { href: "/cases", label: "Cases", icon: ShieldAlert },
-  { href: "/logs", label: "Audit Log", icon: ScrollText },
+  { href: "/about", label: "About", icon: Info },
 ];
 
 export function Nav() {
