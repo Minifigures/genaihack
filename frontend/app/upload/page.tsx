@@ -7,7 +7,24 @@ import { FraudCaseCard } from "@/components/FraudCaseCard";
 import { BenefitsCard } from "@/components/BenefitsCard";
 import { uploadClaim } from "@/lib/api";
 import type { PipelineResult, AgentTrace } from "@/lib/api";
-import { FileUp, AlertCircle, Sparkles } from "lucide-react";
+import { FileUp, AlertCircle, Sparkles, ShieldCheck, ShieldAlert } from "lucide-react";
+
+function IbmLogo({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 100 40" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="100" height="4" />
+      <rect x="0" y="8" width="100" height="4" />
+      <rect x="0" y="16" width="16" height="4" />
+      <rect x="28" y="16" width="44" height="4" />
+      <rect x="84" y="16" width="16" height="4" />
+      <rect x="0" y="24" width="16" height="4" />
+      <rect x="28" y="24" width="44" height="4" />
+      <rect x="84" y="24" width="16" height="4" />
+      <rect x="0" y="32" width="100" height="4" />
+      <rect x="0" y="36" width="100" height="4" />
+    </svg>
+  );
+}
 
 export default function UploadPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +104,53 @@ export default function UploadPage() {
               />
               <BenefitsCard report={result.benefits_report} />
             </div>
+          )}
+
+          {result && (
+            (() => {
+              const complianceTrace = traces.find(
+                (t) => t.agent === "compliance_gate" && t.event === "complete"
+              );
+              const usedWatsonx = !!complianceTrace;
+              const approved = result.compliance_approved;
+
+              return (
+                <div
+                  className={`rounded-lg border p-4 flex items-center gap-3 ${
+                    approved
+                      ? "bg-blue-50 border-blue-200"
+                      : "bg-amber-50 border-amber-200"
+                  }`}
+                >
+                  {approved ? (
+                    <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  ) : (
+                    <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                  )}
+                  <div className="flex-1">
+                    <p
+                      className={`text-sm font-medium ${
+                        approved ? "text-blue-800" : "text-amber-800"
+                      }`}
+                    >
+                      {approved
+                        ? "Compliance Check Passed"
+                        : "Compliance Issues Detected"}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {usedWatsonx
+                        ? "Verified by IBM WatsonX Granite for bias, explainability & regulatory compliance"
+                        : "Verified by local compliance filter"}
+                    </p>
+                  </div>
+                  {usedWatsonx && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-600 text-white text-xs font-medium flex-shrink-0">
+                      IBM WatsonX
+                    </span>
+                  )}
+                </div>
+              );
+            })()
           )}
 
           {result?.report_html && (
