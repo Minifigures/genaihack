@@ -98,8 +98,8 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                     evidence=f"Fee ${proc.fee_charged:.2f} exceeds ODA guide ${suggested_fee:.2f} by {deviation*100:.1f}% (tolerance: {tolerance*100:.0f}%)",
                 ))
 
-            # Check for upcoding
-            if proc.code in UPCODING_PAIRS.values():
+            # Check for upcoding (only flag if fee is also above ODA guide for the billed code)
+            if proc.code in UPCODING_PAIRS.values() and deviation > tolerance:
                 cheaper_code = next(
                     (k for k, v in UPCODING_PAIRS.items() if v == proc.code),
                     None,

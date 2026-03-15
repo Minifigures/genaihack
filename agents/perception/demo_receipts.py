@@ -55,6 +55,42 @@ def get_demo_receipt(filename: str) -> OCRResult:
     if "fraud_test" in name:
         return _fraud_test()
 
+    # Batch 2 clean receipts
+    if "real_11" in name: return _real_11()
+    if "real_12" in name: return _real_12()
+    if "real_13" in name: return _real_13()
+    if "real_14" in name: return _real_14()
+    if "real_15" in name: return _real_15()
+    if "real_16" in name: return _real_16()
+    if "real_17" in name: return _real_17()
+    if "real_18" in name: return _real_18()
+    if "real_19" in name: return _real_19()
+    if "real_20" in name: return _real_20()
+
+    # Batch 2 fraud receipts
+    if "fraud_11" in name: return _fraud_11()
+    if "fraud_12" in name: return _fraud_12()
+    if "fraud_13" in name: return _fraud_13()
+    if "fraud_14" in name: return _fraud_14()
+    if "fraud_15" in name: return _fraud_15()
+    if "fraud_16" in name: return _fraud_16()
+    if "fraud_17" in name: return _fraud_17()
+    if "fraud_18" in name: return _fraud_18()
+    if "fraud_19" in name: return _fraud_19()
+    if "fraud_20" in name: return _fraud_20()
+
+    # Batch 2 AI-generated receipts
+    if "ai_gen_11" in name: return _ai_gen_11()
+    if "ai_gen_12" in name: return _ai_gen_12()
+    if "ai_gen_13" in name: return _ai_gen_13()
+    if "ai_gen_14" in name: return _ai_gen_14()
+    if "ai_gen_15" in name: return _ai_gen_15()
+    if "ai_gen_16" in name: return _ai_gen_16()
+    if "ai_gen_17" in name: return _ai_gen_17()
+    if "ai_gen_18" in name: return _ai_gen_18()
+    if "ai_gen_19" in name: return _ai_gen_19()
+    if "ai_gen_20" in name: return _ai_gen_20()
+
     # Default fallback
     return _clean()
 
@@ -254,6 +290,175 @@ def _ai_gen_10():
     return OCRResult(provider_name="Prestige Oral Health Centre", provider_address="4700 Keele St, Toronto, ON M3J 1P3", claim_date="2025-02-28",
         procedures=[Procedure(code="11101", description="Dental Recall", fee_charged=140.00), Procedure(code="02202", description="Radiographic Assessment", fee_charged=85.00), Procedure(code="27211", description="Full Metal Crown", fee_charged=1600.00, tooth_number="46"), Procedure(code="23112", description="Composite Filling 2S", fee_charged=300.00, tooth_number="11"), Procedure(code="23112", description="Composite Filling 2S", fee_charged=300.00, tooth_number="11")],
         subtotal=2425.00, tax=None, total=2425.00, ocr_confidence=0.90, raw_text="AI gen crown + duplicate")
+
+
+# === BATCH 2: CLEAN 11-20 ===
+
+def _real_11():
+    return OCRResult(provider_name="Yorkville Dental", provider_address="120 Yorkville Ave, Toronto", claim_date="2025-01-05",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=78.00), Procedure(code="02202", description="PA radiographs x2", fee_charged=42.00), Procedure(code="11111", description="Scaling 1st", fee_charged=55.00), Procedure(code="11117", description="Scaling add", fee_charged=55.00)],
+        subtotal=230.00, tax=None, total=230.00, ocr_confidence=0.96, raw_text="Yorkville clean")
+
+def _real_12():
+    return OCRResult(provider_name="Liberty Village Dental", provider_address="171 E Liberty St, Toronto", claim_date="2025-02-11",
+        procedures=[Procedure(code="11102", description="Complete exam", fee_charged=122.00), Procedure(code="01202", description="Bitewings x2", fee_charged=39.00), Procedure(code="13401", description="Fluoride", fee_charged=29.00)],
+        subtotal=190.00, tax=None, total=190.00, ocr_confidence=0.96, raw_text="Liberty Village clean")
+
+def _real_13():
+    return OCRResult(provider_name="Riverdale Dental Care", provider_address="850 Broadview Ave, Toronto", claim_date="2025-01-22",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=80.00), Procedure(code="23111", description="Composite 1S anterior", fee_charged=155.00, tooth_number="22"), Procedure(code="11111", description="Scaling 1st", fee_charged=57.00)],
+        subtotal=292.00, tax=None, total=292.00, ocr_confidence=0.95, raw_text="Riverdale clean")
+
+def _real_14():
+    return OCRResult(provider_name="Scarborough Town Dental", provider_address="150 Borough Dr, Scarborough", claim_date="2025-03-03",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=78.00), Procedure(code="02202", description="PA radiographs", fee_charged=42.00), Procedure(code="71101", description="Extraction erupted", fee_charged=128.00, tooth_number="48")],
+        subtotal=248.00, tax=None, total=248.00, ocr_confidence=0.95, raw_text="Scarborough extraction")
+
+def _real_15():
+    return OCRResult(provider_name="Danforth Dental Studio", provider_address="2980 Danforth Ave, Toronto", claim_date="2025-02-19",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=82.00), Procedure(code="01202", description="Bitewings x2", fee_charged=40.00), Procedure(code="11111", description="Scaling 1st", fee_charged=58.00), Procedure(code="11117", description="Scaling add", fee_charged=58.00), Procedure(code="12101", description="Polishing", fee_charged=47.00)],
+        subtotal=285.00, tax=None, total=285.00, ocr_confidence=0.95, raw_text="Danforth clean")
+
+def _real_16():
+    return OCRResult(provider_name="Etobicoke Family Dental", provider_address="3100 Bloor St W, Etobicoke", claim_date="2025-01-14",
+        procedures=[Procedure(code="11102", description="Complete exam", fee_charged=125.00), Procedure(code="02202", description="PA radiographs", fee_charged=44.00), Procedure(code="23112", description="Composite 2S", fee_charged=195.00, tooth_number="15")],
+        subtotal=364.00, tax=None, total=364.00, ocr_confidence=0.96, raw_text="Etobicoke clean")
+
+def _real_17():
+    return OCRResult(provider_name="North Toronto Dental", provider_address="4950 Yonge St, Toronto", claim_date="2025-03-10",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=78.00), Procedure(code="11111", description="Scaling 1st", fee_charged=55.00), Procedure(code="13401", description="Fluoride", fee_charged=28.00)],
+        subtotal=161.00, tax=None, total=161.00, ocr_confidence=0.97, raw_text="North Toronto clean")
+
+def _real_18():
+    return OCRResult(provider_name="Leslieville Dental Centre", provider_address="1000 Queen St E, Toronto", claim_date="2025-02-07",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=80.00), Procedure(code="02202", description="PA radiographs", fee_charged=44.00), Procedure(code="23111", description="Composite 1S", fee_charged=152.00, tooth_number="11"), Procedure(code="23111", description="Composite 1S", fee_charged=152.00, tooth_number="21")],
+        subtotal=428.00, tax=None, total=428.00, ocr_confidence=0.95, raw_text="Leslieville two fillings")
+
+def _real_19():
+    return OCRResult(provider_name="High Park Dental", provider_address="1860 Bloor St W, Toronto", claim_date="2025-01-30",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=78.00), Procedure(code="01202", description="Bitewings", fee_charged=38.00), Procedure(code="11111", description="Scaling 1st", fee_charged=55.00), Procedure(code="11117", description="Scaling add", fee_charged=55.00)],
+        subtotal=226.00, tax=None, total=226.00, ocr_confidence=0.96, raw_text="High Park clean")
+
+def _real_20():
+    return OCRResult(provider_name="Mimico Dental Group", provider_address="330 Royal York Rd, Toronto", claim_date="2025-03-07",
+        procedures=[Procedure(code="11102", description="Complete exam", fee_charged=124.00), Procedure(code="02202", description="PA radiographs", fee_charged=45.00), Procedure(code="11111", description="Scaling 1st", fee_charged=58.00), Procedure(code="11117", description="Scaling add", fee_charged=58.00), Procedure(code="23112", description="Composite 2S", fee_charged=198.00, tooth_number="24")],
+        subtotal=483.00, tax=None, total=483.00, ocr_confidence=0.95, raw_text="Mimico clean")
+
+
+# === BATCH 2: FRAUD 11-20 ===
+
+def _fraud_11():
+    """Exam + scaling heavily inflated."""
+    return OCRResult(provider_name="QuickSmile Dental", provider_address="999 Dundas St W, Toronto", claim_date="2025-01-18",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=165.00), Procedure(code="11111", description="Scaling 1st", fee_charged=105.00), Procedure(code="11117", description="Scaling add", fee_charged=100.00), Procedure(code="12101", description="Polishing", fee_charged=80.00)],
+        subtotal=450.00, tax=None, total=450.00, ocr_confidence=0.93, raw_text="QuickSmile inflated")
+
+def _fraud_12():
+    """Double root planing upcoded + deviation."""
+    return OCRResult(provider_name="Dr. Smith Dental Clinic", provider_address="123 University Ave, Toronto", claim_date="2025-02-28",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=140.00), Procedure(code="43421", description="Root planing Q1", fee_charged=320.00, tooth_number="16"), Procedure(code="43421", description="Root planing Q2", fee_charged=320.00, tooth_number="26"), Procedure(code="11117", description="Scaling add", fee_charged=90.00)],
+        subtotal=870.00, tax=None, total=870.00, ocr_confidence=0.92, raw_text="double root planing upcode")
+
+def _fraud_13():
+    """4 scaling units unbundled + overcharged."""
+    return OCRResult(provider_name="Discount Dental Plus", provider_address="600 Sheppard Ave W, Toronto", claim_date="2025-03-05",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=85.00), Procedure(code="11117", description="Scaling 1", fee_charged=80.00), Procedure(code="11117", description="Scaling 2", fee_charged=80.00), Procedure(code="11117", description="Scaling 3", fee_charged=80.00), Procedure(code="11117", description="Scaling 4", fee_charged=80.00)],
+        subtotal=405.00, tax=None, total=405.00, ocr_confidence=0.93, raw_text="unbundled 4 scaling")
+
+def _fraud_14():
+    """Crown overcharge + inflated exam."""
+    return OCRResult(provider_name="Elite Crown Dental", provider_address="500 University Ave, Toronto", claim_date="2025-01-25",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=155.00), Procedure(code="27211", description="Crown metal", fee_charged=1500.00, tooth_number="46"), Procedure(code="02202", description="PA radiographs", fee_charged=65.00)],
+        subtotal=1720.00, tax=None, total=1720.00, ocr_confidence=0.91, raw_text="crown overcharge")
+
+def _fraud_15():
+    """Triple composite on same tooth."""
+    return OCRResult(provider_name="Bay Dental Associates", provider_address="100 Bay St, Toronto", claim_date="2025-02-15",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=78.00), Procedure(code="23112", description="Composite 2S", fee_charged=240.00, tooth_number="21"), Procedure(code="23112", description="Composite 2S", fee_charged=240.00, tooth_number="21"), Procedure(code="23112", description="Composite 2S", fee_charged=240.00, tooth_number="21")],
+        subtotal=798.00, tax=None, total=798.00, ocr_confidence=0.92, raw_text="triple duplicate composite")
+
+def _fraud_16():
+    """Root planing upcoded + 3 scaling unbundled."""
+    return OCRResult(provider_name="Downtown Dental Group", provider_address="789 Bay St, Toronto", claim_date="2025-03-01",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=130.00), Procedure(code="43427", description="Root planing 3Q+", fee_charged=360.00), Procedure(code="11117", description="Scaling 1", fee_charged=75.00), Procedure(code="11117", description="Scaling 2", fee_charged=75.00), Procedure(code="11117", description="Scaling 3", fee_charged=75.00)],
+        subtotal=715.00, tax=None, total=715.00, ocr_confidence=0.92, raw_text="upcode + unbundle")
+
+def _fraud_17():
+    """Extraction overcharge + phantom polishing."""
+    return OCRResult(provider_name="Midtown Dental Centre", provider_address="1200 Bay St, Toronto", claim_date="2025-01-12",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=150.00), Procedure(code="71101", description="Extraction erupted", fee_charged=220.00, tooth_number="38"), Procedure(code="12101", description="Polishing", fee_charged=80.00), Procedure(code="11117", description="Scaling add", fee_charged=90.00)],
+        subtotal=540.00, tax=None, total=540.00, ocr_confidence=0.93, raw_text="extraction overcharge")
+
+def _fraud_18():
+    """Systematic 40-60% overcharge."""
+    return OCRResult(provider_name="Premium Dental Studio", provider_address="400 University Ave, Toronto", claim_date="2025-02-20",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=120.00), Procedure(code="02202", description="PA radiographs", fee_charged=65.00), Procedure(code="11111", description="Scaling 1st", fee_charged=82.00), Procedure(code="11117", description="Scaling add", fee_charged=80.00), Procedure(code="23112", description="Composite 2S", fee_charged=285.00, tooth_number="14")],
+        subtotal=632.00, tax=None, total=632.00, ocr_confidence=0.93, raw_text="systematic overcharge")
+
+def _fraud_19():
+    """Double crown billing same tooth."""
+    return OCRResult(provider_name="Lakeshore Dental", provider_address="2100 Lake Shore Blvd W, Toronto", claim_date="2025-03-08",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=78.00), Procedure(code="27201", description="Crown porcelain", fee_charged=1500.00, tooth_number="36"), Procedure(code="27201", description="Crown porcelain", fee_charged=1500.00, tooth_number="36")],
+        subtotal=3078.00, tax=None, total=3078.00, ocr_confidence=0.90, raw_text="double crown same tooth")
+
+def _fraud_20():
+    """Comprehensive fraud: upcode + unbundle + duplicate + deviation."""
+    return OCRResult(provider_name="Smile Bright Dentistry", provider_address="200 Bloor St W, Toronto", claim_date="2025-01-20",
+        procedures=[Procedure(code="11101", description="Recall exam", fee_charged=170.00), Procedure(code="43421", description="Root planing", fee_charged=380.00, tooth_number="14"), Procedure(code="11117", description="Scaling 1", fee_charged=90.00), Procedure(code="11117", description="Scaling 2", fee_charged=90.00), Procedure(code="11117", description="Scaling 3", fee_charged=90.00), Procedure(code="23112", description="Composite 2S", fee_charged=280.00, tooth_number="21"), Procedure(code="23112", description="Composite 2S", fee_charged=280.00, tooth_number="21"), Procedure(code="12101", description="Polishing", fee_charged=78.00)],
+        subtotal=1458.00, tax=None, total=1458.00, ocr_confidence=0.91, raw_text="comprehensive fraud")
+
+
+# === BATCH 2: AI-GEN 11-20 ===
+
+def _ai_gen_11():
+    return OCRResult(provider_name="SmartDent AI Clinic", provider_address="1 Queen St E, Toronto", claim_date="2025-01-08",
+        procedures=[Procedure(code="11101", description="Oral Exam (recall)", fee_charged=78.00), Procedure(code="02202", description="Digital Periapical x2", fee_charged=42.00), Procedure(code="11111", description="Prophylaxis Scaling I", fee_charged=55.00)],
+        subtotal=175.00, tax=None, total=175.00, ocr_confidence=0.96, raw_text="AI clean")
+
+def _ai_gen_12():
+    return OCRResult(provider_name="AutoCare Dental Inc.", provider_address="2500 Victoria Park Ave, Toronto", claim_date="2025-02-14",
+        procedures=[Procedure(code="11102", description="Full Oral Assessment", fee_charged=122.00), Procedure(code="01202", description="Bitewing Diagnostic Set", fee_charged=39.00), Procedure(code="11111", description="Scaling Session A", fee_charged=56.00), Procedure(code="13401", description="Fluoride Application", fee_charged=29.00)],
+        subtotal=246.00, tax=None, total=246.00, ocr_confidence=0.96, raw_text="AI clean exam+fluoride")
+
+def _ai_gen_13():
+    return OCRResult(provider_name="DigiDent Solutions", provider_address="75 St. Nicholas St, Toronto", claim_date="2025-03-02",
+        procedures=[Procedure(code="11101", description="Periodic Exam", fee_charged=80.00), Procedure(code="23112", description="Composite Restoration 2S", fee_charged=196.00, tooth_number="12"), Procedure(code="12101", description="Crown Polish", fee_charged=47.00)],
+        subtotal=323.00, tax=None, total=323.00, ocr_confidence=0.95, raw_text="AI clean filling")
+
+def _ai_gen_14():
+    return OCRResult(provider_name="Neural Dental Network", provider_address="300 Front St W, Toronto", claim_date="2025-01-20",
+        procedures=[Procedure(code="11101", description="Examination", fee_charged=96.00), Procedure(code="02202", description="Radiograph Series", fee_charged=54.00), Procedure(code="11111", description="Scaling Treatment", fee_charged=70.00), Procedure(code="11117", description="Scaling Supplement", fee_charged=70.00)],
+        subtotal=290.00, tax=None, total=290.00, ocr_confidence=0.94, raw_text="AI moderate deviation")
+
+def _ai_gen_15():
+    return OCRResult(provider_name="TechSmile Dental Lab", provider_address="45 Charles St E, Toronto", claim_date="2025-02-25",
+        procedures=[Procedure(code="11101", description="Recall Assessment", fee_charged=92.00), Procedure(code="23111", description="Anterior Composite 1S", fee_charged=178.00, tooth_number="22"), Procedure(code="11111", description="Hygiene Scaling", fee_charged=63.00)],
+        subtotal=333.00, tax=None, total=333.00, ocr_confidence=0.94, raw_text="AI moderate filling")
+
+def _ai_gen_16():
+    return OCRResult(provider_name="CloudDent Healthcare", provider_address="900 Bay St, Toronto", claim_date="2025-03-10",
+        procedures=[Procedure(code="11102", description="Comprehensive Assessment", fee_charged=142.00), Procedure(code="01202", description="Bilateral Bitewings", fee_charged=46.00), Procedure(code="11111", description="Initial Scaling", fee_charged=66.00), Procedure(code="11117", description="Continued Scaling", fee_charged=66.00), Procedure(code="13401", description="Fluoride Rinse", fee_charged=34.00)],
+        subtotal=354.00, tax=None, total=354.00, ocr_confidence=0.93, raw_text="AI moderate multi")
+
+def _ai_gen_17():
+    return OCRResult(provider_name="Quantum Dental AI", provider_address="200 Wellington St W, Toronto", claim_date="2025-01-30",
+        procedures=[Procedure(code="11101", description="Periodic Dental Exam", fee_charged=78.00), Procedure(code="43421", description="Subgingival Debridement Q1", fee_charged=300.00, tooth_number="16"), Procedure(code="43421", description="Subgingival Debridement Q3", fee_charged=300.00, tooth_number="36"), Procedure(code="11117", description="Supplemental Scaling", fee_charged=65.00)],
+        subtotal=743.00, tax=None, total=743.00, ocr_confidence=0.92, raw_text="AI suspicious upcode")
+
+def _ai_gen_18():
+    return OCRResult(provider_name="DeepClean Dental Co.", provider_address="55 Bloor St W, Toronto", claim_date="2025-02-18",
+        procedures=[Procedure(code="11101", description="Clinical Examination", fee_charged=110.00), Procedure(code="43427", description="Full Arch Root Planing", fee_charged=320.00), Procedure(code="11117", description="Scaling Extension A", fee_charged=78.00), Procedure(code="11117", description="Scaling Extension B", fee_charged=78.00), Procedure(code="11117", description="Scaling Extension C", fee_charged=78.00)],
+        subtotal=664.00, tax=None, total=664.00, ocr_confidence=0.91, raw_text="AI upcode+unbundle")
+
+def _ai_gen_19():
+    return OCRResult(provider_name="AlphaDent Premium", provider_address="1 First Canadian Pl, Toronto", claim_date="2025-03-05",
+        procedures=[Procedure(code="11101", description="Dental Examination", fee_charged=160.00), Procedure(code="27201", description="Ceramic Crown Unit", fee_charged=1700.00, tooth_number="46"), Procedure(code="02202", description="Diagnostic X-Ray", fee_charged=75.00), Procedure(code="11117", description="Scaling Service", fee_charged=95.00), Procedure(code="11117", description="Scaling Service", fee_charged=95.00), Procedure(code="11117", description="Scaling Service", fee_charged=95.00)],
+        subtotal=2220.00, tax=None, total=2220.00, ocr_confidence=0.89, raw_text="AI crown fraud combo")
+
+def _ai_gen_20():
+    return OCRResult(provider_name="OmniDent Health Systems", provider_address="800 King St W, Toronto", claim_date="2025-02-10",
+        procedures=[Procedure(code="11101", description="Oral Health Exam", fee_charged=145.00), Procedure(code="23112", description="Resin Composite 2S", fee_charged=290.00, tooth_number="21"), Procedure(code="23112", description="Resin Composite 2S", fee_charged=290.00, tooth_number="21"), Procedure(code="43421", description="Perio Root Therapy", fee_charged=380.00, tooth_number="14"), Procedure(code="11117", description="Add Scaling", fee_charged=88.00)],
+        subtotal=1193.00, tax=None, total=1193.00, ocr_confidence=0.90, raw_text="AI duplicate+upcode")
 
 
 def _fraud_test():
