@@ -120,6 +120,24 @@ async def run_fraud_analyst(state: VigilState) -> dict:
                             ),
                         ))
 
+        # Check for duplicate claims (same code + same tooth billed multiple times)
+        from collections import Counter
+        proc_keys = [(p.code, p.tooth_number or "") for p in procedures]
+        for key, count in Counter(proc_keys).items():
+            if count > 1 and key[1]:  # Only flag if same tooth
+                code, tooth = key
+                entry = ODA_FEE_GUIDE.get(code, {})
+                billed_total = sum(p.fee_charged for p in procedures if p.code == code and (p.tooth_number or "") == tooth)
+                flags.append(FraudFlag(
+                    fraud_type=FraudType.DUPLICATE_CLAIM,
+                    code=code,
+                    billed_fee=billed_total,
+                    suggested_fee=entry.get("suggested_fee"),
+                    deviation_pct=round((billed_total / entry["suggested_fee"] - 1), 3) if entry.get("suggested_fee") else None,
+                    confidence=confidence_defaults.get("duplicate_claim", 0.80),
+                    evidence=f"Procedure {code} billed {count} times for tooth {tooth}",
+                ))
+
         # Check for unbundling
         code_set = {p.code for p in procedures}
         min_units = unbundling_rules["min_scaling_units"]
