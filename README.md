@@ -2,6 +2,10 @@
 
 AI-powered platform that protects student health benefits from billing fraud, discovers unused insurance coverage, and connects students with trusted clinics. Built for GenAI Genesis 2026 Hackathon, University of Toronto.
 
+**Live demo: [vigil-fraud.vercel.app](https://vigil-fraud.vercel.app)**
+
+The hosted demo runs in demo mode (no login or API keys needed), so every page is fully populated. Upload a sample receipt from `data/demo_receipts/` to watch the agent pipeline analyze it in real time.
+
 ## What It Does
 
 Students upload photos of healthcare receipts (dental bills, pharmacy receipts). VIGIL simultaneously:
