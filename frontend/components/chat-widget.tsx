@@ -2,8 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { demoChatReply } from "@/lib/demo-data";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const HAS_BACKEND =
+  !!process.env.NEXT_PUBLIC_API_URL &&
+  !API_BASE.includes("localhost") &&
+  !API_BASE.includes("127.0.0.1");
 
 interface Message {
   role: "user" | "assistant";
@@ -37,33 +42,37 @@ export function ChatWidget() {
     setMessages((prev) => [...prev, { role: "user", content: msg }]);
     setLoading(true);
 
-    try {
-      const res = await fetch(`${API_BASE}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg }),
-      });
-      const data = await res.json();
+    if (HAS_BACKEND) {
+      try {
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg }),
+        });
+        const data = await res.json();
 
-      if (res.status === 429) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "I'm getting a lot of questions right now. Please wait a moment and try again." },
-        ]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: data.reply || "Sorry, I couldn't process that. Try again." },
-        ]);
+        if (res.status === 429) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: "I'm getting a lot of questions right now. Please wait a moment and try again." },
+          ]);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: data.reply || demoChatReply(msg) },
+          ]);
+        }
+        setLoading(false);
+        return;
+      } catch {
+        // fall through to local assistant
       }
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "I'm having trouble connecting. Please try again in a moment." },
-      ]);
-    } finally {
-      setLoading(false);
     }
+
+    // Local keyword assistant (mirrors the backend's offline fallback).
+    await new Promise((r) => setTimeout(r, 350));
+    setMessages((prev) => [...prev, { role: "assistant", content: demoChatReply(msg) }]);
+    setLoading(false);
   }
 
   return (

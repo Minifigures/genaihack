@@ -46,7 +46,9 @@ export default function UploadPage() {
     setTraces([]);
 
     try {
-      const pipelineResult = await uploadClaim(selectedFile);
+      const pipelineResult = await uploadClaim(selectedFile, (trace) => {
+        setTraces((prev) => [...prev, trace]);
+      });
       setResult(pipelineResult);
       setTraces(pipelineResult.agent_traces || []);
       if (pipelineResult.errors && pipelineResult.errors.length > 0) {

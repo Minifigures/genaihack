@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Globe,
 } from "lucide-react";
+import { DEMO_CLINICS } from "@/lib/demo-data";
 
 interface Clinic {
   name: string;
@@ -27,6 +28,10 @@ interface Clinic {
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const HAS_BACKEND =
+  !!process.env.NEXT_PUBLIC_API_URL &&
+  !API_BASE.includes("localhost") &&
+  !API_BASE.includes("127.0.0.1");
 
 export default function ClinicsPage() {
   const [clinics, setClinics] = useState<Clinic[]>([]);
@@ -36,15 +41,23 @@ export default function ClinicsPage() {
 
   useEffect(() => {
     async function load() {
-      try {
-        const res = await fetch(`${API_BASE}/api/clinics`);
-        const data = await res.json();
-        setClinics(data.clinics || []);
-      } catch {
-        // API unavailable
-      } finally {
-        setLoading(false);
+      if (HAS_BACKEND) {
+        try {
+          const res = await fetch(`${API_BASE}/api/clinics`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.clinics && data.clinics.length > 0) {
+              setClinics(data.clinics);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch {
+          // fall through to demo clinics
+        }
       }
+      setClinics(DEMO_CLINICS);
+      setLoading(false);
     }
     load();
   }, []);

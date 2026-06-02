@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseConfigured } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import DashboardPage from "@/components/Dashboard";
 import {
@@ -18,7 +18,7 @@ import {
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !supabaseConfigured;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
