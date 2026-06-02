@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthButton } from "./AuthButton";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseConfigured } from "@/lib/supabase";
 import { User } from "@supabase/supabase-js";
 import {
   LayoutDashboard,
@@ -33,7 +33,7 @@ const navItems: { href: string; label: string; icon: LucideIcon }[] = [
 export function Nav() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
-  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+  const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !supabaseConfigured;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

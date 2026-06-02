@@ -2,16 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase, supabaseConfigured } from "@/lib/supabase";
 
 const PUBLIC_ROUTES = ["/", "/login", "/signup"];
 
+// In demo mode (no Supabase configured, or NEXT_PUBLIC_DEMO_MODE=true) every
+// route is accessible without a session.
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !supabaseConfigured;
+
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!DEMO_MODE);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setLoading(false);
+      return;
+    }
+
     let mounted = true;
 
     async function checkAuth() {
