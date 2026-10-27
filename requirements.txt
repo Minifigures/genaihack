@@ -30,6 +30,7 @@ fpdf2>=2.7.0
 
 # HTTP client (for WatsonX REST API)
 requests>=2.31.0
+certifi>=2026.10.23
 
 # Auth
 PyJWT>=2.8.0
